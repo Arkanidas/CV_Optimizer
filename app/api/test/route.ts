@@ -2,6 +2,11 @@ import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 
 export async function GET() {
-  const data = await prisma.test.findMany()
-  return NextResponse.json(data)
+  const created = await prisma.test.create({
+    data: {
+      name: "Leon"
+    }
+  })
+
+  return Response.json(created)
 }
