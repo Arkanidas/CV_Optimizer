@@ -25,7 +25,7 @@ export default function Navbar() {
  
   return (
     <header
-      className="fixed left-1/2 top-4 z-50 w-[calc(100%_-_1.5rem)] max-w-[46rem] -translate-x-1/2 sm:w-[calc(100%_-_3rem)]"
+      className="fixed left-1/2 top-7 z-50 w-[calc(100%_-_1.5rem)] max-w-[46rem] -translate-x-1/2 sm:w-[calc(100%_-_3rem)]"
     >
       <div
         className={`navbar-motion ${
@@ -49,9 +49,6 @@ export default function Navbar() {
                 <p className="truncate text-sm font-semibold sm:text-lg">
                   CV Optimizer
                 </p>
-                <p className="hidden text-xs text-white/55 sm:block">
-                  AI-first application polish
-                </p>
               </div>
             </a>
 
@@ -74,11 +71,7 @@ export default function Navbar() {
             <div className="col-start-3 flex items-center justify-end gap-2">
               <a
                 href="#signin"
-                onClick={(event) => {
-                  event.preventDefault();
-                  scrollToSection("#signin");
-                }}
-                className="inline-flex h-11 min-w-28 items-center justify-center whitespace-nowrap rounded-lg bg-white px-7 text-sm font-semibold text-[#17131f] shadow-[0_10px_35px_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
+                className="inline-flex h-9 min-w-18 items-center justify-center rounded-lg bg-white px-4 text-sm font-semibold text-[#17131f] shadow-[0_10px_35px_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
               >
                 Sign in
               </a>
