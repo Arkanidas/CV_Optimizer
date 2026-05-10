@@ -1,4 +1,3 @@
-
 import AuroraBackground from "@/components/AuroraBackground";
 import Navbar from "@/components/Navbar";
 
