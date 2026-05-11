@@ -10,7 +10,7 @@ export default function Home() {
         <section className="flex min-h-screen min-h-dvh items-center justify-center px-4 pb-28 pt-32 sm:px-6 sm:pt-36">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
             <p className="inline-flex rounded-full border border-white/14 bg-white/8 px-4 py-2 text-xs font-medium uppercase tracking-[0.28em] text-white/68 backdrop-blur-xl">
-              Resume intelligence
+              Resume rewriting, simplified
             </p>
             <h1 className="mt-7 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] text-white sm:text-6xl lg:text-7xl">
               Fix your CV before recruiters skip it.
