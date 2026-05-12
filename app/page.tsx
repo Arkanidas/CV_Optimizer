@@ -29,12 +29,7 @@ export default function Home() {
               >
                 Get started
               </a>
-              <a
-                href="#pricing"
-                className="inline-flex h-12 items-center justify-center rounded-xl border border-white/14 bg-white/8 px-7 text-sm font-medium text-white backdrop-blur-xl transition hover:bg-white/12"
-              >
-                View pricing
-              </a>
+              
             </div>
           </div>
         </section>
