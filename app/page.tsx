@@ -3,14 +3,14 @@ import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
-    <AuroraBackground className="text-white">
+    <AuroraBackground>
       <main id="top" className="relative">
         <Navbar />
 
         <section className="flex min-h-screen min-h-dvh items-center justify-center px-4 pb-28 pt-32 sm:px-6 sm:pt-36">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
             <p className="inline-flex rounded-full border border-white/14 bg-white/8 px-4 py-2 text-xs font-medium uppercase tracking-[0.28em] text-white/68 backdrop-blur-xl">
-              Resume rewriting, simplified
+              Resume rewriting, simply
             </p>
             <h1 className="mt-7 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] text-white sm:text-6xl lg:text-7xl">
               Fix your CV before recruiters skip it.
@@ -27,7 +27,7 @@ export default function Home() {
                 href="#signin"
                 className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-7 text-sm font-semibold text-[#17131f] shadow-[0_12px_40px_rgba(255,255,255,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
               >
-                Get started
+                Get started today
               </a>
               
             </div>
