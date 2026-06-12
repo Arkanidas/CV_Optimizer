@@ -19,7 +19,7 @@ export default function AuroraBackground({
         {`
           .aurora-layer {
             mix-blend-mode: screen;
-            will-change: transform, opacity;
+            will-change: transform, opacity, filter;
           }
 
           .aurora-layer-green {
@@ -28,54 +28,65 @@ export default function AuroraBackground({
 
           .aurora-layer-blue {
             animation: auroraFloatBlue 84s ease-in-out infinite;
+            animation-delay: -18s;
           }
 
           .aurora-layer-purple {
             animation: auroraFloatPurple 68s ease-in-out infinite;
+            animation-delay: -34s;
           }
 
           @keyframes auroraFloatGreen {
             0% {
-              transform: translate3d(0, -6%, 0) scale(0.96);
-              opacity: 0.68;
+              transform: translate3d(0, -18%, 0) scale(0.86);
+              opacity: 0.48;
+              filter: blur(44px) brightness(0.76);
             }
             50% {
-              transform: translate3d(0, 7%, 0) scale(1.18);
-              opacity: 0.96;
+              transform: translate3d(0, 18%, 0) scale(1.3);
+              opacity: 1;
+              filter: blur(96px) brightness(1.16);
             }
             100% {
-              transform: translate3d(0, -6%, 0) scale(0.96);
-              opacity: 0.68;
+              transform: translate3d(0, -18%, 0) scale(0.86);
+              opacity: 0.48;
+              filter: blur(44px) brightness(0.76);
             }
           }
 
           @keyframes auroraFloatBlue {
             0% {
-              transform: translate3d(0, -8%, 0) scale(1);
-              opacity: 0.66;
+              transform: translate3d(0, -20%, 0) scale(0.9);
+              opacity: 0.44;
+              filter: blur(48px) brightness(0.72);
             }
             50% {
-              transform: translate3d(0, 6%, 0) scale(1.2);
-              opacity: 0.94;
+              transform: translate3d(0, 16%, 0) scale(1.28);
+              opacity: 0.98;
+              filter: blur(90px) brightness(1.14);
             }
             100% {
-              transform: translate3d(0, -8%, 0) scale(1);
-              opacity: 0.66;
+              transform: translate3d(0, -20%, 0) scale(0.9);
+              opacity: 0.44;
+              filter: blur(48px) brightness(0.72);
             }
           }
 
           @keyframes auroraFloatPurple {
             0% {
-              transform: translate3d(0, -5%, 0) scale(0.98);
-              opacity: 0.58;
+              transform: translate3d(0, -16%, 0) scale(0.88);
+              opacity: 0.42;
+              filter: blur(46px) brightness(0.74);
             }
             50% {
-              transform: translate3d(0, 8%, 0) scale(1.19);
-              opacity: 0.9;
+              transform: translate3d(0, 20%, 0) scale(1.32);
+              opacity: 0.94;
+              filter: blur(98px) brightness(1.12);
             }
             100% {
-              transform: translate3d(0, -5%, 0) scale(0.98);
-              opacity: 0.58;
+              transform: translate3d(0, -16%, 0) scale(0.88);
+              opacity: 0.42;
+              filter: blur(46px) brightness(0.74);
             }
           }
         `}
