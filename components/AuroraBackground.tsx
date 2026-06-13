@@ -23,32 +23,32 @@ export default function AuroraBackground({
           }
 
           .aurora-layer-green {
-            animation: auroraFloatGreen 72s ease-in-out infinite;
+            animation: auroraFloatGreen 62s ease-in-out infinite;
           }
 
           .aurora-layer-blue {
-            animation: auroraFloatBlue 84s ease-in-out infinite;
+            animation: auroraFloatBlue 64s ease-in-out infinite;
             animation-delay: -18s;
           }
 
           .aurora-layer-purple {
-            animation: auroraFloatPurple 68s ease-in-out infinite;
-            animation-delay: -34s;
+            animation: auroraFloatPurple 58s ease-in-out infinite;
+            animation-delay: -22s;
           }
 
           @keyframes auroraFloatGreen {
             0% {
-              transform: translate3d(0, -18%, 0) scale(0.86);
+              transform: translate3d(0, -12%, 0) scale(0.86);
               opacity: 0.48;
               filter: blur(44px) brightness(0.76);
             }
             50% {
-              transform: translate3d(0, 18%, 0) scale(1.3);
+              transform: translate3d(0, 22%, 0) scale(1.36);
               opacity: 1;
               filter: blur(96px) brightness(1.16);
             }
             100% {
-              transform: translate3d(0, -18%, 0) scale(0.86);
+              transform: translate3d(0, -12%, 0) scale(0.86);
               opacity: 0.48;
               filter: blur(44px) brightness(0.76);
             }
@@ -63,7 +63,7 @@ export default function AuroraBackground({
             50% {
               transform: translate3d(0, 16%, 0) scale(1.28);
               opacity: 0.98;
-              filter: blur(90px) brightness(1.14);
+              filter: blur(90px) brightness(1.19);
             }
             100% {
               transform: translate3d(0, -20%, 0) scale(0.9);
@@ -74,19 +74,19 @@ export default function AuroraBackground({
 
           @keyframes auroraFloatPurple {
             0% {
-              transform: translate3d(0, -16%, 0) scale(0.88);
+              transform: translate3d(0, -20%, 0) scale(0.82);
               opacity: 0.42;
               filter: blur(46px) brightness(0.74);
             }
             50% {
-              transform: translate3d(0, 20%, 0) scale(1.32);
+              transform: translate3d(0, 20%, 0) scale(1.52);
               opacity: 0.94;
-              filter: blur(98px) brightness(1.12);
+              filter: blur(90px) brightness(1.12);
             }
             100% {
-              transform: translate3d(0, -16%, 0) scale(0.88);
+              transform: translate3d(0, -20%, 0) scale(0.82);
               opacity: 0.42;
-              filter: blur(46px) brightness(0.74);
+              filter: blur(41px) brightness(0.80);
             }
           }
         `}
