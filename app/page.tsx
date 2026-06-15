@@ -25,9 +25,15 @@ export default function Home() {
             >
               <a
                 href="#signin"
+                className="inline-flex h-12 items-center justify-center  px-7 text-sm font-semibold text-[#17131f] transition"
+              >
+                 Learn more
+              </a>
+              <a
+                href="#signin"
                 className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-7 text-sm font-semibold text-[#17131f] shadow-[0_12px_40px_rgba(255,255,255,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
               >
-                Get started today
+                Get started now
               </a>
               
             </div>
