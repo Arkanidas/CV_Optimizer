@@ -34,7 +34,7 @@ export default function Navbar() {
               <img
                 src={logo.src}
                 alt="CV Optimizer Logo"
-                className="h-10 w10 shrink-0 sm:h-11 sm:w-12"
+                className="h-10 w10 shrink-0 sm:h-12 sm:w-12"
               />
               <p className="truncate text-sm font-semibold sm:text-lg">CV Optimizer</p>
             </a>
