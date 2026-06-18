@@ -3,8 +3,9 @@ import { useState } from "react";
 import logo from '@/app/assets/logo1.png';
 
 const navLinks = [
-  { href: "#pricing", label: "Pricing" },
+  { href: "#howitworks", label: "How it Works" },
   { href: "#faq", label: "FAQ" },
+  { href: "#pricing", label: "Pricing" },
 ];
 
 export default function Navbar() {
@@ -20,10 +21,10 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed left-1/2 top-7 z-50 w-[calc(100%_-_1.5rem)] max-w-[46rem] -translate-x-1/2 sm:w-[calc(100%_-_3rem)]">
+    <header className="fixed left-1/2 top-7 z-50 w-[calc(100%_-_1.5rem)] max-w-[55rem] -translate-x-1/2 sm:w-[calc(100%_-_3rem)]">
       <div className={`navbar-motion ${isVisible ? "navbar-motion-visible" : "navbar-motion-hidden"}`}>
-        <div className="rounded-[1.65rem] border border-white/18 bg-white/[0.045] px-3 py-3 shadow-[0_18px_60px_rgba(8,7,18,0.22)] backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-white/[0.045] sm:px-4">
-          <div className="flex items-center justify-between h-13">
+        <div className="rounded-[1.65rem] border border-white/18 bg-white/[0.045] shadow-[0_18px_60px_rgba(8,7,18,0.22)] backdrop-blur-md backdrop-saturate-150 bg-white/[0.045]">
+          <div className="flex items-center justify-between h-14 gap-4 px-3 py-2 sm:gap-6 sm:px-5">
 
             {/* LEFT — logo + wordmark */}
             <a
@@ -34,22 +35,26 @@ export default function Navbar() {
               <img
                 src={logo.src}
                 alt="CV Optimizer Logo"
-                className="h-10 w10 shrink-0 sm:h-12 sm:w-12"
+                className="h-10 w-10 shrink-0 sm:h-12 sm:w-13"
               />
               <p className="truncate text-sm font-semibold sm:text-lg">CV Optimizer</p>
             </a>
 
             {/* CENTER — nav links (hidden on mobile) */}
-            <nav className="hidden items-center justify-center gap-1.5 md:flex">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
-                  className="rounded-lg px-4 py-2.5 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
-                >
-                  {link.label}
-                </a>
+            <nav className="hidden items-center justify-center gap-1.5 md:flex gap-3">
+              {navLinks.map((link, index) => (
+                <span key={link.href} className="flex items-center">
+                  <a
+                    href={link.href}
+                    onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
+                    className="text-md font-medium text-white/70 transition hover:text-white"
+                  >
+                    {link.label}
+                  </a>
+                  {index < navLinks.length - 1 && (
+                    <span className="text-white/15 select-none relative left-1.5"> |</span>
+                  )}
+                </span>
               ))}
             </nav>
 
@@ -92,7 +97,7 @@ export default function Navbar() {
                   onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
                   className="rounded-lg px-4 py-2.5 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
                 >
-                  {link.label}
+                  {link.label}     
                 </a>
               ))}
             </nav>
