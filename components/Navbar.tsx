@@ -30,7 +30,7 @@ export default function Navbar() {
             <a
               href="#top"
               onClick={(e) => { e.preventDefault(); scrollToSection("#top"); }}
-              className="flex flex-1 items-center gap-2 rounded-2xl px-1 py-1 text-white sm:px-2"
+              className="flex flex-1 items-center gap-2 rounded-2xl px-1 py-1 text-white sm:px-2 relative left-2"
             >
               <img
                 src={logo.src}
