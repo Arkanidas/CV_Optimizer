@@ -1,5 +1,7 @@
 import AuroraBackground from "@/components/AuroraBackground";
 import Navbar from "@/components/Navbar";
+import GradientText from '../components/GradientText';
+
 
 export default function Home() {
   return (
@@ -13,7 +15,10 @@ export default function Home() {
               Resume rewriting, simply
             </p>
             <h1 className="mt-7 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] text-white sm:text-6xl lg:text-7xl">
-              Fix your CV before recruiters skip it.
+              <GradientText
+              colors={["#b2a4eb","#ff55f9","#8400ff"]}
+              animationSpeed={9}
+              showBorder={false}>Get Past the Algorithm. Get the Interview</GradientText>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
               Turn rough resumes into targeted, ATS-friendly applications with
