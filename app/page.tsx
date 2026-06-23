@@ -17,7 +17,7 @@ export default function Home() {
             <h1 className="mt-7 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] text-white sm:text-6xl lg:text-7xl">
               <GradientText
               colors={["#b2a4eb","#ff55f9","#8400ff"]}
-              animationSpeed={9}
+              animationSpeed={5}
               showBorder={false}>Get Past the Algorithm. Get the Interview</GradientText>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
