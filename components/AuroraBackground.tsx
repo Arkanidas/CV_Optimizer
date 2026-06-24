@@ -13,7 +13,7 @@ export default function AuroraBackground({
 }: AuroraBackgroundProps) {
   return (
     <div
-      className={`relative isolate min-h-screen min-h-dvh overflow-x-hidden bg-[#120f17] ${className}`.trim()}
+      className={`relative isolate min-h-screen min-h-dvh overflow-x-hidden bg-[#120f17]  ${className}`.trim()}
     >
       <style>
         {`

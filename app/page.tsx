@@ -1,6 +1,7 @@
 import AuroraBackground from "@/components/AuroraBackground";
 import Navbar from "@/components/Navbar";
 import GradientText from '../components/GradientText';
+import { Sparkle } from 'lucide-react';
 
 
 export default function Home() {
@@ -11,14 +12,14 @@ export default function Home() {
 
         <section className="flex min-h-screen min-h-dvh items-center justify-center px-4 pb-28 pt-32 sm:px-6 sm:pt-36">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
-            <p className="inline-flex rounded-full border border-white/14 bg-white/8 px-4 py-2 text-xs font-medium uppercase tracking-[0.28em] text-white/68 backdrop-blur-xl">
-              Resume rewriting, simply
-            </p>
-            <h1 className="mt-7 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] text-white sm:text-6xl lg:text-7xl">
-              <GradientText
-              colors={["#b2a4eb","#ff55f9","#8400ff"]}
-              animationSpeed={5}
-              showBorder={false}>Get Past the Algorithm. Get the Interview</GradientText>
+           <div className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/8 backdrop-blur-xl p-2">
+            <Sparkle className="h-4 w-4 shrink-0 text-violet-300" />
+             <GradientText colors={["#b2a4eb", "#ff55f9", "#8400ff"]} animationSpeed={5} showBorder={false} className="text-md font-medium ">
+               AI-Powered CV Optimization
+             </GradientText>
+             </div>
+            <h1 className="mt-7 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] text-white sm:text-6xl lg:text-7xl">            
+             The Resume that will land you the Interview
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
               Turn rough resumes into targeted, ATS-friendly applications with
