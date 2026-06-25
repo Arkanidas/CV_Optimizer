@@ -11,6 +11,7 @@ interface GradientTextProps {
   showBorder?: boolean;
   direction?: 'horizontal' | 'vertical' | 'diagonal';
   pauseOnHover?: boolean;
+  triggerOnHover?: boolean; 
   yoyo?: boolean;
 }
 
@@ -21,10 +22,11 @@ export default function GradientText({
   animationSpeed = 8,
   showBorder = false,
   direction = 'horizontal',
+  triggerOnHover = false,
   pauseOnHover = false,
   yoyo = true
 }: GradientTextProps) {
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(triggerOnHover);
   const progress = useMotionValue(0);
   const elapsedRef = useRef(0);
   const lastTimeRef = useRef<number | null>(null);
@@ -79,20 +81,22 @@ export default function GradientText({
 
   const handleMouseEnter = useCallback(() => {
     if (pauseOnHover) setIsPaused(true);
-  }, [pauseOnHover]);
+     if (triggerOnHover) setIsPaused(false);
+  }, [pauseOnHover, triggerOnHover]);
 
   const handleMouseLeave = useCallback(() => {
     if (pauseOnHover) setIsPaused(false);
-  }, [pauseOnHover]);
+    if (triggerOnHover) setIsPaused(true);
+  }, [pauseOnHover, triggerOnHover]);
 
   const gradientAngle =
     direction === 'horizontal' ? 'to right' : direction === 'vertical' ? 'to bottom' : 'to bottom right';
-  // Duplicate first color at the end for seamless looping
+
   const gradientColors = [...colors, colors[0]].join(', ');
 
   const gradientStyle = {
     backgroundImage: `linear-gradient(${gradientAngle}, ${gradientColors})`,
-    backgroundSize: direction === 'horizontal' ? '300% 100%' : direction === 'vertical' ? '100% 300%' : '300% 300%',
+    backgroundSize: direction === 'horizontal' ? '300% 100%' : direction === 'vertical' ? '300% 100%' : '300% 300%',
     backgroundRepeat: 'repeat'
   };
 

@@ -23,14 +23,13 @@ export default function Navbar() {
   return (
     <header className="fixed left-1/2 top-7 z-50 w-[calc(100%_-_1.5rem)] max-w-[55rem] -translate-x-1/2 sm:w-[calc(100%_-_3rem)]">
       <div className={`navbar-motion ${isVisible ? "navbar-motion-visible" : "navbar-motion-hidden"}`}>
-        <div className="rounded-[1.65rem] border border-white/18 bg-white/[0.045] shadow-[0_18px_60px_rgba(8,7,18,0.22)] backdrop-blur-md backdrop-saturate-150 bg-white/[0.045]">
+        <div className="rounded-full border  border-white/18 bg-white/[0.045] shadow-[0_18px_60px_rgba(8,7,18,0.22)] backdrop-blur-md backdrop-saturate-150 bg-white/[0.045]">
           <div className="flex items-center justify-between h-14 gap-4 px-3 py-2 sm:gap-6 sm:px-5">
 
-            {/* LEFT — logo + wordmark */}
             <a
               href="#top"
               onClick={(e) => { e.preventDefault(); scrollToSection("#top"); }}
-              className="flex flex-1 items-center gap-2 rounded-2xl px-1 py-1 text-white sm:px-2 relative left-2"
+              className="flex flex-1 items-center gap-2 rounded-2xl px-1 py-1 text-white"
             >
               <img
                 src={logo.src}
@@ -62,7 +61,7 @@ export default function Navbar() {
             <div className="flex flex-1 items-center justify-end">
               <a
                 href="#signin"
-                className="inline-flex relative right-5 h-9 min-w-18 items-center justify-center rounded-2xl bg-white px-4 text-sm font-semibold text-[#17131f] shadow-[0_10px_35px_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
+                className="inline-flex h-9 min-w-18 items-center justify-center rounded-2xl bg-white px-4 text-sm font-semibold text-[#17131f] shadow-[0_10px_35px_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
               >
                 Sign in
               </a>

@@ -12,9 +12,9 @@ export default function Home() {
 
         <section className="flex min-h-screen min-h-dvh items-center justify-center px-4 pb-28 pt-32 sm:px-6 sm:pt-36">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
-           <div className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/8 backdrop-blur-xl p-2">
-            <Sparkle className="h-4 w-4 shrink-0 text-violet-300" />
-             <GradientText colors={["#b2a4eb", "#ff55f9", "#8400ff"]} animationSpeed={5} showBorder={false} className="text-md font-medium ">
+           <div className=" group inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/8 backdrop-blur-xl py-2 px-3">
+            <Sparkle className="h-4 w-4 shrink-0 text-white/70 transition-transform duration-500 group-hover:rotate-180" />
+             <GradientText colors={["#efff0c", "#ed64ff", "#37c0ff"]} animationSpeed={2} showBorder={false} yoyo={false} triggerOnHover className="text-md font-medium cursor-default">
                AI-Powered CV Optimization
              </GradientText>
              </div>
@@ -31,7 +31,7 @@ export default function Home() {
             >
               <a
                 href="#signin"
-                className="inline-flex h-12 items-center justify-center  px-7 text-sm font-semibold text-[#17131f] transition"
+                className="inline-flex h-12 items-center justify-center text-white/70 px-7 text-sm font-semibold transition"
               >
                  Learn more
               </a>
