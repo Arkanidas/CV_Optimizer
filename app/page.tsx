@@ -2,6 +2,7 @@ import AuroraBackground from "@/components/AuroraBackground";
 import Navbar from "@/components/Navbar";
 import GradientText from '../components/GradientText';
 import { Sparkle } from 'lucide-react';
+import CountUp from './CountUp'
 
 
 export default function Home() {
@@ -27,17 +28,17 @@ export default function Home() {
             </p>
             <div
               id="signin"
-              className="mt-9 flex w-full max-w-sm flex-col justify-center gap-3 sm:max-w-none sm:flex-row"
+              className="mt-9 flex w-full max-w-sm flex-col justify-center gap-7 sm:max-w-none sm:flex-row"
             >
               <a
                 href="#signin"
-                className="inline-flex h-12 items-center justify-center text-white/70 px-7 text-sm font-semibold transition"
+                className="inline-flex h-12 items-center justify-center text-white/95 px-7 text-sm font-semibold rounded-xl transition  transition hover bg-black/70"
               >
                  Learn more
               </a>
               <a
                 href="#signin"
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-7 text-sm font-semibold text-[#17131f] shadow-[0_12px_40px_rgba(255,255,255,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-7 text-sm font-semibold text-[#17131f] shadow-[0_5px_20px_rgba(255,255,255,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
               >
                 Get started now
               </a>
