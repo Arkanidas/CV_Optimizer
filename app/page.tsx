@@ -1,8 +1,8 @@
 import AuroraBackground from "@/components/AuroraBackground";
+import GradientText from "@/components/GradientText";
 import Navbar from "@/components/Navbar";
-import GradientText from '../components/GradientText';
-import { Sparkle } from 'lucide-react';
-import CountUp from './CountUp'
+import StatsBanner from "@/components/StatsBanner";
+import { Sparkle } from "lucide-react";
 
 
 export default function Home() {
@@ -11,16 +11,23 @@ export default function Home() {
       <main id="top" className="relative">
         <Navbar />
 
-        <section className="flex min-h-screen min-h-dvh items-center justify-center px-4 pb-28 pt-32 sm:px-6 sm:pt-36">
+        <section className="relative flex min-h-screen min-h-dvh items-center justify-center px-4 pb-56 pt-32 sm:px-6 sm:pb-52 sm:pt-36">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
-           <div className=" group inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/8 backdrop-blur-xl py-2 px-3">
-            <Sparkle className="h-4 w-4 shrink-0 text-white/70 transition-transform duration-500 group-hover:rotate-180" />
-             <GradientText colors={["#efff0c", "#ed64ff", "#37c0ff"]} animationSpeed={2} showBorder={false} yoyo={false} triggerOnHover className="text-md font-medium cursor-default">
-               AI-Powered CV Optimization
-             </GradientText>
-             </div>
-            <h1 className="mt-7 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] text-white sm:text-6xl lg:text-7xl">            
-             The Resume that will land you the Interview
+            <div className="group inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/8 px-3 py-2 backdrop-blur-xl">
+              <Sparkle className="h-4 w-4 shrink-0 text-white/70 transition-transform duration-500 group-hover:rotate-180" />
+              <GradientText
+                colors={["#efff0c", "#ed64ff", "#37c0ff"]}
+                animationSpeed={2}
+                showBorder={false}
+                yoyo={false}
+                triggerOnHover
+                className="cursor-default text-base font-medium"
+              >
+                AI-Powered CV Optimization
+              </GradientText>
+            </div>
+            <h1 className="mt-7 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] text-white sm:text-6xl lg:text-7xl">
+              The resume that will land you the interview
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
               Turn rough resumes into targeted, ATS-friendly applications with
@@ -32,9 +39,9 @@ export default function Home() {
             >
               <a
                 href="#signin"
-                className="inline-flex h-12 items-center justify-center text-white/95 px-7 text-sm font-semibold rounded-xl transition  transition hover bg-black/70"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-black/70 px-7 text-sm font-semibold text-white/95 transition hover:-translate-y-0.5 hover:bg-black/80"
               >
-                 Learn more
+                Learn more
               </a>
               <a
                 href="#signin"
@@ -42,8 +49,11 @@ export default function Home() {
               >
                 Get started now
               </a>
-              
             </div>
+
+          </div>
+          <div className="absolute inset-x-0 bottom-0">
+            <StatsBanner />
           </div>
         </section>
 

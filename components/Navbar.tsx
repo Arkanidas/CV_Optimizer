@@ -23,18 +23,18 @@ export default function Navbar() {
   return (
     <header className="fixed left-1/2 top-7 z-50 w-[calc(100%_-_1.5rem)] max-w-[55rem] -translate-x-1/2 sm:w-[calc(100%_-_3rem)]">
       <div className={`navbar-motion ${isVisible ? "navbar-motion-visible" : "navbar-motion-hidden"}`}>
-        <div className="rounded-full border  border-white/18 bg-white/[0.045] shadow-[0_18px_60px_rgba(8,7,18,0.22)] backdrop-blur-md backdrop-saturate-150 bg-white/[0.045]">
+        <div className="rounded-full border border-white/18 bg-white/[0.045] shadow-[0_18px_60px_rgba(8,7,18,0.22)] backdrop-blur-md backdrop-saturate-150 bg-white/[0.045]">
           <div className="flex items-center justify-between h-14 gap-4 px-3 py-2 sm:gap-6 sm:px-5">
 
             <a
               href="#top"
               onClick={(e) => { e.preventDefault(); scrollToSection("#top"); }}
-              className="flex flex-1 items-center gap-2 rounded-2xl px-1 py-1 text-white"
+              className="flex flex-1 items-center rounded-2xl px-1 py-1 text-white"
             >
               <img
                 src={logo.src}
                 alt="Logo"
-                className="h-10 w-10 shrink-0 sm:h-12 sm:w-13"
+                className="h-10 w-10 shrink-0 sm:h-12 sm:w-13 relative right-2"
               />
               <p className="truncate text-sm font-semibold sm:text-lg">CV Optimizer</p>
             </a>
