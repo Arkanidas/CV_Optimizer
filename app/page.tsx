@@ -52,7 +52,7 @@ export default function Home() {
             </div>
 
           </div>
-          <div className="absolute inset-x-0 bottom-0">
+          <div className="absolute bottom-0">
             <StatsBanner />
           </div>
         </section>

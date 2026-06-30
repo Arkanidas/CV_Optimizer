@@ -22,7 +22,7 @@ const stats = [
 
 export default function StatsBanner() {
   return (
-    <div className="w-full border-y border-white/12 px-4 py-3 saturate-150 sm:px-8 lg:px-16">
+    <div className="w-full border-y border-white/12 px-4 py-3  sm:px-8 lg:px-16 backdrop-saturate-150">
       <dl className="mx-auto flex w-full max-w-7xl flex-col divide-y divide-white/20 md:flex-row md:items-center md:justify-between md:divide-x md:divide-y-0">
         {stats.map((stat) => (
           <div
