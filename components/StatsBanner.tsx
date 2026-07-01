@@ -22,8 +22,8 @@ const stats = [
 
 export default function StatsBanner() {
   return (
-    <div className="w-full border-y border-white/12 px-4 py-3  sm:px-8 lg:px-16 backdrop-saturate-150">
-      <dl className="mx-auto flex w-full max-w-7xl flex-col divide-y divide-white/20 md:flex-row md:items-center md:justify-between md:divide-x md:divide-y-0">
+    <div className="w-full px-4 py-1 sm:px-8 lg:px-16 ">
+      <dl className="mx-auto flex w-full max-w-7xl flex-col divide-y divide-white/10 md:flex-row md:items-center md:justify-between md:divide-x md:divide-y-0">
         {stats.map((stat) => (
           <div
             key={stat.label}
@@ -32,7 +32,7 @@ export default function StatsBanner() {
             <dt className="order-2 mt-3 text-xs font-medium uppercase tracking-[0.24em] text-white/52">
               {stat.label}
             </dt>
-            <dd className="order-1 text-4xl font-semibold leading-none text-[#ffc338] sm:text-5xl">
+            <dd className="order-1 text-4xl font-semibold leading-none text-green-400/95 sm:text-5xl">
               <CountUp to={stat.value} duration={2.2} separator="," />
               {stat.suffix}
             </dd>
