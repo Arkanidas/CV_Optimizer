@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import logo from '@/app/assets/logo1.png';
+import Link from "next/link";
 
 const navLinks = [
   { href: "#howitworks", label: "How it Works" },
@@ -59,12 +60,12 @@ export default function Navbar() {
 
             {/* RIGHT — sign in + mobile hamburger */}
             <div className="flex flex-1 items-center justify-end">
-              <a
-                href="#signin"
+              <Link
+                href="/Login"
                 className="inline-flex h-9 min-w-18 items-center justify-center rounded-2xl bg-white px-4 text-sm font-semibold text-[#17131f] shadow-[0_10px_35px_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
               >
                 Sign in
-              </a>
+              </Link>
 
               <button
                 type="button"
