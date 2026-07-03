@@ -33,7 +33,7 @@ export default function StatsBanner() {
               {stat.label}
             </dt>
             <dd className="order-1 text-4xl font-semibold leading-none text-green-400/95 sm:text-5xl">
-              <CountUp to={stat.value} duration={2.2} separator="," />
+              <CountUp to={stat.value} duration={1.7} separator="," />
               {stat.suffix}
             </dd>
           </div>

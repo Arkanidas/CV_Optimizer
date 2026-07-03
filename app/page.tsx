@@ -30,8 +30,8 @@ export default function Home() {
               The resume that will land you the interview
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
-              Turn rough resumes into targeted, ATS-friendly applications with
-              cleaner language, sharper positioning, and faster iteration.
+              Turn rough resumes & cover letters into targeted, ATS-friendly applications with
+              cleaner language, sharper positioning, and faster iteration to land you the job.
             </p>
             <div
               id="signin"

@@ -211,7 +211,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-1 inline-flex h-12 w-full items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#17131f] shadow-[0_8px_32px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+            className="mt-1 inline-flex h-12 w-full items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#17131f] shadow-[0_8px_32px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
@@ -246,7 +246,7 @@ export default function RegisterPage() {
           type="button"
           onClick={handleGoogle}
           disabled={googleLoading}
-          className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium text-white/80 transition hover:bg-white/[0.10] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed"
+          className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium text-white/80 transition hover:bg-white/[0.10] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {googleLoading ? (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white/70" />
