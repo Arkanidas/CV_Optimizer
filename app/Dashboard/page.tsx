@@ -1,3 +1,10 @@
+"use client";
+
+
 export default function DashboardPage() {
-  return null;
+  <>
+  
+  <h1 className="text-lg text-red-500"> Hello world</h1>
+  
+  </>
 }
