@@ -19,7 +19,7 @@ export default function RegisterPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
