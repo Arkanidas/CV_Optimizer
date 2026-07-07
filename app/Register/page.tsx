@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { User, AtSign, Lock, Eye, EyeOff } from "lucide-react";
+import { User, AtSign, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export default function RegisterPage() {
@@ -18,8 +18,9 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -57,13 +58,17 @@ export default function RegisterPage() {
         redirect: false,
       });
 
-      setIsLoading(false);
-
       if (result?.error) {
+        setIsLoading(false);
         router.push("/login");
-      } else {
-        router.push("/dashboard");
+        return;
       }
+
+      // Show success confirmation, then redirect after 2 seconds
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
     } catch (err) {
       setError("Something went wrong. Please try again.");
       setIsLoading(false);
@@ -103,10 +108,18 @@ export default function RegisterPage() {
           </div>
         )}
 
+        {/* Success message */}
+        {success && (
+          <div className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+            Account has been created successfully.
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
-          {/* Firstname + Lastname field*/}
+          {/* Firstname + Lastname */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-white/80">First name</label>
@@ -118,7 +131,8 @@ export default function RegisterPage() {
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="Jane"
                   required
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300"
+                  disabled={success}
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300 disabled:opacity-50"
                 />
               </div>
             </div>
@@ -133,7 +147,8 @@ export default function RegisterPage() {
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Doe"
                   required
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300"
+                  disabled={success}
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300 disabled:opacity-50"
                 />
               </div>
             </div>
@@ -150,12 +165,13 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300"
+                disabled={success}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300 disabled:opacity-50"
               />
             </div>
           </div>
 
-          {/* Password field */}
+          {/* Password */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-white/80">Password</label>
             <div className="relative">
@@ -166,7 +182,8 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create a password"
                 required
-                className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-11 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300"
+                disabled={success}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-11 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300 disabled:opacity-50"
               />
               <button
                 type="button"
@@ -181,7 +198,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Confirm Password field */}
+          {/* Confirm Password */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-white/80">Confirm password</label>
             <div className="relative">
@@ -192,7 +209,8 @@ export default function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter your password"
                 required
-                className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-11 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300"
+                disabled={success}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-10 pr-11 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-violet-500/60 focus:bg-white/[0.08] focus:ring-1 focus:ring-violet-500/30 duration-300 disabled:opacity-50"
               />
               <button
                 type="button"
@@ -210,10 +228,12 @@ export default function RegisterPage() {
           {/* Submit button */}
           <button
             type="submit"
-            disabled={isLoading}
-            className="mt-1 inline-flex h-12 w-full items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#17131f] shadow-[0_8px_32px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"
+            disabled={isLoading || success}
+            className="mt-1 inline-flex h-12 w-full items-center justify-center cursor-pointer rounded-xl bg-white text-sm font-semibold text-[#17131f] shadow-[0_8px_32px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >
-            {isLoading ? (
+            {success ? (
+              "Redirecting..."
+            ) : isLoading ? (
               <span className="flex items-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#17131f]/30 border-t-[#17131f]" />
                 Creating account...
@@ -245,8 +265,8 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={handleGoogle}
-          disabled={googleLoading}
-          className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium text-white/80 transition hover:bg-white/[0.10] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed"
+          disabled={googleLoading || success}
+          className="inline-flex h-12 w-full items-center justify-center gap-3 cursor-pointer rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium text-white/80 transition hover:bg-white/[0.10] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {googleLoading ? (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white/70" />
