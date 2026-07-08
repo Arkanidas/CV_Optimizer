@@ -54,6 +54,7 @@ export const authOptions: AuthOptions = {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          profilePicture: user.profilePicture,
         };
       },
     }),
@@ -64,6 +65,7 @@ export const authOptions: AuthOptions = {
         token.id = user.id;
         token.firstName = (user as any).firstName;
         token.lastName = (user as any).lastName;
+        token.profilePicture = (user as any).profilePicture;
       }
       return token;
     },
@@ -72,6 +74,7 @@ export const authOptions: AuthOptions = {
         (session.user as any).id = token.id;
         (session.user as any).firstName = token.firstName;
         (session.user as any).lastName = token.lastName;
+        (session.user as any).profilePicture = token.profilePicture;
       }
       return session;
     },

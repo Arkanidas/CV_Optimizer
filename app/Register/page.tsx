@@ -20,12 +20,12 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Please ensure both password fields match.");
       return;
     }
 
@@ -83,7 +83,7 @@ export default function RegisterPage() {
   return (
     <div className="relative flex min-h-screen min-h-dvh items-center justify-center bg-[#0d0b14] px-4 py-16">
 
-      {/* Subtle background glow */}
+   
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-1/3 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/10 blur-[120px]" />
       </div>
@@ -103,7 +103,7 @@ export default function RegisterPage() {
 
         {/* Error message */}
         {error && (
-          <div className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300 text-center">
             {error}
           </div>
         )}
