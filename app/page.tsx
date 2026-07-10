@@ -1,6 +1,7 @@
 import AuroraBackground from "@/components/AuroraBackground";
 import GradientText from "@/components/GradientText";
 import Navbar from "@/components/Navbar";
+import ProfileMenu from "@/components/ProfileMenu";
 import StatsBanner from "@/components/StatsBanner";
 import { Sparkle } from "lucide-react";
 
@@ -10,7 +11,7 @@ export default function Home() {
     <AuroraBackground>
       <main id="top" className="relative">
         <Navbar />
-
+        <ProfileMenu />
         <section className="relative flex min-h-screen min-h-dvh items-center justify-center px-4 pb-56 pt-32 sm:px-6 sm:pb-52 sm:pt-36">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
             <div className="group inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/8 px-3 py-2 backdrop-blur-xl">
