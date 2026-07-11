@@ -60,13 +60,20 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.firstName = (user as any).firstName;
         token.lastName = (user as any).lastName;
         token.profilePicture = (user as any).profilePicture;
       }
+
+      if (trigger === "update" && session) {
+        if (session.firstName) token.firstName = session.firstName;
+        if (session.lastName) token.lastName = session.lastName;
+        if (session.profilePicture) token.profilePicture = session.profilePicture;
+  }
+
       return token;
     },
     async session({ session, token }) {
@@ -76,6 +83,8 @@ export const authOptions: AuthOptions = {
         (session.user as any).lastName = token.lastName;
         (session.user as any).profilePicture = token.profilePicture;
       }
+
+      
       return session;
     },
   },
