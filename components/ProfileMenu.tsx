@@ -4,11 +4,14 @@ import { useState, useRef, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { LayoutDashboard, Settings, LogOut, User } from "lucide-react";
+import SettingsModal from "@/components/SettingsModal";
 
 export default function ProfileMenu() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+ 
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -64,14 +67,16 @@ export default function ProfileMenu() {
               <LayoutDashboard className="h-4 w-4 text-white/50" />
               My Dashboard
             </Link>
-            <Link
-              href="/settings"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-white/80 transition hover:bg-white/[0.06] hover:text-white"
+            <button
+               onClick={() => {
+               setOpen(false);
+               setSettingsOpen(true);
+                }}
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-white/80 transition hover:bg-white/[0.06] hover:text-white cursor-pointer"
             >
               <Settings className="h-4 w-4 text-white/50" />
               Settings
-            </Link>
+            </button>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-300/90 transition hover:bg-red-500/10 hover:text-red-300 cursor-pointer"
@@ -82,6 +87,7 @@ export default function ProfileMenu() {
           </div>
         </div>
       )}
+      {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
     </div>
   );
 }
