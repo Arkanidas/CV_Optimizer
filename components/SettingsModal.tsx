@@ -7,6 +7,7 @@ import { X, User as UserIcon, Lock, Camera, CheckCircle2 } from "lucide-react";
 type Tab = "profile" | "security";
 
 export default function SettingsModal({ onClose }: { onClose: () => void }) {
+
   const { data: session, update } = useSession();
   const [tab, setTab] = useState<Tab>("profile");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,7 +67,8 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
       await update({ firstName: data.firstName, lastName: data.lastName });
       setProfileSuccess(true);
       setTimeout(() => setProfileSuccess(false), 2500);
-    } catch {
+    } catch (err) {
+      console.error("Update error:", err);
       setProfileError("Something went wrong. Please try again.");
     } finally {
       setProfileLoading(false);
@@ -93,7 +95,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
       const data = await res.json();
 
       if (!res.ok) {
-        setPasswordError(data.message || "Something went wrong.");
+        setPasswordError(data.message || "Something went wrong. Please try again later.");
         setPasswordLoading(false);
         return;
       }
@@ -158,7 +160,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
           <button
             onClick={onClose}
             aria-label="Close settings"
-            className="absolute right-5 top-5 text-white/40 transition hover:text-white"
+            className="absolute right-5 top-5 text-white/40 transition hover:text-white cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -239,7 +241,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                 <button
                   type="submit"
                   disabled={profileLoading}
-                  className="mt-1 inline-flex h-11 w-full items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#17131f] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff] disabled:opacity-60 sm:w-auto sm:px-6"
+                  className="mt-1 inline-flex h-11 w-full items-center justify-center rounded-xl cursor-pointer bg-white text-sm font-semibold text-[#17131f] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff] disabled:opacity-60 sm:w-auto sm:px-6"
                 >
                   {profileLoading ? "Saving..." : "Save changes"}
                 </button>
@@ -297,8 +299,9 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
 
                 <button
                   type="submit"
+                  onClick={onClose}
                   disabled={passwordLoading}
-                  className="mt-1 inline-flex h-11 w-full items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#17131f] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff] disabled:opacity-60 sm:w-auto sm:px-6"
+                  className="mt-1 inline-flex h-11 cursor-pointer w-full items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#17131f] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff] disabled:opacity-60 sm:w-auto sm:px-6"
                 >
                   {passwordLoading ? "Saving..." : "Update password"}
                 </button>

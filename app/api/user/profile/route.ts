@@ -33,7 +33,7 @@ export async function PATCH(request: Request) {
   } catch (error) {
     console.error("Profile update error:", error);
     return NextResponse.json(
-      { message: "Something went wrong. Please try again." },
+      { message: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }
