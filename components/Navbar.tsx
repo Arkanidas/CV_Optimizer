@@ -70,6 +70,16 @@ export default function Navbar() {
                   Sign in
                 </Link>
               )}
+
+              {status === "authenticated" && (
+                <Link
+                  href="/dashboard"
+                  className="inline-flex h-9 min-w-18 items-center justify-center rounded-2xl bg-white px-4 text-sm font-semibold text-[#17131f] shadow-[0_10px_35px_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:bg-[#f7f4ff]"
+                >
+                  Dashboard
+                </Link>
+              )}
+
               <button
                 type="button"
                 aria-expanded={menuOpen}
