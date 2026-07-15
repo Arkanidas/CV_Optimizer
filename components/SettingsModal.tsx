@@ -187,7 +187,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/[0.06]"
+                    className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/[0.06] cursor-pointer"
                   >
                     {previewImage || session?.user?.profilePicture ? (
                       <img
