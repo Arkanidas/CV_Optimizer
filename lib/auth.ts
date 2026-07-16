@@ -55,6 +55,7 @@ export const authOptions: AuthOptions = {
           firstName: user.firstName,
           lastName: user.lastName,
           profilePicture: user.profilePicture,
+          hasPassword: !!user.password,
         };
       },
     }),
@@ -66,6 +67,7 @@ export const authOptions: AuthOptions = {
         token.firstName = (user as any).firstName;
         token.lastName = (user as any).lastName;
         token.profilePicture = (user as any).profilePicture;
+        token.hasPassword = !!(user as any).password;
       }
 
       if (trigger === "update" && session) {
@@ -82,6 +84,7 @@ export const authOptions: AuthOptions = {
         (session.user as any).firstName = token.firstName;
         (session.user as any).lastName = token.lastName;
         (session.user as any).profilePicture = token.profilePicture;
+        (session.user as any).hasPassword = token.hasPassword;
       }
 
       

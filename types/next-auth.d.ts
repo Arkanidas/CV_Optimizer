@@ -9,6 +9,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       profilePicture?: string | null;
+      hasPassword?: boolean;
     };
   }
 
@@ -16,6 +17,7 @@ declare module "next-auth" {
     firstName?: string | null;
     lastName?: string | null;
     profilePicture?: string | null;
+    hasPassword?: boolean;
   }
 }
 
@@ -25,5 +27,6 @@ declare module "next-auth/jwt" {
     firstName?: string | null;
     lastName?: string | null;
     profilePicture?: string | null;
+    hasPassword?: boolean;
   }
 }
