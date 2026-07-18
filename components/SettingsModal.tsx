@@ -174,7 +174,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="relative flex w-full max-w-2xl overflow-hidden rounded-3xl border border-white/10 bg-[#17131f] shadow-[0_24px_80px_rgba(0,0,0,0.5)] animate-modal-pop"
+          className="relative flex w-full max-w-2xl h-[440px] overflow-hidden rounded-3xl border border-white/10 bg-[#17131f] shadow-[0_24px_80px_rgba(0,0,0,0.5)] animate-modal-pop"
         >
           {/* Sidebar */}
           <div className="flex w-48 shrink-0 flex-col justify-between border-r border-white/10 bg-white/[0.03] p-5 sm:w-56">
@@ -226,7 +226,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
             <button
               onClick={onClose}
               aria-label="Close settings"
-              className="absolute right-5 top-5 text-white/40 transition hover:text-white"
+              className="absolute right-5 top-5 text-white/40 transition hover:text-white cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -403,7 +403,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                     </div>
                   ) : (
                     <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/50">
-                      Your account uses Google Sign-In, so no password is needed — you'll
+                      Your account uses Google Sign In, so no password is needed, you'll
                       confirm on the next step instead.
                     </div>
                   )}
@@ -429,7 +429,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-3xl border border-white/10 bg-[#17131f] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.5)] animate-modal-pop"
+            className="w-full max-w-sm rounded-3xl border border-white/10 bg-[#17131f] p-6 animate-modal-pop"
           >
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/10">
@@ -445,19 +445,20 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
             </p>
 
             <div className="mt-6 flex gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 inline-flex h-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium text-white/80 transition hover:bg-white/[0.10] hover:text-white"
-              >
-                No
-              </button>
-              <button
+               <button
                 onClick={handleDeleteAccount}
                 disabled={deleteLoading}
-                className="flex-1 inline-flex h-11 items-center justify-center rounded-xl bg-red-500 text-sm font-semibold text-white transition hover:bg-red-600 disabled:opacity-60"
+                className="flex-1 inline-flex h-11 items-center cursor-pointer justify-center rounded-xl bg-red-500 text-sm font-semibold text-white transition hover:bg-red-600 disabled:opacity-60"
               >
                 {deleteLoading ? "Deleting..." : "Yes, I'm sure"}
               </button>
+               <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 inline-flex h-11 items-center cursor-pointer justify-center rounded-xl border border-white/10 bg-white/[0.06] text-sm font-medium text-white/80 transition hover:bg-white/[0.10] hover:text-white"
+              >
+                No
+              </button>
+            
             </div>
           </div>
         </div>

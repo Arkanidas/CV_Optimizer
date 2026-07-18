@@ -77,3 +77,18 @@ html.is-scrolling::-webkit-scrollbar-thumb {
 .animate-modal-pop {
   animation: modalPop 0.25s ease-out forwards;
 }
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpFade 0.2s ease-out forwards;
+}

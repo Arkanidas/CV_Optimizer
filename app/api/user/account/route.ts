@@ -34,8 +34,6 @@ export async function DELETE(request: Request) {
       }
     }
 
-    // Cascade deletes (set in your schema) handle Account, Session, Cv,
-    // CoverLetter, and Subscription rows automatically
     await prisma.user.delete({ where: { id: session.user.id } });
 
     return NextResponse.json({ message: "Account deleted successfully." });
