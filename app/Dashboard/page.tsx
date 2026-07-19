@@ -14,10 +14,6 @@ export default async function DashboardPage() {
   return (
     <div className="relative min-h-screen min-h-dvh bg-[#0d0b14]">
      <Sidebar />
-      <div className="absolute right-6 top-6 flex items-center gap-3">
-       
-      <LogoutButton />
-      </div>
     </div>
   );
 }

@@ -30,8 +30,7 @@ export default function Sidebar() {
     <>
       <aside className="flex h-screen w-70 shrink-0 flex-col border-r border-white/10 bg-white/[0.02] px-4 py-5">
 
-  
-        <div className="flex items-center gap-2 px-1 py-3 border border-bottom border-white/10">
+        <div className="flex items-center gap-2 px-1 py-3 border-b-1 border-white/10">
           <img src={logo.src} alt="Logo" className="h-9 w-9 shrink-0" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-white">CV Optimizer</p>
