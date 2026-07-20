@@ -92,3 +92,18 @@ html.is-scrolling::-webkit-scrollbar-thumb {
 .animate-slide-up {
   animation: slideUpFade 0.2s ease-out forwards;
 }
+
+@keyframes stackFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-stack-in {
+  animation: stackFadeIn 0.25s ease-out forwards;
+}

@@ -31,7 +31,7 @@ export default function Sidebar() {
       <aside className="flex h-screen w-70 shrink-0 flex-col border-r border-white/10 bg-white/[0.02] px-4 py-5">
 
         <div className="flex items-center gap-2 px-1 py-3 border-b-1 border-white/10">
-          <img src={logo.src} alt="Logo" className="h-9 w-9 shrink-0" />
+          <img src={logo.src} alt="Logo" className="h-12 w-13 shrink-0" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-white">CV Optimizer</p>
             <p className="truncate text-xs text-white/40">AI Resume Optimizer</p>
@@ -57,60 +57,62 @@ export default function Sidebar() {
         </div>
 
         <div className="flex-1" />
+           {/* User section */}
+        <div ref={menuRef} className="relative pt-4">
+    <button
+    onClick={() => setMenuOpen((v) => !v)}
+    className={`flex w-full items-center gap-2.5 rounded-xl px-1.5 py-1.5 text-left transition-transform duration-300 ease-out ${
+      menuOpen ? "-translate-y-[30px]" : "translate-y-0"
+    }`}
+  >
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/[0.06]">
+      {profilePicture ? (
+        <img src={profilePicture} alt="Profile" className="h-full w-full object-cover" />
+      ) : (
+        <UserIcon className="h-4 w-4 text-white/40" />
+      )}
+    </span>
 
-        <div ref={menuRef} className="relative border-t border-white/10 pt-4">
-          {menuOpen && (
-            <div className="absolute bottom-full left-0 right-0 mb-2 overflow-hidden rounded-2xl border border-white/10 bg-[#17131f]/95 shadow-[0_16px_48px_rgba(0,0,0,0.5)] backdrop-blur-xl animate-slide-up">
-              <div className="flex flex-col p-1.5">
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    setSettingsOpen(true);
-                  }}
-                  className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-white/80 transition hover:bg-white/[0.06] hover:text-white"
-                >
-                  <Settings className="h-4 w-4 text-white/50" />
-                  Settings
-                </button>
-                <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-300/90 transition hover:bg-red-500/10 hover:text-red-300"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </button>
-              </div>
-            </div>
-          )}
+    <span className="min-w-0 flex-1">
+      <p className="truncate text-sm font-medium text-white">
+        {firstName} {lastName}
+      </p>
+    </span>
 
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            className="flex w-full items-center gap-2.5 rounded-xl px-1.5 py-1.5 text-left transition hover:bg-white/[0.05]"
-          >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/[0.06]">
-              {profilePicture ? (
-                <img src={profilePicture} alt="Profile" className="h-full w-full object-cover" />
-              ) : (
-                <UserIcon className="h-4 w-4 text-white/40" />
-              )}
-            </span>
+    <ChevronUp
+      className={`h-4 w-4 shrink-0 text-white/40 transition-transform duration-200 cursor-pointer ${
+        menuOpen ? "rotate-180" : ""
+      }`}
+    />
+  </button>
 
-            <span className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-white">
-                {firstName} {lastName}
-              </p>
-            </span>
-
-            <ChevronUp
-              className={`h-4 w-4 shrink-0 text-white/40 transition-transform duration-200 ${
-                menuOpen ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-        </div>
+  {menuOpen && (
+    <div className="-mt-[22px] flex flex-col gap-0.5 border-t border-white/10 pt-3">
+      <button
+        onClick={() => {
+          setMenuOpen(false);
+          setSettingsOpen(true);
+        }}
+        style={{ animationDelay: "0ms" }}
+        className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-white/70 opacity-1 transition hover:text-white animate-stack-in cursor-pointer"
+      >
+        <Settings className="h-4 w-4 text-white/40" />
+        Settings
+      </button>
+      <button
+        onClick={() => signOut({ callbackUrl: "/" })}
+        style={{ animationDelay: "180ms" }}
+        className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-red-300/80 opacity-1 transition hover:text-red-300 animate-stack-in cursor-pointer"
+      >
+        <LogOut className="h-4 w-4" />
+        Logout
+      </button>
+    </div>
+  )}
+</div>
       </aside>
 
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
     </>
   );
-}
+} 
