@@ -56,9 +56,9 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <div className="flex-1" />
+        <div className="flex-1 " />
            {/* User section */}
-        <div ref={menuRef} className="relative pt-4">
+        <div ref={menuRef} className="relative pt-4 cursor-pointer">
     <button
     onClick={() => setMenuOpen((v) => !v)}
     className={`flex w-full items-center gap-2.5 rounded-xl px-1.5 py-1.5 text-left transition-transform duration-300 ease-out ${
@@ -94,7 +94,7 @@ export default function Sidebar() {
           setSettingsOpen(true);
         }}
         style={{ animationDelay: "0ms" }}
-        className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-white/70 opacity-1 transition hover:text-white animate-stack-in cursor-pointer"
+        className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-white/70 opacity-100 transition hover:text-white animate-stack-in cursor-pointer"
       >
         <Settings className="h-4 w-4 text-white/40" />
         Settings
@@ -102,7 +102,7 @@ export default function Sidebar() {
       <button
         onClick={() => signOut({ callbackUrl: "/" })}
         style={{ animationDelay: "180ms" }}
-        className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-red-300/80 opacity-1 transition hover:text-red-300 animate-stack-in cursor-pointer"
+        className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-red-300/80 opacity-100 transition hover:text-red-300 animate-stack-in cursor-pointer"
       >
         <LogOut className="h-4 w-4" />
         Logout
