@@ -5,12 +5,14 @@ import { useSession, signOut } from "next-auth/react";
 import { FileText, Mail, Settings, LogOut, ChevronUp, User as UserIcon } from "lucide-react";
 import logo from "@/app/assets/logo1.png";
 import SettingsModal from "@/components/SettingsModal";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -18,9 +20,16 @@ export default function Sidebar() {
         setMenuOpen(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
 
   const firstName = session?.user?.firstName ?? "";
   const lastName = session?.user?.lastName ?? "";
@@ -30,7 +39,7 @@ export default function Sidebar() {
     <>
       <aside className="flex h-screen w-70 shrink-0 flex-col border-r border-white/10 bg-white/[0.02] px-4 py-5">
 
-        <div className="flex items-center gap-2 px-1 py-3 border-b-1 border-white/10">
+        <div className="flex items-center gap-2 px-1 py-2 border-b-1 border-white/10">
           <img src={logo.src} alt="Logo" className="h-12 w-13 shrink-0" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-white">CV Optimizer</p>
@@ -45,11 +54,11 @@ export default function Sidebar() {
           </p>
 
           <div className="mt-3 flex flex-col gap-2">
-            <button className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-left text-sm font-medium text-white/85 transition hover:border-violet-500/40 hover:bg-white/[0.07] hover:text-white">
+            <button className="flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-left text-sm font-medium text-white/85 transition hover:border-violet-500/40 hover:bg-white/[0.07] hover:text-white cursor-pointer">
               <FileText className="h-4 w-4 shrink-0 text-violet-400" />
               Optimize my CV
             </button>
-            <button className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-3 text-left text-sm font-medium text-white/85 transition hover:border-violet-500/40 hover:bg-white/[0.07] hover:text-white">
+            <button className="flex items-center gap-2.5 rounded-xl   px-3.5 py-3 text-left text-sm font-medium text-white/85 transition hover:border-violet-500/40 hover:bg-white/[0.07] hover:text-white cursor-pointer">
               <Mail className="h-4 w-4 shrink-0 text-violet-400" />
               Optimize my Cover Letter
             </button>
@@ -100,7 +109,7 @@ export default function Sidebar() {
         Settings
       </button>
       <button
-        onClick={() => signOut({ callbackUrl: "/" })}
+        onClick={handleLogout}
         style={{ animationDelay: "180ms" }}
         className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-red-300/80 opacity-100 transition hover:text-red-300 animate-stack-in cursor-pointer"
       >

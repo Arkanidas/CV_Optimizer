@@ -67,7 +67,7 @@ export const authOptions: AuthOptions = {
         token.firstName = (user as any).firstName;
         token.lastName = (user as any).lastName;
         token.profilePicture = (user as any).profilePicture;
-        token.hasPassword = !!(user as any).password;
+        token.hasPassword = !!(user as any).hasPassword;
       }
 
       if (trigger === "update" && session) {
