@@ -124,7 +124,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const handleDeleteFormSubmit = (e: React.FormEvent) => {
+  const handleDeleteFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setDeleteError("");
 
@@ -185,7 +185,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
               <nav className="mt-6 flex flex-col gap-1">
                 <button
                   onClick={() => setTab("profile")}
-                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm transition cursor-pointer ${
                     tab === "profile"
                       ? "bg-white/[0.08] text-white"
                       : "text-white/50 hover:bg-white/[0.05] hover:text-white/80"
@@ -196,7 +196,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                 </button>
                 <button
                   onClick={() => setTab("security")}
-                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm transition cursor-pointer ${
                     tab === "security"
                       ? "bg-white/[0.08] text-white"
                       : "text-white/50 hover:bg-white/[0.05] hover:text-white/80"
@@ -210,7 +210,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
 
             <button
               onClick={() => setTab("danger")}
-              className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+              className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm transition cursor-pointer ${
                 tab === "danger"
                   ? "bg-red-500/10 text-red-300"
                   : "text-red-400/70 hover:bg-red-500/10 hover:text-red-300"
