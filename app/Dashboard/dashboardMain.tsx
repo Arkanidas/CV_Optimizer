@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import Sidebar from "@/components/sidebar";
 
-export type DashboardTab = "cv" | "coverLetter" | null;
+export type DashboardTab = "cv" | "coverLetter" | "home" | null;
 export type Theme = "dark" | "light";
 
 export default function DashboardShell() {
@@ -40,7 +40,7 @@ export default function DashboardShell() {
             Cover Letter Optimization
           </h1>
         )}
-        {activeTab === null && (
+        {activeTab === "home" && (
           <h1 className={`text-2xl font-semibold ${isLight ? "text-black" : "text-white"}`}>
             Hello
           </h1>

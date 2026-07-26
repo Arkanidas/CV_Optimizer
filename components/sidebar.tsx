@@ -56,7 +56,7 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
             isLight ? "border-black/10" : "border-white/10"
           }`}
         >
-          <img src={logo.src} alt="Logo" className="h-12 w-13 shrink-0" />
+          <img src={logo.src} alt="Logo" className="h-12 w-13 shrink-0 border border-white/10 cursor-pointer" onClick={() => onSelectTab("home")} />
           <div className="min-w-0">
             <p className={`truncate text-sm font-semibold ${isLight ? "text-black" : "text-white"}`}>
               CV Optimizer
@@ -153,7 +153,7 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
                   setMenuOpen(false);
                   setSettingsOpen(true);
                 }}
-                style={{ animationDelay: "0ms" }}
+                style={{ animationDelay: "30ms" }}
                 className={`flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm opacity-100 transition animate-stack-in cursor-pointer ${
                   isLight ? "text-black/70 hover:text-black" : "text-white/70 hover:text-white"
                 }`}
@@ -163,7 +163,7 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
               </button>
               <button
                 onClick={handleLogout}
-                style={{ animationDelay: "180ms" }}
+                style={{ animationDelay: "220ms" }}
                 className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-red-400 opacity-100 transition hover:text-red-300 animate-stack-in cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
