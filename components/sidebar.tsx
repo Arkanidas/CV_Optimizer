@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { FileText, Mail, Settings, LogOut, ChevronUp, User as UserIcon } from "lucide-react";
 import logo from "@/app/assets/logo1.png";
 import SettingsModal from "@/components/SettingsModal";
-import { DashboardTab, Theme } from ".././app/dashboard/dashboardMain";
+import { DashboardTab, Theme } from "@/app/Dashboard/dashboardMain";
 
 interface SidebarProps {
   activeTab: DashboardTab;

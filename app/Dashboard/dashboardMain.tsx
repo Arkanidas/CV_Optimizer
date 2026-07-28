@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import Sidebar from "@/components/sidebar";
+import { useSession} from "next-auth/react";
 
 export type DashboardTab = "cv" | "coverLetter" | "home" | null;
 export type Theme = "dark" | "light";
@@ -11,9 +12,14 @@ export default function DashboardShell() {
   const [activeTab, setActiveTab] = useState<DashboardTab>(null);
   const [theme, setTheme] = useState<Theme>("dark");
   const isLight = theme === "light";
-
+  const { data: session} = useSession();
   
+  const firstName = session?.user?.firstName ?? "";
+  const lastName = session?.user?.lastName ?? "";
+ 
   return (
+
+
     <div className={`flex min-h-screen min-h-dvh ${isLight ? "bg-[#ededed]" : "bg-[#0d0b14]"}`}>
       <Sidebar activeTab={activeTab} onSelectTab={setActiveTab} theme={theme} />
 
@@ -42,7 +48,7 @@ export default function DashboardShell() {
         )}
         {activeTab === "home" && (
           <h1 className={`text-2xl font-semibold ${isLight ? "text-black" : "text-white"}`}>
-            Hello
+            Welcome back {firstName} {lastName}
           </h1>
         )}
       </main>
