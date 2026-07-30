@@ -107,3 +107,4 @@ html.is-scrolling::-webkit-scrollbar-thumb {
 .animate-stack-in {
   animation: stackFadeIn 0.6s ease-out forwards;
 }
+

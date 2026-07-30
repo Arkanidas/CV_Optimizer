@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { FileText, Mail, Settings, LogOut, ChevronUp, User as UserIcon } from "lucide-react";
 import logo from "@/app/assets/logo1.png";
 import SettingsModal from "@/components/SettingsModal";
-import { DashboardTab, Theme } from "@/app/Dashboard/dashboardMain";
+import { DashboardTab, Theme } from "@/app/dashboard/dashboardMain";
 
 interface SidebarProps {
   activeTab: DashboardTab;
@@ -153,7 +153,7 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
                   setMenuOpen(false);
                   setSettingsOpen(true);
                 }}
-                style={{ animationDelay: "30ms" }}
+                style={{ animationDelay: "0ms" }}
                 className={`flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm opacity-100 transition animate-stack-in cursor-pointer ${
                   isLight ? "text-black/70 hover:text-black" : "text-white/70 hover:text-white"
                 }`}
@@ -163,7 +163,7 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
               </button>
               <button
                 onClick={handleLogout}
-                style={{ animationDelay: "220ms" }}
+                style={{ animationDelay: "200ms" }}
                 className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-red-400 opacity-100 transition hover:text-red-300 animate-stack-in cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
