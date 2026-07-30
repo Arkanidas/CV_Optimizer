@@ -47,7 +47,7 @@ export default function DashboardShell() {
           </h1>
         )}
         {activeTab === "home" && (
-          <h1 className={`text-2xl font-semibold ${isLight ? "text-black" : "text-white"}`}>
+          <h1 className={`text-3xl font-semibold ${isLight ? "text-black" : "text-white"}`}>
             Welcome back {firstName} {lastName}
           </h1>
         )}
