@@ -97,9 +97,12 @@ model Subscription {
   userId               String   @unique
   stripeCustomerId     String?  @unique
   stripeSubscriptionId String?  @unique
-  plan                 String   @default("free") // "free" | "starter" | "pro" | "team"
   status               String   @default("active")
   currentPeriodEnd     DateTime?
+  tier                    String   @default("free") // "free" | "standard" | "pro"
+  generationsUsedThisMonth Int     @default(0)
+  generationsResetAt       DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+

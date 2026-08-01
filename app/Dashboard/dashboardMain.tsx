@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import Sidebar from "@/components/sidebar";
 import { useSession} from "next-auth/react";
+import { Upload, Sparkles, Loader2, FileCheck, Download } from "lucide-react";
+import CoverLetterWizard from "./dashComponents/CoverLetterAdmin";
 
 export type DashboardTab = "cv" | "coverLetter" | "home" | null;
 export type Theme = "dark" | "light";
@@ -13,6 +15,14 @@ export default function DashboardShell() {
   const [theme, setTheme] = useState<Theme>("dark");
   const isLight = theme === "light";
   const { data: session} = useSession();
+
+  const steps = [
+  { id: "upload", label: "Upload", icon: Upload },
+  { id: "personalize", label: "Personalize", icon: Sparkles },
+  { id: "analyzing", label: "Analyzing", icon: Loader2 },
+  { id: "review", label: "Review", icon: FileCheck },
+  { id: "download", label: "Download", icon: Download },
+];
   
   const firstName = session?.user?.firstName ?? "";
   const lastName = session?.user?.lastName ?? "";
@@ -42,9 +52,18 @@ export default function DashboardShell() {
           </h1>
         )}
         {activeTab === "coverLetter" && (
-          <h1 className={`text-2xl font-semibold ${isLight ? "text-black" : "text-white"}`}>
-            Cover Letter Optimization
-          </h1>
+         <>
+    <h1 className={`text-2xl font-semibold ${isLight ? "text-black" : "text-white"}`}>
+      Cover Letter Optimization
+    </h1>
+    <h3 className={`text-lg font-medium ${isLight ? "text-black" : "text-white"}`}>
+      Optimize your cover letter for each application
+    </h3>
+
+    <div className="mt-6">
+      <CoverLetterWizard />
+    </div>
+  </>
         )}
         {activeTab === "home" && (
           <h1 className={`text-3xl font-semibold ${isLight ? "text-black" : "text-white"}`}>
