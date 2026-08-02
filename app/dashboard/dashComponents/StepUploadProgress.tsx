@@ -19,18 +19,12 @@ interface Step1UploadContextProps {
 }
 
 export default function Step1UploadContext({ savedCvs, onContinue, }: Step1UploadContextProps) {
-  const [mode, setMode] = useState<"select" | "upload">(
-    savedCvs.length > 0 ? "select" : "upload"
-  );
-  const [selectedCvId, setSelectedCvId] = useState<string | null>(
-    savedCvs[0]?.id ?? null
-  );
+  const [mode, setMode] = useState<"select" | "upload">(savedCvs.length > 0 ? "select" : "upload");
+  const [selectedCvId, setSelectedCvId] = useState<string | null>(savedCvs[0]?.id ?? null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
 
-  const isFormValid =
-    jobDescription.trim().length > 40 &&
-    ((mode === "select" && selectedCvId) || (mode === "upload" && uploadedFile));
+  const isFormValid = jobDescription.trim().length > 100 && ((mode === "select" && selectedCvId) || (mode === "upload" && uploadedFile));
 
   function handleContinue() {
     if (!isFormValid) return;
@@ -119,19 +113,23 @@ export default function Step1UploadContext({ savedCvs, onContinue, }: Step1Uploa
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold text-white">Job description</h3>
+        <h3 className="text-xl font-semibold text-white">Job description</h3>
         <p className="mt-1 text-sm text-white/50">
-          Paste the full posting — the more detail, the better the match.
+          Paste the full job description, the more detail the better the Cover Letter.
         </p>
         <textarea
           value={jobDescription}
+          maxLength={7000}
           onChange={(e) => setJobDescription(e.target.value)}
           rows={8}
           placeholder="Paste the job description here..."
-          className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:border-violet-400/50 focus:outline-none focus:ring-1 focus:ring-violet-400/30"
+          className={`mt-3 w-full resize rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
+           jobDescription.length >= 7000
+            ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
+            : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"}`}          
         />
         <p className="mt-1 text-right text-xs text-white/30">
-          {jobDescription.trim().length} characters
+          {jobDescription.trim().length}/7000 characters
         </p>
       </div>
 

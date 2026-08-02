@@ -1,18 +1,15 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import DashboardMain from "./dashboardMain";
+"use client";
 
+import { useSession } from "next-auth/react";
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+export default function DashboardHomePage() {
+  const { data: session } = useSession();
+  const firstName = session?.user?.firstName ?? "";
+  const lastName = session?.user?.lastName ?? "";
 
-
-
-  if (!session) {
-    redirect("/login");
-  }
-
-  return <DashboardMain />;
-   
+  return (
+    <h1 className="text-3xl font-semibold text-white">
+      Welcome back {firstName} {lastName}
+    </h1>
+  );
 }

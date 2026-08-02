@@ -3,23 +3,23 @@
 import { useState, useRef, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FileText, Mail, Settings, LogOut, ChevronUp, User as UserIcon } from "lucide-react";
 import logo from "@/app/assets/logo1.png";
 import SettingsModal from "@/components/SettingsModal";
-import { DashboardTab, Theme } from "@/app/dashboard/dashboardMain";
 
 interface SidebarProps {
-  activeTab: DashboardTab;
-  onSelectTab: (tab: DashboardTab) => void;
-  theme: Theme;
+  theme: "dark" | "light";
 }
 
-export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps) {
+export default function Sidebar({ theme }: SidebarProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   const isLight = theme === "light";
 
@@ -56,7 +56,9 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
             isLight ? "border-black/10" : "border-white/10"
           }`}
         >
-          <img src={logo.src} alt="Logo" className="h-12 w-13 shrink-0 border border-white/10 cursor-pointer" onClick={() => onSelectTab("home")} />
+          <Link href="/dashboard/">
+          <img src={logo.src} alt="Logo" className="h-12 w-13 shrink-0 border border-white/10 cursor-pointer" />
+          </Link>
           <div className="min-w-0">
             <p className={`truncate text-sm font-semibold ${isLight ? "text-black" : "text-white"}`}>
               CV Optimizer
@@ -78,10 +80,10 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
           </p>
 
           <div className="mt-3 flex flex-col gap-2">
-            <button
-              onClick={() => onSelectTab("cv")}
-              className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-3 text-left text-sm font-medium transition cursor-pointer ${
-                activeTab === "cv"
+            <Link
+              href="/dashboard/cv"
+              className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-3 text-left text-sm font-medium transition ${
+                pathname === "/dashboard/cv"
                   ? "border-violet-500/50 bg-violet-500/10 " + (isLight ? "text-black" : "text-white")
                   : isLight
                   ? "border-black/10 bg-black/[0.03] text-black/75 hover:border-violet-500/40 hover:bg-black/[0.06] hover:text-black"
@@ -90,11 +92,11 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
             >
               <FileText className="h-4 w-4 shrink-0 text-violet-400" />
               Optimize my CV
-            </button>
-            <button
-              onClick={() => onSelectTab("coverLetter")}
-              className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-3 text-left text-sm font-medium transition cursor-pointer ${
-                activeTab === "coverLetter"
+            </Link>
+            <Link
+              href="/dashboard/cover-letter"
+              className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-3 text-left text-sm font-medium transition ${
+                pathname === "/dashboard/cover-letter"
                   ? "border-violet-500/50 bg-violet-500/10 " + (isLight ? "text-black" : "text-white")
                   : isLight
                   ? "border-black/10 bg-black/[0.03] text-black/75 hover:border-violet-500/40 hover:bg-black/[0.06] hover:text-black"
@@ -103,7 +105,7 @@ export default function Sidebar({ activeTab, onSelectTab, theme }: SidebarProps)
             >
               <Mail className="h-4 w-4 shrink-0 text-violet-400" />
               Optimize my Cover Letter
-            </button>
+            </Link>
           </div>
         </div>
 
