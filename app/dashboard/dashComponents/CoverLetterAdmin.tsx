@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Upload, Sparkles, Loader2, FileCheck, Download } from "lucide-react";
 import StepperBubbles, { type StepDefinition } from "./StepBubbles";
-import Step1UploadContext from "./StepUploadProgress";
+import Step1UploadContext from "./step1coverletter";
 
 interface SavedCv {
   id: string;

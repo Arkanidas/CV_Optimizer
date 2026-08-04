@@ -21,8 +21,7 @@ export function getModelForTier(tier: SubscriptionTier): string {
   return MODEL_BY_TIER[tier];
 }
 
-// Thin wrapper so every route handles errors and text-extraction the same way,
-// instead of re-writing SDK plumbing in every route file.
+
 export async function generateWithClaude(params: {
   tier: SubscriptionTier;
   system: string;

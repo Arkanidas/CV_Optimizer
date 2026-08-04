@@ -24,7 +24,7 @@ export default function Step1UploadContext({ savedCvs, onContinue, }: Step1Uploa
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
 
-  const isFormValid = jobDescription.trim().length > 100 && ((mode === "select" && selectedCvId) || (mode === "upload" && uploadedFile));
+  const isFormValid = jobDescription.trim().length >= 300 && ((mode === "select" && selectedCvId) || (mode === "upload" && uploadedFile));
 
   function handleContinue() {
     if (!isFormValid) return;
@@ -120,6 +120,7 @@ export default function Step1UploadContext({ savedCvs, onContinue, }: Step1Uploa
         <textarea
           value={jobDescription}
           maxLength={7000}
+          minLength={300}
           onChange={(e) => setJobDescription(e.target.value)}
           rows={8}
           placeholder="Paste the job description here..."
