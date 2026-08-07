@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Upload, Sparkles, Loader2, FileCheck, Download } from "lucide-react";
 import StepperBubbles, { type StepDefinition } from "./StepBubbles";
 import Step1UploadContext from "./step1coverletter";
+import StepPersonalizeMatch from "./StepPersonalizeMatch";
 
 interface SavedCv {
   id: string;
@@ -14,6 +15,7 @@ interface SavedCv {
 interface WizardData {
   cvId?: string;
   uploadedFile?: File;
+  cvText?: string;
   jobDescription?: string;
   // filled in by steps 2-5 as they're built
   whyCompany?: string;
@@ -34,10 +36,9 @@ export default function CoverLetterWizard() {
   const [wizardData, setWizardData] = useState<WizardData>({});
   const [savedCvs, setSavedCvs] = useState<SavedCv[]>([]);
   const [loadingCvs, setLoadingCvs] = useState(true);
+  const [extracting, setExtracting] = useState(false);
+  const [extractError, setExtractError] = useState("");
 
-  // Fetch the user's saved CVs once, client-side, so Step 1 can offer
-  // "use a saved CV" alongside "upload new". Swap this for props from a
-  // server component instead if you'd rather avoid the client fetch.
   useEffect(() => {
     fetch("/api/cv/list")
       .then((res) => res.json())
@@ -46,11 +47,44 @@ export default function CoverLetterWizard() {
       .finally(() => setLoadingCvs(false));
   }, []);
 
-  function handleStep1Continue(data: {
+  async function handleStep1Continue(data: {
     cvId?: string;
     uploadedFile?: File;
     jobDescription: string;
   }) {
+    setExtractError("");
+
+    if (data.uploadedFile) {
+      setExtracting(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", data.uploadedFile);
+
+        const res = await fetch("/api/cv/extract-text", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await res.json();
+
+        if (!res.ok) {
+          setExtractError(result.message || "Couldn't read that file. please try again");
+          setExtracting(false);
+          return;
+        }
+
+        setWizardData((prev) => ({ ...prev, ...data, cvText: result.text }));
+        setExtracting(false);
+        setCurrentStepIndex(1);
+      } catch (err) {
+        console.error("Extraction error:", err);
+        setExtractError("Something went wrong reading your CV. Please try again.");
+        setExtracting(false);
+      }
+      return;
+    }
+
+    // Saved-CV path: no retrievable text yet until file storage (Vercel Blob) is built —
+    // wired up as a follow-up once that exists.
     setWizardData((prev) => ({ ...prev, ...data }));
     setCurrentStepIndex(1);
   }
@@ -64,13 +98,27 @@ export default function CoverLetterWizard() {
           (loadingCvs ? (
             <p className="text-sm text-white/40">Loading your saved CVs...</p>
           ) : (
-            <Step1UploadContext
-              savedCvs={savedCvs}
-              onContinue={handleStep1Continue}
-            />
+            <>
+              {extractError && (
+                <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {extractError}
+                </div>
+              )}
+              <Step1UploadContext
+                savedCvs={savedCvs}
+                onContinue={handleStep1Continue}
+              />
+            </>
           ))}
 
-        {currentStepIndex > 0 && (
+        {currentStepIndex === 1 && (
+          <StepPersonalizeMatch
+            jobDescription={wizardData.jobDescription ?? ""}
+            cvText={wizardData.cvText ?? ""}
+          />
+        )}
+
+        {currentStepIndex > 1 && (
           <div className="flex flex-col items-center gap-3 py-10 text-center">
             <p className="text-sm text-white/50">
               Step {currentStepIndex + 1} — {steps[currentStepIndex].label} —
