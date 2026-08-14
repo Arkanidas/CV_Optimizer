@@ -1,10 +1,14 @@
-export const JD_EXTRACTION_PROMPT = `You are analyzing a job description to extract every requirement — both explicitly stated and reasonably implied by the role type.
+export const JD_EXTRACTION_PROMPT = `You are analyzing a job description to extract every requirement the ideal candidate would need — both explicitly stated and reasonably implied by the role itself.
 
 For each requirement found:
-- Mark "stated" if the JD literally mentions it
-- Mark "implied" if it's not written but would obviously be expected for this type of role (e.g. a front-desk role implies communication skills even if that phrase never appears)
+- Mark "stated" if the JD literally mentions it.
+- Mark "implied" if it's not written but would obviously be expected for this type of role.
 
-Extract hard skills, soft skills, qualifications, and key responsibilities. Be thorough — don't skip implied requirements just because they're not explicit.`;
+Be thorough about implied requirements, especially when the JD is short or vague. Think about what personality traits, soft skills, and working style this type of role genuinely requires in the real world, even if the posting never spells them out. For example, a waiter/waitress posting that only lists basic duties still implies: stress resistance, social skills, service-mindedness, strong communication, a positive attitude, and the ability to work at a fast pace — because these are inherent to succeeding in that role, regardless of whether the JD mentions them.
+
+Apply this same reasoning to any role: infer the traits a realistic, successful person in this position would need, based on the nature of the work itself.
+
+Mark each requirement's importance as "must_have" or "nice_to_have" based on how the JD frames it (e.g. "required" vs "preferred" or "a plus"). If not specified, use your judgment based on how central the requirement is to the role.`;
 
 export const CV_EXTRACTION_PROMPT = `You are analyzing a CV/resume to extract discrete, evidence-bearing entries: job experiences, achievements, skills, and education.
 

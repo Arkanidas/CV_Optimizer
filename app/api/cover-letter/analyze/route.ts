@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import {extractJdRequirements, extractCvEntries, matchRequirementsToEntries,} from "@/lib/AI/coverLetterAnalysis";
+import { calculateMatchPercentage } from "@/lib/AI/matchScoring";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -21,8 +22,9 @@ export async function POST(request: Request) {
     ]);
 
     const matches = await matchRequirementsToEntries(jdExtraction, cvExtraction, tier);
+    const matchPercentage = calculateMatchPercentage(matches);
 
-    return NextResponse.json({ jdExtraction, cvExtraction, matches });
+    return NextResponse.json({ jdExtraction, cvExtraction, matches, matchPercentage });
   } catch (error) {
     console.error("Cover letter analysis error:", error);
     return NextResponse.json(

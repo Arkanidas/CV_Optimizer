@@ -1,14 +1,54 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import MatchRing from "./MatchRing";
+
 interface StepPersonalizeMatchProps {
   jobDescription: string;
   cvText: string;
 }
 
-export default function StepPersonalizeMatch({
-  jobDescription,
-  cvText,
-}: StepPersonalizeMatchProps) {
+export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPersonalizeMatchProps) {
+
+  const [matchPercent, setMatchPercent] = useState<number | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function runAnalysis() {
+      setError("");
+      setMatchPercent(null);
+
+      try {
+        const res = await fetch("/api/cover-letter/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cvText, jobDescription }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (!cancelled) setError(data.message || "Something went wrong analyzing your match.");
+          return;
+        }
+
+        if (!cancelled) setMatchPercent(data.matchPercentage);
+        // data.jdExtraction, data.cvExtraction, data.matches also come back here —
+        // this is what will power the Achievement Spotlight cards next.
+      } catch (err) {
+        console.error("Analysis error:", err);
+        if (!cancelled) setError("Something went wrong analyzing your match.");
+      }
+    }
+
+    if (cvText && jobDescription) runAnalysis();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [cvText, jobDescription]);
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -28,12 +68,12 @@ export default function StepPersonalizeMatch({
           </div>
         </div>
 
-        {/* Placeholder for now — real percentage calculation comes in a later step */}
+      
         <div className="flex justify-center md:px-2">
           <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/10 text-center backdrop-blur-md">
             <span className="text-lg font-semibold text-violet-200">—</span>
             <span className="text-[10px] font-medium uppercase tracking-wide text-violet-300/70">
-              Match
+              <MatchRing percent={matchPercent} />
             </span>
           </div>
         </div>
