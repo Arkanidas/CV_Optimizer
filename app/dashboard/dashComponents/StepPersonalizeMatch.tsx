@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import MatchRing from "./MatchRing";
+import { hasTierAccess } from "@/lib/AI/tiers";
+import { useSession } from "next-auth/react";
+import { Lock } from "lucide-react";
 
 interface StepPersonalizeMatchProps {
   jobDescription: string;
@@ -9,11 +12,15 @@ interface StepPersonalizeMatchProps {
 }
 
 export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPersonalizeMatchProps) {
+  const { data: session } = useSession();
+  const tier = session?.user?.tier ?? "free";
+  const canSeeMatch = hasTierAccess(tier, "standard");
 
   const [matchPercent, setMatchPercent] = useState<number | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!canSeeMatch) return;
     let cancelled = false;
 
     async function runAnalysis() {
@@ -71,9 +78,17 @@ export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPer
       
         <div className="flex justify-center md:px-2">
           <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/10 text-center backdrop-blur-md">
-            <span className="text-lg font-semibold text-violet-200">—</span>
             <span className="text-[10px] font-medium uppercase tracking-wide text-violet-300/70">
-              <MatchRing percent={matchPercent} />
+           {canSeeMatch ? (
+            <MatchRing percent={matchPercent} />
+          ) : (
+            <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.03] text-center">
+              <Lock className="h-4 w-4 text-white/30" />
+              <span className="text-[10px] font-medium leading-tight text-white/35">
+                Standard+
+              </span>
+            </div>
+          )}
             </span>
           </div>
         </div>

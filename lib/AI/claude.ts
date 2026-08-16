@@ -1,4 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { z } from "zod";
+import type { SubscriptionTier } from "./tiers";
+
+
+export type { SubscriptionTier } 
+
 
 if (!process.env.ANTHROPIC_API_KEY) {
   throw new Error("Missing ANTHROPIC_API_KEY in your environment variables");
@@ -9,7 +15,6 @@ export const anthropic = new Anthropic({
 });
 
 
-export type SubscriptionTier = "free" | "standard" | "pro";
 
 export const MODEL_BY_TIER: Record<SubscriptionTier, string> = {
   free: "claude-haiku-4-5-20251001", // Free plan
@@ -47,6 +52,49 @@ export async function generateWithClaude(params: {
     console.error("Claude API error:", error);
     throw new Error(
       "Something went wrong generating your content. Please try again."
+    );
+  }
+}
+
+// Sibling to generateWithClaude, for forced structured/schema output.
+// Use this for extraction/matching stages (JD parsing, CV parsing, matching)
+// instead of free-text generation.
+export async function generateStructuredWithClaude<T>(params: {
+  tier: SubscriptionTier;
+  system: string;
+  prompt: string;
+  schema: z.ZodType<T>;
+  toolName: string;
+  maxTokens?: number;
+}): Promise<T> {
+  const { tier, system, prompt, schema, toolName, maxTokens = 4096 } = params;
+
+  try {
+    const message = await anthropic.messages.create({
+      model: getModelForTier(tier),
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: "user", content: prompt }],
+      tools: [
+        {
+          name: toolName,
+          description: "Return the extracted data matching the required structure.",
+          input_schema: z.toJSONSchema(schema) as any,
+        },
+      ],
+      tool_choice: { type: "tool", name: toolName },
+    });
+
+    const toolUseBlock = message.content.find((block) => block.type === "tool_use");
+    if (!toolUseBlock || toolUseBlock.type !== "tool_use") {
+      throw new Error("Claude did not return structured output");
+    }
+
+    return schema.parse(toolUseBlock.input);
+  } catch (error) {
+    console.error("Claude structured API error:", error);
+    throw new Error(
+      "Something went wrong analyzing your content. Please try again."
     );
   }
 }

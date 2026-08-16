@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import type { SubscriptionTier } from "@/lib/AI/tiers";
 
 declare module "next-auth" {
   interface Session {
@@ -10,6 +11,7 @@ declare module "next-auth" {
       image?: string | null;
       profilePicture?: string | null;
       hasPassword?: boolean;
+      tier?: SubscriptionTier;
     };
   }
 
@@ -28,5 +30,6 @@ declare module "next-auth/jwt" {
     lastName?: string | null;
     profilePicture?: string | null;
     hasPassword?: boolean;
+    tier?: SubscriptionTier;
   }
 }

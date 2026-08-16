@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { extractTextFromFile } from "@/lib/extractText";
+import { looksLikeCv } from "@/lib/IsValidCv";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -27,6 +28,13 @@ export async function POST(request: Request) {
     if (!text || text.trim().length < 100) {
       return NextResponse.json(
         { message: "Couldn't read readable text from that file. Try a different file." },
+        { status: 422 }
+      );
+    }
+
+     if (!looksLikeCv(text)) {
+      return NextResponse.json(
+        { message: "This doesn't look like a CV. Please upload a real resume." },
         { status: 422 }
       );
     }

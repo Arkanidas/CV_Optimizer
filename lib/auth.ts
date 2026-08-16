@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { SubscriptionTier } from "./AI/claude";
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -68,6 +69,11 @@ export const authOptions: AuthOptions = {
         token.lastName = (user as any).lastName;
         token.profilePicture = (user as any).profilePicture;
         token.hasPassword = !!(user as any).hasPassword;
+
+      const subscription = await prisma.subscription.findUnique({
+      where: { userId: user.id },
+    });
+    token.tier = (subscription?.tier as SubscriptionTier) ?? "free";
       }
 
       if (trigger === "update" && session) {
@@ -85,6 +91,7 @@ export const authOptions: AuthOptions = {
         (session.user as any).lastName = token.lastName;
         (session.user as any).profilePicture = token.profilePicture;
         (session.user as any).hasPassword = token.hasPassword;
+        (session.user as any).tier = token.tier;
       }
 
       

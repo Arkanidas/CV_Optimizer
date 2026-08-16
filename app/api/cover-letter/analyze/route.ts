@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import {extractJdRequirements, extractCvEntries, matchRequirementsToEntries,} from "@/lib/AI/coverLetterAnalysis";
+import { extractJdRequirements, extractCvEntries, matchRequirementsToEntries } from "@/lib/AI/coverLetterAnalysis";
 import { calculateMatchPercentage } from "@/lib/AI/matchScoring";
+import { hasTierAccess, type SubscriptionTier } from "@/lib/AI/tiers";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -10,11 +11,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Not authenticated." }, { status: 401 });
   }
 
+  const tier: SubscriptionTier = session.user.tier ?? "free";
+
+  if (!hasTierAccess(tier, "standard")) {
+    return NextResponse.json(
+      { message: "Match scoring is available on Standard and Pro plans." },
+      { status: 403 }
+    );
+  }
+
   try {
     const { cvText, jobDescription } = await request.json();
-
-    // TODO: pull the real tier from session.user / your Subscription model
-    const tier = "free" as const;
 
     const [jdExtraction, cvExtraction] = await Promise.all([
       extractJdRequirements(jobDescription, tier),
