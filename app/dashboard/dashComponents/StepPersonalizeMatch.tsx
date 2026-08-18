@@ -61,7 +61,7 @@ export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPer
       <div>
         <h3 className="text-base font-semibold text-white">Your match</h3>
         <p className="mt-1 text-sm text-white/50">
-          Here's what we're working with — your CV alongside the job description.
+          Here's what we're working with, your CV alongside the job description.
         </p>
       </div>
 
