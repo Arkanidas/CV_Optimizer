@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, Sparkles, Loader2, FileCheck, Download } from "lucide-react";
+import { Upload, Sparkles, Loader2, FileCheck, Download, RotateCcw } from "lucide-react";
 import StepperBubbles, { type StepDefinition } from "./StepBubbles";
 import Step1UploadContext from "./step1coverletter";
 import StepPersonalizeMatch from "./StepPersonalizeMatch";
@@ -17,7 +17,8 @@ interface WizardData {
   uploadedFile?: File;
   cvText?: string;
   jobDescription?: string;
-  // filled in by steps 2-5 as they're built
+   matchPercentage?: number;
+   matches?: any;
   whyCompany?: string;
   tone?: "formal" | "casual";
   generatedLetter?: string;
@@ -31,6 +32,15 @@ const steps: StepDefinition[] = [
   { id: "download", label: "Download", icon: Download },
 ];
 
+const STORAGE_KEY = "coverLetterWizardState";
+
+// File objects can't survive JSON.stringify, so it's stripped before saving —
+// everything else (cvText, jobDescription, etc.) is plain serializable data.
+function getPersistableData(data: WizardData) {
+  const { uploadedFile, ...rest } = data;
+  return rest;
+}
+
 export default function CoverLetterWizard() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [wizardData, setWizardData] = useState<WizardData>({});
@@ -38,6 +48,33 @@ export default function CoverLetterWizard() {
   const [loadingCvs, setLoadingCvs] = useState(true);
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState("");
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restore from sessionStorage AFTER mount (not during initial render) —
+  // this avoids a server/client hydration mismatch, since the server always
+  // renders the default (empty) state first.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setCurrentStepIndex(parsed.currentStepIndex ?? 0);
+        setWizardData(parsed.wizardData ?? {});
+      }
+    } catch {
+      // corrupted/old storage shape — just start fresh, no need to surface an error
+    }
+    setHydrated(true);
+  }, []);
+
+  // Persist on every change, once we're past the initial restore.
+  useEffect(() => {
+    if (!hydrated) return;
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ currentStepIndex, wizardData: getPersistableData(wizardData) })
+    );
+  }, [currentStepIndex, wizardData, hydrated]);
 
   useEffect(() => {
     fetch("/api/cv/list")
@@ -67,7 +104,7 @@ export default function CoverLetterWizard() {
         const result = await res.json();
 
         if (!res.ok) {
-          setExtractError(result.message || "Couldn't read that file. please try again");
+          setExtractError(result.message || "Couldn't read that file.");
           setExtracting(false);
           return;
         }
@@ -83,15 +120,31 @@ export default function CoverLetterWizard() {
       return;
     }
 
-    // Saved-CV path: no retrievable text yet until file storage (Vercel Blob) is built —
-    // wired up as a follow-up once that exists.
     setWizardData((prev) => ({ ...prev, ...data }));
     setCurrentStepIndex(1);
   }
 
+  function handleStartOver() {
+    sessionStorage.removeItem(STORAGE_KEY);
+    setWizardData({});
+    setCurrentStepIndex(0);
+    setExtractError("");
+  }
+
   return (
     <div className="flex flex-col gap-8">
-      <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
+      <div className="flex items-center justify-between">
+        <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
+        {currentStepIndex > 0 && (
+          <button
+            onClick={handleStartOver}
+            className="ml-4 flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/50 transition hover:bg-white/[0.08] hover:text-white/80"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Start over
+          </button>
+        )}
+      </div>
 
       <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-md">
         {currentStepIndex === 0 &&
@@ -115,6 +168,11 @@ export default function CoverLetterWizard() {
           <StepPersonalizeMatch
             jobDescription={wizardData.jobDescription ?? ""}
             cvText={wizardData.cvText ?? ""}
+            matchPercentage={wizardData.matchPercentage}
+             matches={wizardData.matches}
+             onAnalysisComplete={(matchPercentage, matches) =>
+             setWizardData((prev) => ({ ...prev, matchPercentage, matches }))
+    }
           />
         )}
 

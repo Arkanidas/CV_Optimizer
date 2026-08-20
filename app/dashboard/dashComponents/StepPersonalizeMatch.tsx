@@ -9,18 +9,40 @@ import { Lock } from "lucide-react";
 interface StepPersonalizeMatchProps {
   jobDescription: string;
   cvText: string;
+  matchPercentage?: number;
+  matches?: any;
+  onAnalysisComplete?: (matchPercentage: number, matches: any) => void;
 }
 
-export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPersonalizeMatchProps) {
+export default function StepPersonalizeMatch({
+  jobDescription,
+  cvText,
+  matchPercentage,
+  matches,
+  onAnalysisComplete,
+}: StepPersonalizeMatchProps) {
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
   const canSeeMatch = hasTierAccess(tier, "standard");
 
-  const [matchPercent, setMatchPercent] = useState<number | null>(null);
+  // Local state is only used WHILE a fresh analysis is running. Once we have
+  // a result, the parent-held matchPercentage/matches (persisted via
+  // sessionStorage) becomes the real source of truth instead.
+  const [matchPercent, setMatchPercent] = useState<number | null>(
+    matchPercentage ?? null
+  );
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!canSeeMatch) return;
+
+    // Already have results (either passed fresh from a completed call, or
+    // restored from sessionStorage) — skip calling the API again entirely.
+    if (matchPercentage !== undefined && matches !== undefined) {
+      setMatchPercent(matchPercentage);
+      return;
+    }
+
     let cancelled = false;
 
     async function runAnalysis() {
@@ -40,9 +62,10 @@ export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPer
           return;
         }
 
-        if (!cancelled) setMatchPercent(data.matchPercentage);
-        // data.jdExtraction, data.cvExtraction, data.matches also come back here —
-        // this is what will power the Achievement Spotlight cards next.
+        if (!cancelled) {
+          setMatchPercent(data.matchPercentage);
+          onAnalysisComplete?.(data.matchPercentage, data.matches);
+        }
       } catch (err) {
         console.error("Analysis error:", err);
         if (!cancelled) setError("Something went wrong analyzing your match.");
@@ -54,7 +77,7 @@ export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPer
     return () => {
       cancelled = true;
     };
-  }, [cvText, jobDescription]);
+  }, [cvText, jobDescription, canSeeMatch, matchPercentage, matches, onAnalysisComplete]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -64,6 +87,12 @@ export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPer
           Here's what we're working with, your CV alongside the job description.
         </p>
       </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {error}
+        </div>
+      )}
 
       <div className="relative grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto_1fr] md:items-center">
         <div className="flex h-72 flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -75,11 +104,8 @@ export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPer
           </div>
         </div>
 
-      
         <div className="flex justify-center md:px-2">
-          <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/10 text-center backdrop-blur-md">
-            <span className="text-[10px] font-medium uppercase tracking-wide text-violet-300/70">
-           {canSeeMatch ? (
+          {canSeeMatch ? (
             <MatchRing percent={matchPercent} />
           ) : (
             <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.03] text-center">
@@ -89,8 +115,6 @@ export default function StepPersonalizeMatch({ jobDescription, cvText,}: StepPer
               </span>
             </div>
           )}
-            </span>
-          </div>
         </div>
 
         <div className="flex h-72 flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">

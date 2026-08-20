@@ -36,6 +36,13 @@ export const MatchingResultsSchema = z.object({
   matches: z.array(MatchResultSchema),
 });
 
+export const CvValidationSchema = z.object({
+  isLikelyCv: z.boolean(),
+  confidence: z.enum(["high", "medium", "low"]),
+  reason: z.string().describe("One short sentence explaining the classification"),
+});
+
 export type JDExtraction = z.infer<typeof JDExtractionSchema>;
 export type CvExtraction = z.infer<typeof CvExtractionSchema>;
 export type MatchingResults = z.infer<typeof MatchingResultsSchema>;
+export type CvValidation = z.infer<typeof CvValidationSchema>;

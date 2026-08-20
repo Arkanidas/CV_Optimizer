@@ -1,13 +1,6 @@
 import { generateStructuredWithClaude, type SubscriptionTier } from "./claude";
-import {
-  JDExtractionSchema,
-  CvExtractionSchema,
-  MatchingResultsSchema,
-  type JDExtraction,
-  type CvExtraction,
-  type MatchingResults,
-} from "./schemas";
-import { JD_EXTRACTION_PROMPT, CV_EXTRACTION_PROMPT, MATCHING_PROMPT } from "./prompts";
+import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema, CvValidationSchema, type JDExtraction,type CvExtraction, type MatchingResults, type CvValidation,} from "./schemas";
+import { JD_EXTRACTION_PROMPT, CV_EXTRACTION_PROMPT, MATCHING_PROMPT, CV_VALIDATION_PROMPT } from "./prompts";
 
 export async function extractJdRequirements(
   jobDescription: string,
@@ -22,16 +15,24 @@ export async function extractJdRequirements(
   });
 }
 
-export async function extractCvEntries(
-  cvText: string,
-  tier: SubscriptionTier
-): Promise<CvExtraction> {
+export async function extractCvEntries(cvText: string, tier: SubscriptionTier ): Promise<CvExtraction> {
   return generateStructuredWithClaude({
     tier,
     system: CV_EXTRACTION_PROMPT,
     prompt: cvText,
     schema: CvExtractionSchema,
     toolName: "extract_cv_entries",
+  });
+}
+
+export async function validateCvText(cvText: string): Promise<CvValidation> {
+  return generateStructuredWithClaude({
+    tier: "free", // always Haiku — this is a gate, not a paid feature
+    system: CV_VALIDATION_PROMPT,
+    prompt: cvText,
+    schema: CvValidationSchema,
+    toolName: "validate_cv",
+    maxTokens: 256, // deliberately small — this only needs a short classification
   });
 }
 

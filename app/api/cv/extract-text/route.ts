@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { extractTextFromFile } from "@/lib/extractText";
 import { looksLikeCv } from "@/lib/IsValidCv";
+import { validateCvText } from "@/lib/AI/coverLetterAnalysis";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -13,6 +14,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
+   
 
     if (!file) {
       return NextResponse.json({ message: "No file provided." }, { status: 400 });
@@ -35,6 +37,13 @@ export async function POST(request: Request) {
      if (!looksLikeCv(text)) {
       return NextResponse.json(
         { message: "This doesn't look like a CV. Please upload a real resume." },
+        { status: 422 }
+      );
+    }
+      const validation = await validateCvText(text);
+    if (!validation.isLikelyCv || validation.confidence === "low") {
+      return NextResponse.json(
+        { message: "This doesn't look like a genuine CV. Please upload a real resume." },
         { status: 422 }
       );
     }
