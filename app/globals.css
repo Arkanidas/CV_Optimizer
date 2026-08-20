@@ -120,5 +120,5 @@ html.is-scrolling::-webkit-scrollbar-thumb {
 }
 
 .animate-wave-pulse {
-  animation: wavePulse 3s ease-out infinite;
+  animation: wavePulse 4s ease-out infinite;
 }
