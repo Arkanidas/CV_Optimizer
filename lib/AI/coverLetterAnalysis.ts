@@ -49,5 +49,6 @@ export async function matchRequirementsToEntries(
     prompt,
     schema: MatchingResultsSchema,
     toolName: "match_requirements",
+    maxTokens: 8192,
   });
 }

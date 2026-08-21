@@ -25,6 +25,11 @@ export default function StepPersonalizeMatch({
   const tier = session?.user?.tier ?? "free";
   const canSeeMatch = hasTierAccess(tier, "standard");
 
+
+
+
+
+
   // Local state is only used WHILE a fresh analysis is running. Once we have
   // a result, the parent-held matchPercentage/matches (persisted via
   // sessionStorage) becomes the real source of truth instead.
@@ -42,6 +47,11 @@ export default function StepPersonalizeMatch({
       setMatchPercent(matchPercentage);
       return;
     }
+
+
+
+
+
 
     let cancelled = false;
 
@@ -106,7 +116,7 @@ export default function StepPersonalizeMatch({
 
         <div className="flex justify-center md:px-2">
           {canSeeMatch ? (
-            <MatchRing percent={matchPercent} />
+            <MatchRing percent={matchPercent} />                  
           ) : (
             <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.03] text-center">
               <Lock className="h-4 w-4 text-white/30" />

@@ -14,7 +14,7 @@ export const CV_EXTRACTION_PROMPT = `You are analyzing a CV/resume to extract di
 
 For each entry, also infer "impliedSkills" — skills this experience demonstrates even if never explicitly stated. For example, any customer-facing or service role typically implies teamwork and communication skills, even if those exact words don't appear in the bullet.
 
-Extract entries as they are written — do not summarize or combine multiple experiences into one entry.`;
+Extract entries as they are written by Work Experience, skills or education — do not summarize or combine multiple experiences into one entry.`;
 
 export const MATCHING_PROMPT = `You are matching a job description's requirements against a candidate's CV entries.
 
