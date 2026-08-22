@@ -5,6 +5,7 @@ import MatchRing from "./MatchRing";
 import { hasTierAccess } from "@/lib/AI/tiers";
 import { useSession } from "next-auth/react";
 import { Lock } from "lucide-react";
+import MatchStatusText from "@/components/MatchStatusText";
 
 interface StepPersonalizeMatchProps {
   jobDescription: string;
@@ -90,7 +91,7 @@ export default function StepPersonalizeMatch({
   }, [cvText, jobDescription, canSeeMatch, matchPercentage, matches, onAnalysisComplete]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 ">
       <div>
         <h3 className="text-base font-semibold text-white">Your match</h3>
         <p className="mt-1 text-sm text-white/50">
@@ -114,7 +115,7 @@ export default function StepPersonalizeMatch({
           </div>
         </div>
 
-        <div className="flex justify-center md:px-2">
+        <div className="flex justify-center flex-col gap-5 md:px-2">
           {canSeeMatch ? (
             <MatchRing percent={matchPercent} />                  
           ) : (
@@ -125,6 +126,8 @@ export default function StepPersonalizeMatch({
               </span>
             </div>
           )}
+             {canSeeMatch && <MatchStatusText percent={matchPercent} />}
+
         </div>
 
         <div className="flex h-72 flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">

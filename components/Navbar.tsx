@@ -48,7 +48,7 @@ export default function Navbar() {
                 <span key={link.href} className="flex items-center">
                   <a
                     href={link.href}
-                    onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
+                    onClick={(e) => {e.preventDefault(); scrollToSection(link.href);}}
                     className="text-md font-medium text-white/70 transition hover:text-white"
                   >
                     {link.label}
