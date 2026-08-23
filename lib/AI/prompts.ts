@@ -24,7 +24,7 @@ For each JD requirement, find CV entries that provide genuine evidence for it â€
 
 For each match, give a one-sentence rationale explaining the connection.
 
-IMPORTANT: If a requirement has no genuine supporting evidence anywhere in the CV, omit it entirely rather than forcing a weak match. Do not include CV entries that don't meaningfully support any requirement.`;
+IMPORTANT: Every requirement from the JD requirements list must appear exactly once in your output, even if no matching evidence exists â€” in that case, return an empty matchedEntries array for that requirement. Do not omit unmatched requirements, and do not force a weak or invented match just to avoid an empty array.`;
 
 export const CV_VALIDATION_PROMPT = `You are checking whether a piece of text is a genuine CV/resume, as opposed to random text, a template with no real content, a different type of document, or an attempt to abuse a CV-processing tool.
 

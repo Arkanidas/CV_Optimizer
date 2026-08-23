@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MatchRing from "./MatchRing";
-import { hasTierAccess } from "@/lib/AI/tiers";
 import { useSession } from "next-auth/react";
 import { Lock } from "lucide-react";
+import { hasTierAccess } from "@/lib/AI/tiers";
+import type { MatchingResults } from "@/lib/AI/schemas";
+import MatchRing from "./MatchRing";
 import MatchStatusText from "@/components/MatchStatusText";
+import MatchCard from "./MatchCard";
 
 interface StepPersonalizeMatchProps {
   jobDescription: string;
   cvText: string;
   matchPercentage?: number;
-  matches?: any;
-  onAnalysisComplete?: (matchPercentage: number, matches: any) => void;
+  matches?: MatchingResults;
+  onAnalysisComplete?: (matchPercentage: number, matches: MatchingResults) => void;
 }
 
 export default function StepPersonalizeMatch({
@@ -26,33 +28,16 @@ export default function StepPersonalizeMatch({
   const tier = session?.user?.tier ?? "free";
   const canSeeMatch = hasTierAccess(tier, "standard");
 
-
-
-
-
-
-  // Local state is only used WHILE a fresh analysis is running. Once we have
-  // a result, the parent-held matchPercentage/matches (persisted via
-  // sessionStorage) becomes the real source of truth instead.
-  const [matchPercent, setMatchPercent] = useState<number | null>(
-    matchPercentage ?? null
-  );
+  const [matchPercent, setMatchPercent] = useState<number | null>(matchPercentage ?? null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!canSeeMatch) return;
 
-    // Already have results (either passed fresh from a completed call, or
-    // restored from sessionStorage) — skip calling the API again entirely.
     if (matchPercentage !== undefined && matches !== undefined) {
       setMatchPercent(matchPercentage);
       return;
     }
-
-
-
-
-
 
     let cancelled = false;
 
@@ -91,7 +76,7 @@ export default function StepPersonalizeMatch({
   }, [cvText, jobDescription, canSeeMatch, matchPercentage, matches, onAnalysisComplete]);
 
   return (
-    <div className="flex flex-col gap-6 ">
+    <div className="flex flex-col gap-6">
       <div>
         <h3 className="text-base font-semibold text-white">Your match</h3>
         <p className="mt-1 text-sm text-white/50">
@@ -105,19 +90,34 @@ export default function StepPersonalizeMatch({
         </div>
       )}
 
-      <div className="relative grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto_1fr] md:items-center">
-        <div className="flex h-72 flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="relative grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto_1fr] md:items-start">
+        {/* Job Description side */}
+        <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <p className="mb-2 text-xs font-medium uppercase tracking-widest text-white/35">
             Job Description
           </p>
-          <div className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-white/70">
+          <div className="max-h-48 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-white/70">
             {jobDescription || <span className="text-white/30">No job description found.</span>}
           </div>
+
+          {canSeeMatch && matches && matches.matches.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
+              {matches.matches.map((m, i) => (
+                <MatchCard
+                  key={i}
+                  label={m.requirement.requirement}
+                  matched={m.matchedEntries.length > 0}
+                  title={m.matchedEntries[0]?.rationale}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="flex justify-center flex-col gap-5 md:px-2">
+        {/* Ring + status */}
+        <div className="flex flex-col items-center gap-3 md:px-2 md:pt-6">
           {canSeeMatch ? (
-            <MatchRing percent={matchPercent} />                  
+            <MatchRing percent={matchPercent} />
           ) : (
             <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.03] text-center">
               <Lock className="h-4 w-4 text-white/30" />
@@ -126,17 +126,32 @@ export default function StepPersonalizeMatch({
               </span>
             </div>
           )}
-             {canSeeMatch && <MatchStatusText percent={matchPercent} />}
-
+          {canSeeMatch && <MatchStatusText percent={matchPercent} />}
         </div>
 
-        <div className="flex h-72 flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        {/* CV side */}
+        <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <p className="mb-2 text-xs font-medium uppercase tracking-widest text-white/35">
             Your CV
           </p>
-          <div className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-white/70">
+          <div className="max-h-48 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-white/70">
             {cvText || <span className="text-white/30">No CV text found.</span>}
           </div>
+
+          {canSeeMatch && matches && (
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
+              {matches.matches
+                .filter((m) => m.matchedEntries.length > 0)
+                .map((m, i) => (
+                  <MatchCard
+                    key={i}
+                    label={m.requirement.requirement}
+                    matched={true}
+                    title={m.matchedEntries[0]?.rationale}
+                  />
+                ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
