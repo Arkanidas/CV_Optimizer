@@ -5,6 +5,9 @@ export const JDRequirementSchema = z.object({
   category: z.enum(["hard_skill", "soft_skill", "qualification", "responsibility"]),
   explicitness: z.enum(["stated", "implied"]).describe("stated = literally written in the JD. implied = not written, but reasonably expected given the role type."),
   importance: z.enum(["must_have", "nice_to_have"]),
+  verifiableFromCv: z.boolean().describe(
+    "true if this is a skill, experience, qualification, or education that a CV could reasonably confirm or deny. false if this is scheduling, availability, location/commute, salary, or any other logistics that no CV can ever answer."
+  ),
 });
 
 export const JDExtractionSchema = z.object({requirements: z.array(JDRequirementSchema),});

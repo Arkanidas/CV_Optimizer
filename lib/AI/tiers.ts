@@ -6,9 +6,19 @@ const TIER_RANK: Record<SubscriptionTier, number> = {
   pro: 2,
 };
 
-// Returns true if userTier meets or exceeds requiredTier.
-// e.g. hasTierAccess("pro", "standard") -> true
-//      hasTierAccess("free", "standard") -> false
+export const CARD_LIMIT_BY_TIER: Record<SubscriptionTier, number> = {
+  free: 8,
+  standard: 15,
+  pro: Infinity,
+};
+
+
+// hasTierAccess("pro", "standard") -> true
+// hasTierAccess("free", "standard") -> false
 export function hasTierAccess(userTier: SubscriptionTier, requiredTier: SubscriptionTier): boolean {
   return TIER_RANK[userTier] >= TIER_RANK[requiredTier];
+}
+
+export function getCardLimit(tier: SubscriptionTier): number {
+  return CARD_LIMIT_BY_TIER[tier];
 }

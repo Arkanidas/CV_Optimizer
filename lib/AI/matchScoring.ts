@@ -1,8 +1,6 @@
 import type { MatchingResults } from "./schemas";
 
-// must_have requirements count for more than nice_to_have — this is what
-// makes "must haves" matter more than "good to haves" in the final score,
-// while still letting nice-to-haves push a candidate toward 100%.
+
 const IMPORTANCE_WEIGHT = {
   must_have: 2,
   nice_to_have: 1,
@@ -17,12 +15,13 @@ const RELEVANCE_CREDIT = {
 } as const;
 
 export function calculateMatchPercentage(matches: MatchingResults): number {
-  if (matches.matches.length === 0) return 0;
+  const verifiable = matches.matches.filter((m) => m.requirement.verifiableFromCv);
+  if (verifiable.length === 0) return 0;
 
   let earned = 0;
   let possible = 0;
 
-  for (const match of matches.matches) {
+  for (const match of verifiable) {
     const weight = IMPORTANCE_WEIGHT[match.requirement.importance];
     possible += weight;
 

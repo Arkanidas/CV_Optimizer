@@ -8,13 +8,22 @@ Be thorough about implied requirements, especially when the JD is short or vague
 
 Apply this same reasoning to any role: infer the traits a realistic, successful person in this position would need, based on the nature of the work itself.
 
-Mark each requirement's importance as "must_have" or "nice_to_have" based on how the JD frames it (e.g. "required" vs "preferred" or "a plus"). If not specified, use your judgment based on how central the requirement is to the role.`;
+Mark each requirement's importance as "must_have" or "nice_to_have" based on how the JD frames it (e.g. "required" vs "preferred" or "a plus"). If not specified, use your judgment based on how central the requirement is to the role.
+
+For each requirement, also mark "verifiableFromCv": true or false.
+- true: skills, experience, qualifications, education, certifications, licenses — anything a CV could reasonably demonstrate or contradict.
+- false: work schedule, availability, start date, location/commute requirements, willingness to work on-site, salary expectations, or any other logistical/administrative requirement. A CV can never confirm these regardless of how well-written it is — mark them false so they are excluded from matching.
+`;
+
+
 
 export const CV_EXTRACTION_PROMPT = `You are analyzing a CV/resume to extract discrete, evidence-bearing entries: job experiences, achievements, skills, and education.
 
 For each entry, also infer "impliedSkills" — skills this experience demonstrates even if never explicitly stated. For example, any customer-facing or service role typically implies teamwork and communication skills, even if those exact words don't appear in the bullet.
 
-Extract entries as they are written by Work Experience, skills or education — do not summarize or combine multiple experiences into one entry.`;
+Extract entries as they are written by Work Experience, skills or education — do not summarize or combine multiple experiences into one entry.
+
+Pay close attention to short, inline facts often placed in a header or contact-info line — licenses (e.g. driver's licenses), certifications, or language fluency are often stated there rather than in a dedicated bullet. Extract these as their own "skill" type entry even if they appear inline alongside a name, email, or phone number.`;
 
 export const MATCHING_PROMPT = `You are matching a job description's requirements against a candidate's CV entries.
 
