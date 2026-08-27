@@ -8,6 +8,7 @@ import type { MatchingResults } from "@/lib/AI/schemas";
 import MatchRing from "./MatchRing";
 import MatchStatusText from "@/components/MatchStatusText";
 import MatchCard from "./MatchCard";
+import { selectDisplayMatches } from "@/lib/matchCardSelection";
 
 interface StepPersonalizeMatchProps {
   jobDescription: string;
@@ -27,6 +28,7 @@ export default function StepPersonalizeMatch({
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
   const canSeeMatch = hasTierAccess(tier, "standard");
+  const displayMatches = matches ? selectDisplayMatches(matches, tier) : [];
 
   const [matchPercent, setMatchPercent] = useState<number | null>(matchPercentage ?? null);
   const [error, setError] = useState("");
@@ -100,9 +102,9 @@ export default function StepPersonalizeMatch({
             {jobDescription || <span className="text-white/30">No job description found.</span>}
           </div>
 
-          {canSeeMatch && matches && matches.matches.length > 0 && (
+          {canSeeMatch && displayMatches.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
-              {matches.matches.map((m, i) => (
+              {displayMatches.map((m, i) => (
                 <MatchCard
                   key={i}
                   label={m.requirement.requirement}
@@ -138,9 +140,9 @@ export default function StepPersonalizeMatch({
             {cvText || <span className="text-white/30">No CV text found.</span>}
           </div>
 
-          {canSeeMatch && matches && (
+          {canSeeMatch && displayMatches.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
-              {matches.matches
+              {displayMatches
                 .filter((m) => m.matchedEntries.length > 0)
                 .map((m, i) => (
                   <MatchCard
