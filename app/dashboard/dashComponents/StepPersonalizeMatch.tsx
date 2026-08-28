@@ -8,7 +8,7 @@ import type { MatchingResults } from "@/lib/AI/schemas";
 import MatchRing from "./MatchRing";
 import MatchStatusText from "@/components/MatchStatusText";
 import MatchCard from "./MatchCard";
-import { selectDisplayMatches } from "@/lib/matchCardSelection";
+import { selectDisplayMatches, buildCardTooltip, type DisplayCard } from "@/lib/matchCardSelection";
 
 interface StepPersonalizeMatchProps {
   jobDescription: string;
@@ -28,7 +28,8 @@ export default function StepPersonalizeMatch({
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
   const canSeeMatch = hasTierAccess(tier, "standard");
-  const displayMatches = matches ? selectDisplayMatches(matches, tier) : [];
+  const displayCards: DisplayCard[] = matches ? selectDisplayMatches(matches, tier) : [];
+  const cvSideCards = displayCards.filter((c) => c.type !== "required-missing");
 
   const [matchPercent, setMatchPercent] = useState<number | null>(matchPercentage ?? null);
   const [error, setError] = useState("");
@@ -93,7 +94,7 @@ export default function StepPersonalizeMatch({
       )}
 
       <div className="relative grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto_1fr] md:items-start">
-        {/* Job Description side */}
+        {/* Job Description side — shows all three card types, including gaps */}
         <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <p className="mb-2 text-xs font-medium uppercase tracking-widest text-white/35">
             Job Description
@@ -102,14 +103,14 @@ export default function StepPersonalizeMatch({
             {jobDescription || <span className="text-white/30">No job description found.</span>}
           </div>
 
-          {canSeeMatch && displayMatches.length > 0 && (
+          {canSeeMatch && displayCards.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
-              {displayMatches.map((m, i) => (
+              {displayCards.map((card, i) => (
                 <MatchCard
                   key={i}
-                  label={m.requirement.requirement}
-                  matched={m.matchedEntries.length > 0}
-                  title={m.matchedEntries[0]?.rationale}
+                  label={card.match.requirement.shortLabel}
+                  type={card.type}
+                  tooltip={buildCardTooltip(card)}
                 />
               ))}
             </div>
@@ -131,7 +132,7 @@ export default function StepPersonalizeMatch({
           {canSeeMatch && <MatchStatusText percent={matchPercent} />}
         </div>
 
-        {/* CV side */}
+        {/* CV side — only what's actually matched (no gray cards here) */}
         <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <p className="mb-2 text-xs font-medium uppercase tracking-widest text-white/35">
             Your CV
@@ -140,18 +141,16 @@ export default function StepPersonalizeMatch({
             {cvText || <span className="text-white/30">No CV text found.</span>}
           </div>
 
-          {canSeeMatch && displayMatches.length > 0 && (
+          {canSeeMatch && cvSideCards.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
-              {displayMatches
-                .filter((m) => m.matchedEntries.length > 0)
-                .map((m, i) => (
-                  <MatchCard
-                    key={i}
-                    label={m.requirement.requirement}
-                    matched={true}
-                    title={m.matchedEntries[0]?.rationale}
-                  />
-                ))}
+              {cvSideCards.map((card, i) => (
+                <MatchCard
+                  key={i}
+                  label={card.match.requirement.shortLabel}
+                  type={card.type}
+                  tooltip={buildCardTooltip(card)}
+                />
+              ))}
             </div>
           )}
         </div>

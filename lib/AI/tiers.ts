@@ -7,9 +7,9 @@ const TIER_RANK: Record<SubscriptionTier, number> = {
 };
 
 export const CARD_LIMIT_BY_TIER: Record<SubscriptionTier, number> = {
-  free: 8,
-  standard: 15,
-  pro: Infinity,
+  free:15,
+  standard: 27,
+  pro: 60,
 };
 
 

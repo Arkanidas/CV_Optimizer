@@ -94,7 +94,7 @@ export default function Step1UploadContext({ savedCvs, onContinue, }: Step1Uploa
             ))}
           </div>
         ) : (
-          <label className="mt-4 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-10 text-center transition-colors hover:border-violet-400/50 hover:bg-violet-500/[0.03]">
+          <label className="mt-4 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-10 text-center transition-colors duration-100 hover:border-violet-400/50 hover:bg-violet-500/[0.03]">
             <Upload className="h-6 w-6 text-violet-300" />
             <span className="text-sm text-white/70">
               {uploadedFile
@@ -119,18 +119,18 @@ export default function Step1UploadContext({ savedCvs, onContinue, }: Step1Uploa
         </p>
         <textarea
           value={jobDescription}
-          maxLength={4000}
+          maxLength={6000}
           minLength={500}
           onChange={(e) => setJobDescription(e.target.value)}
           rows={8}
           placeholder="Paste the job description here..."
-          className={`mt-3 w-full resize rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
-           jobDescription.length >= 4000
+          className={`mt-3 resize-y min-h-[280px] w-full rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
+           jobDescription.length >= 6000
             ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
             : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"}`}          
         />
         <p className="mt-1 text-right text-xs text-white/30">
-          {jobDescription.trim().length}/4000 characters
+          {jobDescription.trim().length}/6000 characters
         </p>
       </div>
 
