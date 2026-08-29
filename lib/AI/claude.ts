@@ -74,6 +74,7 @@ export async function generateStructuredWithClaude<T>(params: {
       model: getModelForTier(tier),
       max_tokens: maxTokens,
       system,
+      temperature: 0.2,
       messages: [{ role: "user", content: prompt }],
       tools: [
         {
@@ -84,6 +85,7 @@ export async function generateStructuredWithClaude<T>(params: {
       ],
       tool_choice: { type: "tool", name: toolName },
     });
+
     if (message.stop_reason === "max_tokens") {
   console.error(`Claude hit max_tokens (${maxTokens}) before completing tool: ${toolName}`);
   throw new Error("The response was too long to complete. Please try again with a shorter CV or job description.");

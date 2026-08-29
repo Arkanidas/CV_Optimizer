@@ -33,6 +33,8 @@ For each JD requirement, find CV entries that provide genuine evidence for it �
 - "direct": the CV entry explicitly demonstrates this requirement
 - "inferred": the CV entry doesn't explicitly mention it, but reasonably demonstrates it given the nature of that role/achievement
 
+Be strict and realistic, not encouraging. Your job is to give the candidate an honest, accurate picture of their fit — not to make them feel good. Only include an "inferred" match if the connection is genuinely reasonable, the kind of connection an experienced hiring manager would actually accept as real evidence. Do not stretch a tenuous, generic, or speculative connection just to avoid leaving a requirement unmatched. A candidate who is genuinely not qualified for a role should see a low score reflecting that — do not soften or round up out of encouragement. If there is no real evidence for a requirement, leave matchedEntries empty; this is the correct, expected, and often important outcome.
+
 For each match, give a one-sentence rationale explaining the connection.
 
 IMPORTANT: Every requirement from the JD requirements list must appear exactly once in your output, even if no matching evidence exists — in that case, return an empty matchedEntries array for that requirement. Do not omit unmatched requirements, and do not force a weak or invented match just to avoid an empty array.`;
