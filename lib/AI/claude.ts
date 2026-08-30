@@ -74,7 +74,6 @@ export async function generateStructuredWithClaude<T>(params: {
       model: getModelForTier(tier),
       max_tokens: maxTokens,
       system,
-      temperature: 0.2,
       messages: [{ role: "user", content: prompt }],
       tools: [
         {
