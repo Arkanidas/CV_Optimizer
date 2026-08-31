@@ -94,25 +94,32 @@ export default function StepPersonalizeMatch({
       )}
 
       <div className="relative grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto_1fr] md:items-start">
-        {/* Job Description side — shows all three card types, including gaps */}
-        <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-white/35">
+
+        {/* Job Description side */}
+        <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">      
+          <p className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">
             Job Description
           </p>
-          <div className="max-h-48 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-white/70">
+             <hr className="my-2 border-white/10"/>
+          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-white/95">
             {jobDescription || <span className="text-white/30">No job description found.</span>}
           </div>
 
           {canSeeMatch && displayCards.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
-              {displayCards.map((card, i) => (
-                <MatchCard
-                  key={i}
-                  label={card.match.requirement.shortLabel}
-                  type={card.type}
-                  tooltip={buildCardTooltip(card)}
-                />
-              ))}
+            <div className="mt-4 border-t border-white/10 pt-4">
+              <p className="mb-3 text-sm font-medium uppercase tracking-widest text-violet-300">
+                 Job requirement qualification:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {displayCards.map((card, i) => (
+                  <MatchCard
+                    key={i}
+                    label={card.match.requirement.shortLabel}
+                    type={card.type}
+                    tooltip={buildCardTooltip(card)}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -132,25 +139,31 @@ export default function StepPersonalizeMatch({
           {canSeeMatch && <MatchStatusText percent={matchPercent} />}
         </div>
 
-        {/* CV side — only what's actually matched (no gray cards here) */}
+        {/* CV side */}
         <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-white/35">
+          <p className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">
             Your CV
           </p>
-          <div className="max-h-48 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed text-white/70">
+           <hr className="my-2 border-white/10"/>
+          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-white/95">
             {cvText || <span className="text-white/30">No CV text found.</span>}
           </div>
 
           {canSeeMatch && cvSideCards.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
-              {cvSideCards.map((card, i) => (
-                <MatchCard
-                  key={i}
-                  label={card.match.requirement.shortLabel}
-                  type={card.type}
-                  tooltip={buildCardTooltip(card)}
-                />
-              ))}
+            <div className="mt-4 border-t border-white/10 pt-4">
+              <p className="mb-3 text-sm font-medium uppercase tracking-widest text-violet-300">
+                Your CV qualifications:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {cvSideCards.map((card, i) => (
+                  <MatchCard
+                    key={i}
+                    label={card.match.requirement.shortLabel}
+                    type={card.type}
+                    tooltip={buildCardTooltip(card)}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
