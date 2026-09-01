@@ -44,6 +44,29 @@ export const CvValidationSchema = z.object({
   reason: z.string().describe("One short sentence explaining the classification"),
 });
 
+export const AnalysisConclusionSchema = z.object({
+  verdict: z.enum(["strong_fit", "good_fit", "moderate_fit", "weak_fit", "poor_fit"]),
+  summary: z.string().describe(
+    "2-4 sentences, written directly to the candidate using 'you', giving an honest, realistic overview of their fit for this specific role."
+  ),
+  strengths: z.array(z.string()).describe(
+    "Up to 4 short, specific points on what makes this candidate a good fit for this job."
+  ),
+  gaps: z.array(z.string()).describe(
+    "Up to 4 short, specific points on what's missing or weak for this job."
+  ),
+  recommendation: z.string().describe(
+    "One direct sentence telling the candidate whether it's worth proceeding to personalize a cover letter for this job."
+  ),
+  alternativeSuggestions: z
+    .array(z.string())
+    .optional()
+    .describe(
+      "Only present when match percentage is 25% or below: 2-4 short suggestions of job titles/role types that would fit this candidate's real CV much better."
+    ),
+});
+export type AnalysisConclusion = z.infer<typeof AnalysisConclusionSchema>;
+
 export type JDExtraction = z.infer<typeof JDExtractionSchema>;
 export type CvExtraction = z.infer<typeof CvExtractionSchema>;
 export type MatchingResults = z.infer<typeof MatchingResultsSchema>;
