@@ -62,11 +62,11 @@ export const AnalysisConclusionSchema = z.object({
     .array(z.string())
     .optional()
     .describe(
-      "Only present when match percentage is 25% or below: 2-4 short suggestions of job titles/role types that would fit this candidate's real CV much better."
+      "Only present when match percentage is 40% or below: 2-4 short suggestions of job titles/role types that would fit this candidate's real CV much better."
     ),
 });
-export type AnalysisConclusion = z.infer<typeof AnalysisConclusionSchema>;
 
+export type AnalysisConclusion = z.infer<typeof AnalysisConclusionSchema>;
 export type JDExtraction = z.infer<typeof JDExtractionSchema>;
 export type CvExtraction = z.infer<typeof CvExtractionSchema>;
 export type MatchingResults = z.infer<typeof MatchingResultsSchema>;

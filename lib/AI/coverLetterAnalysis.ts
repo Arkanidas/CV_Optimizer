@@ -1,6 +1,6 @@
 import { generateStructuredWithClaude, type SubscriptionTier } from "./claude";
-import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema, CvValidationSchema, type JDExtraction,type CvExtraction, type MatchingResults, type CvValidation,} from "./schemas";
-import { JD_EXTRACTION_PROMPT, CV_EXTRACTION_PROMPT, MATCHING_PROMPT, CV_VALIDATION_PROMPT } from "./prompts";
+import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema, CvValidationSchema, AnalysisConclusionSchema, type JDExtraction,type CvExtraction, type MatchingResults, type CvValidation, type AnalysisConclusion} from "./schemas";
+import { JD_EXTRACTION_PROMPT, CV_EXTRACTION_PROMPT, MATCHING_PROMPT, CV_VALIDATION_PROMPT, ANALYSIS_CONCLUSION_PROMPT } from "./prompts";
 
 export async function extractJdRequirements(
   jobDescription: string,
@@ -50,5 +50,21 @@ export async function matchRequirementsToEntries(
     schema: MatchingResultsSchema,
     toolName: "match_requirements",
     maxTokens: 8192,
+  });
+}
+
+export async function generateAnalysisConclusion(
+  matchPercentage: number,
+  matches: MatchingResults,
+  tier: SubscriptionTier
+): Promise<AnalysisConclusion> {
+  const prompt = `Match percentage: ${matchPercentage}%\n\nRequirement matches:\n${JSON.stringify(matches, null, 2)}`;
+
+  return generateStructuredWithClaude({
+    tier,
+    system: ANALYSIS_CONCLUSION_PROMPT,
+    prompt,
+    schema: AnalysisConclusionSchema,
+    toolName: "generate_analysis_conclusion",
   });
 }

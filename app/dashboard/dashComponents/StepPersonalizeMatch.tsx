@@ -4,18 +4,20 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Lock } from "lucide-react";
 import { hasTierAccess } from "@/lib/AI/tiers";
-import type { MatchingResults } from "@/lib/AI/schemas";
+import type { MatchingResults, AnalysisConclusionSchema } from "@/lib/AI/schemas";
 import MatchRing from "./MatchRing";
 import MatchStatusText from "@/components/MatchStatusText";
 import MatchCard from "./MatchCard";
 import { selectDisplayMatches, buildCardTooltip, type DisplayCard } from "@/lib/matchCardSelection";
+import AnalysisConclusion from "./AnalysisConclusion";
 
 interface StepPersonalizeMatchProps {
   jobDescription: string;
   cvText: string;
   matchPercentage?: number;
   matches?: MatchingResults;
-  onAnalysisComplete?: (matchPercentage: number, matches: MatchingResults) => void;
+  conclusion?: AnalysisConclusionSchema;
+  onAnalysisComplete?: (matchPercentage: number, matches: MatchingResults, conclusion: AnalysisConclusionSchema) => void;
 }
 
 export default function StepPersonalizeMatch({
@@ -23,6 +25,7 @@ export default function StepPersonalizeMatch({
   cvText,
   matchPercentage,
   matches,
+  conclusion,
   onAnalysisComplete,
 }: StepPersonalizeMatchProps) {
   const { data: session } = useSession();
@@ -63,7 +66,7 @@ export default function StepPersonalizeMatch({
 
         if (!cancelled) {
           setMatchPercent(data.matchPercentage);
-          onAnalysisComplete?.(data.matchPercentage, data.matches);
+          onAnalysisComplete?.(data.matchPercentage, data.matches, data.conclusion);
         }
       } catch (err) {
         console.error("Analysis error:", err);

@@ -42,3 +42,20 @@ IMPORTANT: Every requirement from the JD requirements list must appear exactly o
 export const CV_VALIDATION_PROMPT = `You are checking whether a piece of text is a genuine CV/resume, as opposed to random text, a template with no real content, a different type of document, or an attempt to abuse a CV-processing tool.
 
 A real CV typically includes: identifiable work history or education with plausible details, not just section headers with no substance. Be skeptical of text that only has structural keywords (like "Experience" or "Education") but no actual, specific content underneath them.`;
+
+export const ANALYSIS_CONCLUSION_PROMPT = `You are writing a short, honest, direct analysis conclusion for a candidate, based on how well their CV matches a specific job description.
+
+You will be given the match percentage (already calculated) and the full list of matched/unmatched requirements.
+
+Use the match percentage as your primary guide for the "verdict":
+- strong_fit: 85% and above
+- good_fit: 65-84%
+- moderate_fit: 45-64%
+- weak_fit: 31-44%
+- poor_fit: below 30%
+
+Write the summary directly to the candidate ("you"), honestly and realistically. Do not soften a genuinely weak fit or round up out of encouragement — the candidate needs accurate information to make a real decision, not to feel good.
+
+For "recommendation", give one direct sentence on whether it's worth proceeding to personalize a cover letter for this specific job, or whether their time may be better spent applying elsewhere.
+
+For "alternativeSuggestions": ONLY include this field if the match percentage is 30% or below. When included, suggest 2-4 job titles or role types that would genuinely fit better, based specifically on what is actually on this candidate's CV — their real skills, experience, and education — not generic advice. If the match percentage is above 30%, omit this field entirely.`;
