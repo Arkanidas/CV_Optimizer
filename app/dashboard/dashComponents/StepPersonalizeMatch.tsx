@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Lock } from "lucide-react";
 import { hasTierAccess } from "@/lib/AI/tiers";
-import type { MatchingResults, AnalysisConclusionSchema } from "@/lib/AI/schemas";
+import type { MatchingResults, AnalysisConclusion as AnalysisConclusionType} from "@/lib/AI/schemas";
 import MatchRing from "./MatchRing";
 import MatchStatusText from "@/components/MatchStatusText";
 import MatchCard from "./MatchCard";
@@ -16,8 +16,8 @@ interface StepPersonalizeMatchProps {
   cvText: string;
   matchPercentage?: number;
   matches?: MatchingResults;
-  conclusion?: AnalysisConclusionSchema;
-  onAnalysisComplete?: (matchPercentage: number, matches: MatchingResults, conclusion: AnalysisConclusionSchema) => void;
+  conclusion?: AnalysisConclusionType;
+  onAnalysisComplete?: (matchPercentage: number, matches: MatchingResults, conclusion: AnalysisConclusionType) => void;
 }
 
 export default function StepPersonalizeMatch({
@@ -171,6 +171,7 @@ export default function StepPersonalizeMatch({
           )}
         </div>
       </div>
+         {canSeeMatch && conclusion && <AnalysisConclusion conclusion={conclusion} />}
     </div>
   );
 }
