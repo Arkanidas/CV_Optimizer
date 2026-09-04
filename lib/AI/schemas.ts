@@ -56,7 +56,7 @@ export const AnalysisConclusionSchema = z.object({
     "Up to 4 short, specific points on what's missing or weak for this job."
   ),
   recommendation: z.string().describe(
-    "One direct sentence telling the candidate whether it's worth proceeding to personalize a cover letter for this job."
+    "One direct sentence telling the candidate whether it's worth proceeding to personalize a cover letter for this job or not."
   ),
   alternativeSuggestions: z
     .array(z.string())

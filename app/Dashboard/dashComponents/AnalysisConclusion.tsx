@@ -21,9 +21,10 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
   return (
     <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
       <div className="flex items-center justify-between gap-3">
-        <h4 className="text-sm font-semibold uppercase tracking-widest text-white/50">
+        <h4 className="text-sm font-semibold uppercase tracking-widest text-violet-300">
           Analysis conclusion
         </h4>
+       
         <span
           className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-xs font-medium ${verdictStyle.className}`}
         >
@@ -42,7 +43,7 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
             <ul className="flex flex-col gap-1.5">
               {conclusion.strengths.map((s, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/70" />
+                  <CheckCircle2 className="mt-0.5 h-4.5 w-4.5 shrink-0 text-emerald-400/70" />
                   {s}
                 </li>
               ))}
@@ -53,12 +54,12 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
         {conclusion.gaps.length > 0 && (
           <div>
             <p className="mb-2 text-xs font-medium uppercase tracking-widest text-white/35">
-              Gaps
+              Cons
             </p>
             <ul className="flex flex-col gap-1.5">
               {conclusion.gaps.map((g, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-                  <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-400/60" />
+                  <XCircle className="mt-0.5 h-4.5 w-4.5 shrink-0 text-red-400/60" />
                   {g}
                 </li>
               ))}
@@ -67,7 +68,7 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
         )}
       </div>
 
-      <p className="mt-4 border-t border-white/10 pt-4 text-sm font-medium text-white/90">
+      <p className="mt-4 border-t border-white/10 pt-4 text-sm font-medium text-emerald-300">
         {conclusion.recommendation}
       </p>
 
@@ -82,7 +83,7 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
                 key={i}
                 className="rounded-full border border-violet-400/30 bg-violet-500/10 px-3 py-1 text-xs text-violet-200"
               >
-                {role}
+                {role} 
               </span>
             ))}
           </div>

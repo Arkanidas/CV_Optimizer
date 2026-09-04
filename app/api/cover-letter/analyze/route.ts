@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Cover letter analysis error:", error);
     return NextResponse.json(
-      { message: "Something went wrong analyzing your CV and job description." },
+      { message: "Something went wrong analyzing your CV and job." },
       { status: 500 }
     );
   }

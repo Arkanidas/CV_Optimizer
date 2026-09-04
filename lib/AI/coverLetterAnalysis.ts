@@ -66,5 +66,6 @@ export async function generateAnalysisConclusion(
     prompt,
     schema: AnalysisConclusionSchema,
     toolName: "generate_analysis_conclusion",
+    maxTokens: 8192,
   });
 }

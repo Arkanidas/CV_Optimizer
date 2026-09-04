@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, Sparkles, Loader2, FileCheck, Download, RotateCcw } from "lucide-react";
+import { Upload, Sparkles, Loader2, FileCheck, RotateCcw, SquareKanban } from "lucide-react";
 import StepperBubbles, { type StepDefinition } from "./StepBubbles";
 import Step1UploadContext from "./step1coverletter";
 import StepPersonalizeMatch from "./StepPersonalizeMatch";
+import type { AnalysisConclusion } from "@/lib/AI/schemas";
 
 interface SavedCv {
   id: string;
@@ -17,19 +18,22 @@ interface WizardData {
   uploadedFile?: File;
   cvText?: string;
   jobDescription?: string;
-   matchPercentage?: number;
-   matches?: any;
+  matchPercentage?: number;
+  matches?: any;
   whyCompany?: string;
   tone?: "formal" | "casual";
   generatedLetter?: string;
+  conclusion?: AnalysisConclusion;
 }
+
+
 
 const steps: StepDefinition[] = [
   { id: "upload", label: "Upload", icon: Upload },
-  { id: "personalize", label: "Personalize", icon: Sparkles },
-  { id: "analyzing", label: "Analyzing", icon: Loader2 },
-  { id: "review", label: "Review", icon: FileCheck },
-  { id: "download", label: "Download", icon: Download },
+  { id: "Overview", label: "Overview", icon: SquareKanban },
+  { id: "Personalise", label: "Personalize", icon: Sparkles },
+  { id: "Analyze", label: "Analyze", icon: Loader2 },
+  { id: "Review", label: "Review", icon: FileCheck },
 ];
 
 const STORAGE_KEY = "coverLetterWizardState";
@@ -169,10 +173,11 @@ export default function CoverLetterWizard() {
             jobDescription={wizardData.jobDescription ?? ""}
             cvText={wizardData.cvText ?? ""}
             matchPercentage={wizardData.matchPercentage}
-             matches={wizardData.matches}
-             onAnalysisComplete={(matchPercentage, matches) =>
-             setWizardData((prev) => ({ ...prev, matchPercentage, matches }))
-    }
+            matches={wizardData.matches}
+            conclusion={wizardData.conclusion}
+            onAnalysisComplete={(matchPercentage, matches, conclusion) =>
+              setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
+            }
           />
         )}
 
