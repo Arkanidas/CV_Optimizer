@@ -25,7 +25,7 @@ export default function MatchRing({ percent }: MatchRingProps) {
     if (percent === null) return;
 
     const target = Math.max(0, Math.min(100, percent));
-    const duration = 2200;
+    const duration = 2700;
     const start = performance.now();
 
     function tick(now: number) {

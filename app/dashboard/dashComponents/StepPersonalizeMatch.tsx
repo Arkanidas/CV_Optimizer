@@ -18,6 +18,7 @@ interface StepPersonalizeMatchProps {
   matches?: MatchingResults;
   conclusion?: AnalysisConclusionType;
   onAnalysisComplete?: (matchPercentage: number, matches: MatchingResults, conclusion: AnalysisConclusionType) => void;
+  onContinue?: () => void;
 }
 
 export default function StepPersonalizeMatch({
@@ -27,6 +28,7 @@ export default function StepPersonalizeMatch({
   matches,
   conclusion,
   onAnalysisComplete,
+  onContinue,
 }: StepPersonalizeMatchProps) {
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
@@ -110,7 +112,7 @@ export default function StepPersonalizeMatch({
 
           {canSeeMatch && displayCards.length > 0 && (
             <div className="mt-4 border-t border-white/10 pt-4">
-              <p className="mb-3 text-sm font-medium uppercase tracking-widest text-violet-300">
+              <p className="mb-5 text-sm font-medium uppercase tracking-widest text-violet-300">
                  Job requirement qualification:
               </p>
               <div className="flex flex-wrap gap-2">
@@ -154,7 +156,7 @@ export default function StepPersonalizeMatch({
 
           {canSeeMatch && cvSideCards.length > 0 && (
             <div className="mt-4 border-t border-white/10 pt-4">
-              <p className="mb-3 text-sm font-medium uppercase tracking-widest text-violet-300">
+              <p className="mb-5 text-sm font-medium uppercase tracking-widest text-violet-300">
                 Your CV qualifications:
               </p>
               <div className="flex flex-wrap gap-2">
@@ -171,7 +173,7 @@ export default function StepPersonalizeMatch({
           )}
         </div>
       </div>
-         {canSeeMatch && conclusion && <AnalysisConclusion conclusion={conclusion} />}
+         {canSeeMatch && conclusion && <AnalysisConclusion conclusion={conclusion} onContinue={onContinue}/>}
     </div>
   );
 }

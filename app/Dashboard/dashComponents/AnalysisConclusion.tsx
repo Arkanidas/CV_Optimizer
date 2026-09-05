@@ -1,10 +1,11 @@
 "use client";
 
 import type { AnalysisConclusion as AnalysisConclusionType } from "@/lib/AI/schemas";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
 
 interface AnalysisConclusionProps {
   conclusion: AnalysisConclusionType;
+  onContinue?: () => void;
 }
 
 const VERDICT_STYLES: Record<AnalysisConclusionType["verdict"], { label: string; className: string }> = {
@@ -15,7 +16,7 @@ const VERDICT_STYLES: Record<AnalysisConclusionType["verdict"], { label: string;
   poor_fit: { label: "Poor fit", className: "border-red-400/40 bg-red-500/10 text-red-300" },
 };
 
-export default function AnalysisConclusion({ conclusion }: AnalysisConclusionProps) {
+export default function AnalysisConclusion({ conclusion, onContinue }: AnalysisConclusionProps) {
   const verdictStyle = VERDICT_STYLES[conclusion.verdict];
 
   return (
@@ -67,10 +68,19 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
           </div>
         )}
       </div>
+<div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-4">
+        <p className="text-sm font-medium text-emerald-300">{conclusion.recommendation}</p>
 
-      <p className="mt-4 border-t border-white/10 pt-4 text-sm font-medium text-emerald-300">
-        {conclusion.recommendation}
-      </p>
+        {onContinue && (
+          <button
+            onClick={onContinue}
+            className="ml-auto flex flex-row rounded-xl cursor-pointer bg-violet-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+          >
+            Continue
+            <ArrowRight className="h-4.5 w-4.5 mt-0.5 ml-2" />
+          </button>
+        )}
+      </div>
 
       {conclusion.alternativeSuggestions && conclusion.alternativeSuggestions.length > 0 && (
         <div className="mt-4 rounded-xl border border-violet-400/20 bg-violet-500/5 p-4">

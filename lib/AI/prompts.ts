@@ -21,7 +21,7 @@ For each requirement, also provide a "shortLabel" — a compact 2-4 word version
 
 export const CV_EXTRACTION_PROMPT = `You are analyzing a CV/resume to extract discrete, evidence-bearing entries: job experiences, achievements, skills, and education.
 
-For each entry, also infer "impliedSkills" — skills this experience demonstrates even if never explicitly stated. For example, any customer-facing or service role typically implies teamwork and communication skills, even if those exact words don't appear in the bullet.
+For each entry, also infer "impliedSkills" — skills this experience demonstrates even if never explicitly stated. For example, any customer-facing or service role typically implies teamwork, problem-solving, and communication skills, even if those exact words don't appear in the bullet.
 
 Extract entries as they are written by Work Experience, skills or education — do not summarize or combine multiple experiences into one entry.
 
@@ -58,4 +58,6 @@ Write the summary directly to the candidate ("you"), honestly and realistically.
 
 For "recommendation", give one direct sentence on whether it's worth proceeding to personalize a cover letter for this specific job, or whether their time may be better spent applying elsewhere.
 
-For "alternativeSuggestions": ONLY include this field if the match percentage is 30% or below. When included, suggest 2-4 job titles or role types that would genuinely fit better, based specifically on what is actually on this candidate's CV — their real skills, experience, and education — not generic advice. If the match percentage is above 30%, omit this field entirely.`;
+For "alternativeSuggestions": ONLY include this field if the match percentage is 30% or below. When included, suggest 2-4 job titles or role types that would genuinely fit better, based specifically on what is actually on this candidate's CV — their real skills, experience, and education — not generic advice. If the match percentage is above 30%, omit this field entirely.
+
+IMPORTANT: Never include by any means things you can't know about the candidate e.g being able to afford relocation, their personal preferences, or being able to work for under set hours. Only make recommendations based on what is actually in the CV and the job description.`;

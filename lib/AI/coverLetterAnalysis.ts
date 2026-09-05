@@ -49,7 +49,7 @@ export async function matchRequirementsToEntries(
     prompt,
     schema: MatchingResultsSchema,
     toolName: "match_requirements",
-    maxTokens: 8192,
+    maxTokens: 10000,
   });
 }
 
@@ -66,6 +66,6 @@ export async function generateAnalysisConclusion(
     prompt,
     schema: AnalysisConclusionSchema,
     toolName: "generate_analysis_conclusion",
-    maxTokens: 8192,
+    maxTokens: 10000,
   });
 }

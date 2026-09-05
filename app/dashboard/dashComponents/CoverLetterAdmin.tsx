@@ -178,6 +178,7 @@ export default function CoverLetterWizard() {
             onAnalysisComplete={(matchPercentage, matches, conclusion) =>
               setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
             }
+            onContinue={() => setCurrentStepIndex(2)}
           />
         )}
 
