@@ -19,9 +19,9 @@ export default function StepperBubbles({steps, currentStepIndex,}: StepperBubble
 
   return (
     <div className="relative w-full py-2">
-      <div className="absolute left-[22px] right-[22px] top-[30px] h-px bg-white/10 " />
+      <div className="absolute left-[22px] right-[22px] top-[30px] h-1 bg-white/10 " />
       <div
-        className="absolute left-[22px] top-[30px] h-px bg-violet-500/70 transition-all duration-500 ease-out"
+        className="absolute left-[22px] top-[30px] h-1 bg-violet-400/60 transition-all duration-500 ease-out"
         style={{ width: `calc((100% - 44px) * ${progressPercent / 100})` }}
       />
 
@@ -34,7 +34,7 @@ export default function StepperBubbles({steps, currentStepIndex,}: StepperBubble
           return (
             <div key={step.id} className="flex flex-col items-center gap-2">
               <div
-                className={`relative flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-md transition-all duration-300 ${
+                className={`relative flex h-12 w-12 items-center justify-center border-2 rounded-full border backdrop-blur-md transition-all duration-300 ${
                   isCompleted
                     ? "border-violet-400/60 bg-violet-500/20 text-violet-200"
                     : isActive

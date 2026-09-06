@@ -8,6 +8,8 @@ Be thorough about implied requirements, especially when the JD is short or vague
 
 Apply this same reasoning to any role: infer the traits a realistic, successful person in this position would need, based on the nature of the work itself.
 
+IMPORTANT: Extract at most 20 requirements total, prioritizing the ones most central and clearly relevant to the role. If a job description is narrative/prose-heavy rather than structured, be selective and concise — do not attempt to extract every possible inferred trait. Quality and relevance matter more than exhaustiveness.
+
 Mark each requirement's importance as "must_have" or "nice_to_have" based on how the JD frames it (e.g. "required" vs "preferred" or "a plus"). If not specified, use your judgment based on how central the requirement is to the role.
 
 For each requirement, also mark "verifiableFromCv": true or false.

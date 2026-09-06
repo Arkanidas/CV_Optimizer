@@ -23,7 +23,7 @@ export default function MatchStatusText({ percent }: MatchStatusTextProps) {
       text={text}
       className="justify-center text-md font-medium"
       splitType="chars"
-      delay={120}
+      delay={60}
       duration={1.8}
       ease="elastic.out"
       from={{ opacity: 0, y: 12 }}

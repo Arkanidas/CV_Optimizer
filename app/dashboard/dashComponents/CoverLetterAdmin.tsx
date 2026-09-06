@@ -38,8 +38,7 @@ const steps: StepDefinition[] = [
 
 const STORAGE_KEY = "coverLetterWizardState";
 
-// File objects can't survive JSON.stringify, so it's stripped before saving —
-// everything else (cvText, jobDescription, etc.) is plain serializable data.
+
 function getPersistableData(data: WizardData) {
   const { uploadedFile, ...rest } = data;
   return rest;
@@ -150,7 +149,7 @@ export default function CoverLetterWizard() {
         )}
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-md">
+      <div className="rounded-2xl border border-white/10 border-2 bg-white/[0.02] p-6 backdrop-blur-md">
         {currentStepIndex === 0 &&
           (loadingCvs ? (
             <p className="text-sm text-white/40">Loading your saved CVs...</p>

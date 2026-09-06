@@ -86,7 +86,7 @@ export default function StepPersonalizeMatch({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-base font-semibold text-white">Your match</h3>
+        <h3 className="text-base font-semibold text-[#EAEAEA] text-xl">Your match</h3>
         <p className="mt-1 text-sm text-white/50">
           Here's what we're working with, your CV alongside the job description.
         </p>
@@ -106,14 +106,14 @@ export default function StepPersonalizeMatch({
             Job Description
           </p>
              <hr className="my-2 border-white/10"/>
-          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-white/95">
+          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-[#EAEAEA]">
             {jobDescription || <span className="text-white/30">No job description found.</span>}
           </div>
 
           {canSeeMatch && displayCards.length > 0 && (
             <div className="mt-4 border-t border-white/10 pt-4">
               <p className="mb-5 text-sm font-medium uppercase tracking-widest text-violet-300">
-                 Job requirement qualification:
+                 Job requirement qualifications:
               </p>
               <div className="flex flex-wrap gap-2">
                 {displayCards.map((card, i) => (
@@ -150,7 +150,7 @@ export default function StepPersonalizeMatch({
             Your CV
           </p>
            <hr className="my-2 border-white/10"/>
-          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-white/95">
+          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-[#EAEAEA]">
             {cvText || <span className="text-white/30">No CV text found.</span>}
           </div>
 

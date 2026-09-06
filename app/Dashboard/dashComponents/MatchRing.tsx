@@ -12,9 +12,9 @@ const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 function getColor(percent: number): string {
-  if (percent < 25) return "#f87171"; // red
-  if (percent < 75) return "#facc15"; // yellow
-  return "#4ade80"; // green
+  if (percent < 25) return "#f87171"; 
+  if (percent < 75) return "#facc15"; 
+  return "#4ade80";
 }
 
 export default function MatchRing({ percent }: MatchRingProps) {

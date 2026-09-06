@@ -56,9 +56,7 @@ export async function generateWithClaude(params: {
   }
 }
 
-// Sibling to generateWithClaude, for forced structured/schema output.
-// Use this for extraction/matching stages (JD parsing, CV parsing, matching)
-// instead of free-text generation.
+
 export async function generateStructuredWithClaude<T>(params: {
   tier: SubscriptionTier;
   system: string;
@@ -69,7 +67,7 @@ export async function generateStructuredWithClaude<T>(params: {
 }): Promise<T> {
   const { tier, system, prompt, schema, toolName, maxTokens = 4096 } = params;
 
-  try {
+  const attempt = async (): Promise<T> => {
     const message = await anthropic.messages.create({
       model: getModelForTier(tier),
       max_tokens: maxTokens,
@@ -86,20 +84,50 @@ export async function generateStructuredWithClaude<T>(params: {
     });
 
     if (message.stop_reason === "max_tokens") {
-  console.error(`Claude hit max_tokens (${maxTokens}) before completing tool: ${toolName}`);
-  throw new Error("The response was too long to complete. Please try again with a shorter CV or job description.");
-}
+      throw new Error(`Claude hit max_tokens (${maxTokens}) before completing tool: ${toolName}`);
+    }
 
     const toolUseBlock = message.content.find((block) => block.type === "tool_use");
     if (!toolUseBlock || toolUseBlock.type !== "tool_use") {
       throw new Error("Claude did not return structured output");
     }
 
-    return schema.parse(toolUseBlock.input);
-  } catch (error) {
-    console.error("Claude structured API error:", error);
-    throw new Error(
-      "Something went wrong analyzing your content. Please try again."
-    );
+    let input = toolUseBlock.input;
+
+    // Defensive coercion: occasionally a nested array/object field comes
+    // back as a JSON-encoded string instead of true JSON. Attempt to parse
+    // any string-typed field that looks like a JSON array/object before
+    // validating against the schema.
+    if (typeof input === "object" && input !== null) {
+      for (const key of Object.keys(input)) {
+        const value = (input as any)[key];
+        if (
+          typeof value === "string" &&
+          (value.trim().startsWith("[") || value.trim().startsWith("{"))
+        ) {
+          try {
+            (input as any)[key] = JSON.parse(value);
+          } catch {
+            // leave as-is; schema.parse below will surface the real error
+          }
+        }
+      }
+    }
+
+    return schema.parse(input);
+  };
+
+  try {
+    return await attempt();
+  } catch (firstError) {
+    console.error(`Claude structured API error (attempt 1) for ${toolName}:`, firstError);
+    try {
+      return await attempt();
+    } catch (secondError) {
+      console.error(`Claude structured API error (attempt 2) for ${toolName}:`, secondError);
+      throw new Error(
+        "Something went wrong analyzing your content. Please try again."
+      );
+    }
   }
 }

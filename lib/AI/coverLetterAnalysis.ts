@@ -2,10 +2,7 @@ import { generateStructuredWithClaude, type SubscriptionTier } from "./claude";
 import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema, CvValidationSchema, AnalysisConclusionSchema, type JDExtraction,type CvExtraction, type MatchingResults, type CvValidation, type AnalysisConclusion} from "./schemas";
 import { JD_EXTRACTION_PROMPT, CV_EXTRACTION_PROMPT, MATCHING_PROMPT, CV_VALIDATION_PROMPT, ANALYSIS_CONCLUSION_PROMPT } from "./prompts";
 
-export async function extractJdRequirements(
-  jobDescription: string,
-  tier: SubscriptionTier
-): Promise<JDExtraction> {
+export async function extractJdRequirements(jobDescription: string, tier: SubscriptionTier): Promise<JDExtraction> {
   return generateStructuredWithClaude({
     tier,
     system: JD_EXTRACTION_PROMPT,
