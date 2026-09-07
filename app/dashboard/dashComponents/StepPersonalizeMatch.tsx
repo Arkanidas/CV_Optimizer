@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Lock } from "lucide-react";
 import { hasTierAccess } from "@/lib/AI/tiers";
-import type { MatchingResults, AnalysisConclusion as AnalysisConclusionType} from "@/lib/AI/schemas";
+import type { MatchingResults, AnalysisConclusion as AnalysisConclusionType } from "@/lib/AI/schemas";
 import MatchRing from "./MatchRing";
 import MatchStatusText from "@/components/MatchStatusText";
 import MatchCard from "./MatchCard";
-import { selectDisplayMatches, buildCardTooltip, type DisplayCard } from "@/lib/matchCardSelection";
+import OverflowCard from "./OverflowCard";
+import { selectDisplayMatches, buildCardTooltip } from "@/lib/matchCardSelection";
 import AnalysisConclusion from "./AnalysisConclusion";
 
 interface StepPersonalizeMatchProps {
@@ -16,8 +17,12 @@ interface StepPersonalizeMatchProps {
   cvText: string;
   matchPercentage?: number;
   matches?: MatchingResults;
-  conclusion?: AnalysisConclusionType;
-  onAnalysisComplete?: (matchPercentage: number, matches: MatchingResults, conclusion: AnalysisConclusionType) => void;
+  conclusion?: AnalysisConclusionType | null;
+  onAnalysisComplete?: (
+    matchPercentage: number,
+    matches: MatchingResults,
+    conclusion: AnalysisConclusionType | null
+  ) => void;
   onContinue?: () => void;
 }
 
@@ -32,16 +37,22 @@ export default function StepPersonalizeMatch({
 }: StepPersonalizeMatchProps) {
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
-  const canSeeMatch = hasTierAccess(tier, "standard");
-  const displayCards: DisplayCard[] = matches ? selectDisplayMatches(matches, tier) : [];
+
+  // Score, ring, and written conclusion stay Standard/Pro only.
+  const canSeeScore = hasTierAccess(tier, "standard");
+
+  const { cards: displayCards, hiddenCount } = matches
+    ? selectDisplayMatches(matches, tier)
+    : { cards: [], hiddenCount: 0 };
   const cvSideCards = displayCards.filter((c) => c.type !== "required-missing");
 
   const [matchPercent, setMatchPercent] = useState<number | null>(matchPercentage ?? null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!canSeeMatch) return;
-
+    // Achievement cards are now available to every tier — the analysis
+    // pipeline runs regardless. Score/conclusion visibility is a display
+    // concern (canSeeScore), not a fetch-gating concern anymore.
     if (matchPercentage !== undefined && matches !== undefined) {
       setMatchPercent(matchPercentage);
       return;
@@ -81,12 +92,12 @@ export default function StepPersonalizeMatch({
     return () => {
       cancelled = true;
     };
-  }, [cvText, jobDescription, canSeeMatch, matchPercentage, matches, onAnalysisComplete]);
+  }, [cvText, jobDescription, matchPercentage, matches, onAnalysisComplete]);
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-base font-semibold text-[#EAEAEA] text-xl">Your match</h3>
+        <h3 className="text-base font-semibold text-white">Your match</h3>
         <p className="mt-1 text-sm text-white/50">
           Here's what we're working with, your CV alongside the job description.
         </p>
@@ -101,19 +112,19 @@ export default function StepPersonalizeMatch({
       <div className="relative grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto_1fr] md:items-start">
 
         {/* Job Description side */}
-        <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">      
+        <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <p className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">
             Job Description
           </p>
-             <hr className="my-2 border-white/10"/>
-          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-[#EAEAEA]">
+          <hr className="my-2 border-white/10" />
+          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-white/95">
             {jobDescription || <span className="text-white/30">No job description found.</span>}
           </div>
 
-          {canSeeMatch && displayCards.length > 0 && (
+          {displayCards.length > 0 && (
             <div className="mt-4 border-t border-white/10 pt-4">
-              <p className="mb-5 text-sm font-medium uppercase tracking-widest text-violet-300">
-                 Job requirement qualifications:
+              <p className="mb-3 text-sm font-medium uppercase tracking-widest text-violet-300">
+                Job requirement qualification:
               </p>
               <div className="flex flex-wrap gap-2">
                 {displayCards.map((card, i) => (
@@ -124,6 +135,7 @@ export default function StepPersonalizeMatch({
                     tooltip={buildCardTooltip(card)}
                   />
                 ))}
+                {hiddenCount > 0 && <OverflowCard count={hiddenCount} />}
               </div>
             </div>
           )}
@@ -131,7 +143,7 @@ export default function StepPersonalizeMatch({
 
         {/* Ring + status */}
         <div className="flex flex-col items-center gap-3 md:px-2 md:pt-6">
-          {canSeeMatch ? (
+          {canSeeScore ? (
             <MatchRing percent={matchPercent} />
           ) : (
             <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.03] text-center">
@@ -141,7 +153,7 @@ export default function StepPersonalizeMatch({
               </span>
             </div>
           )}
-          {canSeeMatch && <MatchStatusText percent={matchPercent} />}
+          {canSeeScore && <MatchStatusText percent={matchPercent} />}
         </div>
 
         {/* CV side */}
@@ -149,14 +161,14 @@ export default function StepPersonalizeMatch({
           <p className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">
             Your CV
           </p>
-           <hr className="my-2 border-white/10"/>
-          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-[#EAEAEA]">
+          <hr className="my-2 border-white/10" />
+          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-white/95">
             {cvText || <span className="text-white/30">No CV text found.</span>}
           </div>
 
-          {canSeeMatch && cvSideCards.length > 0 && (
+          {cvSideCards.length > 0 && (
             <div className="mt-4 border-t border-white/10 pt-4">
-              <p className="mb-5 text-sm font-medium uppercase tracking-widest text-violet-300">
+              <p className="mb-3 text-sm font-medium uppercase tracking-widest text-violet-300">
                 Your CV qualifications:
               </p>
               <div className="flex flex-wrap gap-2">
@@ -168,12 +180,16 @@ export default function StepPersonalizeMatch({
                     tooltip={buildCardTooltip(card)}
                   />
                 ))}
+                {hiddenCount > 0 && <OverflowCard count={hiddenCount} />}
               </div>
             </div>
           )}
         </div>
       </div>
-         {canSeeMatch && conclusion && <AnalysisConclusion conclusion={conclusion} onContinue={onContinue}/>}
+
+      {canSeeScore && conclusion && (
+        <AnalysisConclusion conclusion={conclusion} onContinue={onContinue} />
+      )}
     </div>
   );
 }

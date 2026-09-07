@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { extractJdRequirements, extractCvEntries, matchRequirementsToEntries, generateAnalysisConclusion } from "@/lib/AI/coverLetterAnalysis";
+import {extractJdRequirements, extractCvEntries, matchRequirementsToEntries,generateAnalysisConclusion} from "@/lib/AI/coverLetterAnalysis";
 import { calculateMatchPercentage } from "@/lib/AI/matchScoring";
 import { hasTierAccess, type SubscriptionTier } from "@/lib/AI/tiers";
 
@@ -13,13 +13,6 @@ export async function POST(request: Request) {
 
   const tier: SubscriptionTier = session.user.tier ?? "free";
 
-  if (!hasTierAccess(tier, "standard")) {
-    return NextResponse.json(
-      { message: "Match scoring is available on Standard and Pro plans." },
-      { status: 403 }
-    );
-  }
-
   try {
     const { cvText, jobDescription } = await request.json();
 
@@ -30,13 +23,17 @@ export async function POST(request: Request) {
 
     const matches = await matchRequirementsToEntries(jdExtraction, cvExtraction, tier);
     const matchPercentage = calculateMatchPercentage(matches);
-    const conclusion = await generateAnalysisConclusion(matchPercentage, matches, tier);
-   
+
+
+    const conclusion = hasTierAccess(tier, "standard")
+      ? await generateAnalysisConclusion(matchPercentage, matches, tier)
+      : null;
+
     return NextResponse.json({ jdExtraction, cvExtraction, matches, matchPercentage, conclusion });
   } catch (error) {
     console.error("Cover letter analysis error:", error);
     return NextResponse.json(
-      { message: "Something went wrong analyzing your CV and job." },
+      { message: "Something went wrong analyzing your CV and job description." },
       { status: 500 }
     );
   }

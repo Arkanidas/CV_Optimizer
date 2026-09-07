@@ -23,7 +23,7 @@ interface WizardData {
   whyCompany?: string;
   tone?: "formal" | "casual";
   generatedLetter?: string;
-  conclusion?: AnalysisConclusion;
+  conclusion?: AnalysisConclusion | null;
 }
 
 

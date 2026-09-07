@@ -9,6 +9,11 @@ export interface DisplayCard {
   match: MatchingResults["matches"][number];
 }
 
+export interface SelectDisplayMatchesResult {
+  cards: DisplayCard[];
+  hiddenCount: number;
+}
+
 function categorize(
   m: MatchingResults["matches"][number]
 ): DisplayCardType | null {
@@ -18,18 +23,17 @@ function categorize(
   if (isMatched && isRequired) return "required-matched";
   if (isMatched && !isRequired) return "nice-matched";
   if (!isMatched && isRequired) return "required-missing";
-  return null; // unmatched nice_to_have — deliberately excluded, per your spec
+  return null; // unmatched nice_to_have — deliberately excluded
 }
 
 // Selects and categorizes which matches are worth showing as cards, for a
-// given tier. required-missing (gray) cards are NEVER trimmed — every gap
-// in a must-have requirement is always shown in full, since this is the
-// single most important thing the user needs to see. Only the matched
-// (purple) cards flex to fit whatever budget remains after that.
+// given tier. required-missing (gray) cards are NEVER trimmed. Only matched
+// (purple) cards flex to fit the tier's limit — hiddenCount reports how many
+// of those got cut, so the UI can show an honest "+N, upgrade to see more".
 export function selectDisplayMatches(
   matches: MatchingResults,
   tier: SubscriptionTier
-): DisplayCard[] {
+): SelectDisplayMatchesResult {
   const verifiable = matches.matches.filter((m) => m.requirement.verifiableFromCv);
 
   const categorized = verifiable
@@ -46,19 +50,29 @@ export function selectDisplayMatches(
   const niceMatched = categorized.filter((c) => c.type === "nice-matched");
 
   if (limit === Infinity) {
-    return [...requiredMatched, ...niceMatched, ...requiredMissing];
+    return {
+      cards: [...requiredMatched, ...niceMatched, ...requiredMissing],
+      hiddenCount: 0,
+    };
   }
 
-  // Gray cards always shown in full — never counted against the limit's cap.
   const remainingForMatched = Math.max(0, limit - requiredMissing.length);
   const selectedRequiredMatched = requiredMatched.slice(0, remainingForMatched);
   const remainingForNice = Math.max(0, remainingForMatched - selectedRequiredMatched.length);
   const selectedNiceMatched = niceMatched.slice(0, remainingForNice);
 
-  return [...selectedRequiredMatched, ...selectedNiceMatched, ...requiredMissing];
+  const hiddenCount =
+    requiredMatched.length -
+    selectedRequiredMatched.length +
+    (niceMatched.length - selectedNiceMatched.length);
+
+  return {
+    cards: [...selectedRequiredMatched, ...selectedNiceMatched, ...requiredMissing],
+    hiddenCount,
+  };
 }
 
-// Builds the hover tooltip text, prefixed with REQUIRED:/GOOD TO HAVE: per your spec.
+// Builds the hover tooltip text, prefixed with REQUIRED:/GOOD TO HAVE:.
 export function buildCardTooltip(card: DisplayCard): string {
   const prefix = card.match.requirement.importance === "must_have" ? "REQUIRED" : "GOOD TO HAVE";
 

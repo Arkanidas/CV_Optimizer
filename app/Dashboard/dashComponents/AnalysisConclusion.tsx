@@ -27,8 +27,7 @@ export default function AnalysisConclusion({ conclusion, onContinue }: AnalysisC
         </h4>
        
         <span
-          className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-xs font-medium ${verdictStyle.badge}`}
-        >
+          className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-xs font-medium ${verdictStyle.badge}`}>
           {verdictStyle.label}
         </span>
       </div>
