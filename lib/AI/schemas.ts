@@ -17,6 +17,8 @@ export const CvEntrySchema = z.object({
   title: z.string().describe("e.g. 'Barista, Blue Bottle Coffee'"),
   description: z.string().describe("The bullet or detail as written on the CV"),
   impliedSkills: z.array(z.string()).describe("Skills this role/bullet demonstrates even if not explicitly stated, based on what this type of role typically involves"),
+  startDate: z.string().nullable().describe("For job_experience or education entries with a date range, the start date in YYYY-MM format if determinable (e.g. '2022-11'). Null if not applicable or not stated."),
+  endDate: z.string().nullable().describe("The end date in YYYY-MM format, or the literal string 'present' if the entry is ongoing (e.g. 'present', 'nu', 'current' in the original text). Null if not applicable or not stated."),
 });
 
 export const CvExtractionSchema = z.object({

@@ -29,7 +29,7 @@ export async function validateCvText(cvText: string): Promise<CvValidation> {
     prompt: cvText,
     schema: CvValidationSchema,
     toolName: "validate_cv",
-    maxTokens: 256, // deliberately small — this only needs a short classification
+    maxTokens: 256, 
   });
 }
 

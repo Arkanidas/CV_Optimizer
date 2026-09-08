@@ -7,9 +7,15 @@ const TIER_RANK: Record<SubscriptionTier, number> = {
 };
 
 export const CARD_LIMIT_BY_TIER: Record<SubscriptionTier, number> = {
-  free:12,
+  free:10,
   standard: 25,
   pro: 50,
+};
+
+export const STRENGTH_GAP_LIMIT_BY_TIER: Record<SubscriptionTier, number> = {
+  free: 2,
+  standard: 3,
+  pro: 4,
 };
 
 
@@ -21,4 +27,8 @@ export function hasTierAccess(userTier: SubscriptionTier, requiredTier: Subscrip
 
 export function getCardLimit(tier: SubscriptionTier): number {
   return CARD_LIMIT_BY_TIER[tier];
+}
+
+export function getStrengthGapLimit(tier: SubscriptionTier): number {
+  return STRENGTH_GAP_LIMIT_BY_TIER[tier];
 }

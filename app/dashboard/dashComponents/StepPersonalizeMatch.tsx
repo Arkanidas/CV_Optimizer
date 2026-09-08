@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Lock } from "lucide-react";
-import { hasTierAccess } from "@/lib/AI/tiers";
 import type { MatchingResults, AnalysisConclusion as AnalysisConclusionType } from "@/lib/AI/schemas";
 import MatchRing from "./MatchRing";
 import MatchStatusText from "@/components/MatchStatusText";
@@ -17,12 +15,11 @@ interface StepPersonalizeMatchProps {
   cvText: string;
   matchPercentage?: number;
   matches?: MatchingResults;
-  conclusion?: AnalysisConclusionType | null;
+  conclusion?: AnalysisConclusionType;
   onAnalysisComplete?: (
     matchPercentage: number,
     matches: MatchingResults,
-    conclusion: AnalysisConclusionType | null
-  ) => void;
+    conclusion: AnalysisConclusionType) => void;
   onContinue?: () => void;
 }
 
@@ -38,9 +35,6 @@ export default function StepPersonalizeMatch({
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
 
-  // Score, ring, and written conclusion stay Standard/Pro only.
-  const canSeeScore = hasTierAccess(tier, "standard");
-
   const { cards: displayCards, hiddenCount } = matches
     ? selectDisplayMatches(matches, tier)
     : { cards: [], hiddenCount: 0 };
@@ -50,9 +44,6 @@ export default function StepPersonalizeMatch({
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Achievement cards are now available to every tier — the analysis
-    // pipeline runs regardless. Score/conclusion visibility is a display
-    // concern (canSeeScore), not a fetch-gating concern anymore.
     if (matchPercentage !== undefined && matches !== undefined) {
       setMatchPercent(matchPercentage);
       return;
@@ -141,19 +132,10 @@ export default function StepPersonalizeMatch({
           )}
         </div>
 
-        {/* Ring + status */}
+        {/* Ring + status — available to every tier now */}
         <div className="flex flex-col items-center gap-3 md:px-2 md:pt-6">
-          {canSeeScore ? (
-            <MatchRing percent={matchPercent} />
-          ) : (
-            <div className="flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.03] text-center">
-              <Lock className="h-4 w-4 text-white/30" />
-              <span className="text-[10px] font-medium leading-tight text-white/35">
-                Standard+
-              </span>
-            </div>
-          )}
-          {canSeeScore && <MatchStatusText percent={matchPercent} />}
+          <MatchRing percent={matchPercent} />
+          <MatchStatusText percent={matchPercent} />
         </div>
 
         {/* CV side */}
@@ -187,9 +169,7 @@ export default function StepPersonalizeMatch({
         </div>
       </div>
 
-      {canSeeScore && conclusion && (
-        <AnalysisConclusion conclusion={conclusion} onContinue={onContinue} />
-      )}
+      {conclusion && <AnalysisConclusion conclusion={conclusion} onContinue={onContinue} />}
     </div>
   );
 }

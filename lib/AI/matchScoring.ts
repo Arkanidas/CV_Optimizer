@@ -1,4 +1,5 @@
-import type { MatchingResults } from "./schemas";
+import type { MatchingResults, AnalysisConclusion } from "./schemas";
+import { getStrengthGapLimit, type SubscriptionTier } from "@/lib/AI/tiers";
 
 
 const IMPORTANCE_WEIGHT = {
@@ -13,6 +14,18 @@ const RELEVANCE_CREDIT = {
   direct: 1,
   inferred: 0.75,
 } as const;
+
+export function applyTierLimitsToConclusion(
+  conclusion: AnalysisConclusion,
+  tier: SubscriptionTier
+): AnalysisConclusion {
+  const limit = getStrengthGapLimit(tier);
+  return {
+    ...conclusion,
+    strengths: conclusion.strengths.slice(0, limit),
+    gaps: conclusion.gaps.slice(0, limit),
+  };
+}
 
 export function calculateMatchPercentage(matches: MatchingResults): number {
   const verifiable = matches.matches.filter((m) => m.requirement.verifiableFromCv);

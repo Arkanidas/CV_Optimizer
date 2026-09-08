@@ -27,7 +27,9 @@ For each entry, also infer "impliedSkills" — skills this experience demonstrat
 
 Extract entries as they are written by Work Experience, skills or education — do not summarize or combine multiple experiences into one entry.
 
-Pay close attention to short, inline facts often placed in a header or contact-info line — licenses (e.g. driver's licenses), certifications, or language fluency are often stated there rather than in a dedicated bullet. Extract these as their own "skill" type entry even if they appear inline alongside a name, email, or phone number.`;
+Pay close attention to short, inline facts often placed in a header or contact-info line — licenses (e.g. driver's licenses), certifications, or language fluency are often stated there rather than in a dedicated bullet. Extract these as their own "skill" type entry even if they appear inline alongside a name, email, or phone number.
+
+For job_experience and education entries, extract "startDate" and "endDate" in YYYY-MM format whenever a date range is present on the CV (e.g. "Okt. 2024 - Juni 2026" becomes startDate: "2024-10", endDate: "2026-06"). If the role is ongoing (e.g. "2022 - present", "2022 - nu"), set endDate to the literal string "present". If no date range is stated for an entry, leave both fields null — do not guess.`;
 
 export const MATCHING_PROMPT = `You are matching a job description's requirements against a candidate's CV entries.
 

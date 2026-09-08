@@ -23,9 +23,8 @@ interface WizardData {
   whyCompany?: string;
   tone?: "formal" | "casual";
   generatedLetter?: string;
-  conclusion?: AnalysisConclusion | null;
+  conclusion?: AnalysisConclusion;
 }
-
 
 
 const steps: StepDefinition[] = [
@@ -37,7 +36,6 @@ const steps: StepDefinition[] = [
 ];
 
 const STORAGE_KEY = "coverLetterWizardState";
-
 
 function getPersistableData(data: WizardData) {
   const { uploadedFile, ...rest } = data;
