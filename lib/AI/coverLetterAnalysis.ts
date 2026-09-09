@@ -1,6 +1,7 @@
 import { generateStructuredWithClaude, type SubscriptionTier } from "./claude";
 import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema, CvValidationSchema, AnalysisConclusionSchema, type JDExtraction,type CvExtraction, type MatchingResults, type CvValidation, type AnalysisConclusion} from "./schemas";
 import { JD_EXTRACTION_PROMPT, CV_EXTRACTION_PROMPT, MATCHING_PROMPT, CV_VALIDATION_PROMPT, ANALYSIS_CONCLUSION_PROMPT } from "./prompts";
+import { monthsBetween } from "@/lib/dateMath";
 
 export async function extractJdRequirements(jobDescription: string, tier: SubscriptionTier): Promise<JDExtraction> {
   return generateStructuredWithClaude({
@@ -12,14 +13,21 @@ export async function extractJdRequirements(jobDescription: string, tier: Subscr
   });
 }
 
-export async function extractCvEntries(cvText: string, tier: SubscriptionTier ): Promise<CvExtraction> {
-  return generateStructuredWithClaude({
+export async function extractCvEntries(cvText: string, tier: SubscriptionTier): Promise<CvExtraction> {
+  const result = await generateStructuredWithClaude({
     tier,
     system: CV_EXTRACTION_PROMPT,
     prompt: cvText,
     schema: CvExtractionSchema,
     toolName: "extract_cv_entries",
   });
+
+  const enrichedEntries = result.entries.map((entry) => ({
+    ...entry,
+    durationMonths: monthsBetween(entry.startDate, entry.endDate),
+  }));
+
+  return { entries: enrichedEntries };
 }
 
 export async function validateCvText(cvText: string): Promise<CvValidation> {

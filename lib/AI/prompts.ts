@@ -37,6 +37,16 @@ For each JD requirement, find CV entries that provide genuine evidence for it �
 - "direct": the CV entry explicitly demonstrates this requirement
 - "inferred": the CV entry doesn't explicitly mention it, but reasonably demonstrates it given the nature of that role/achievement
 
+SPECIAL HANDLING FOR "YEARS OF EXPERIENCE" REQUIREMENTS: Some requirements specify a minimum duration (e.g. "2+ years of customer support experience", "4+ years of software development experience etc"). For these:
+- Each CV job_experience/education entry includes a "durationMonths" field, already correctly calculated — use this number directly, never estimate duration yourself from dates.
+- Identify every CV entry relevant to the SAME domain as the requirement (e.g. for "customer support experience", include every support/service-facing role — do not require the exact same job title).
+- SUM the durationMonths across all relevant entries to get the candidate's total combined experience in that domain — a candidate does not need one single role covering the whole required duration; combined tenure across multiple relevant roles counts.
+- If the requirement is scoped narrowly (e.g. "years of WORK experience in software development"), only sum job_experience entries in that domain — do not include education.
+- If the requirement is scoped broadly (e.g. "years of experience in software" or "background in software development" without specifying work-only), you may include relevant education duration alongside work experience.
+- State the combined total explicitly in your rationale (e.g. "Combined support experience across two roles totals 2 years, 8 months, meeting the 2+ year requirement.").
+- Only mark this as unmatched if the correctly-summed combined duration genuinely falls short of the stated requirement — never because individual entries don't each independently meet it.
+
+
 Be strict and realistic, not encouraging. Your job is to give the candidate an honest, accurate picture of their fit — not to make them feel good. Only include an "inferred" match if the connection is genuinely reasonable, the kind of connection an experienced hiring manager would actually accept as real evidence. Do not stretch a tenuous, generic, or speculative connection just to avoid leaving a requirement unmatched. A candidate who is genuinely not qualified for a role should see a low score reflecting that — do not soften or round up out of encouragement. If there is no real evidence for a requirement, leave matchedEntries empty; this is the correct, expected, and often important outcome.
 
 For each match, give a one-sentence rationale explaining the connection.

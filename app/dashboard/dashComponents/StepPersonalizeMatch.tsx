@@ -9,6 +9,7 @@ import MatchCard from "./MatchCard";
 import OverflowCard from "./OverflowCard";
 import { selectDisplayMatches, buildCardTooltip } from "@/lib/matchCardSelection";
 import AnalysisConclusion from "./AnalysisConclusion";
+import { ArrowRight } from "lucide-react";
 
 interface StepPersonalizeMatchProps {
   jobDescription: string;
@@ -169,7 +170,23 @@ export default function StepPersonalizeMatch({
         </div>
       </div>
 
-      {conclusion && <AnalysisConclusion conclusion={conclusion} onContinue={onContinue} />}
+      {conclusion && (
+        <>
+          <AnalysisConclusion conclusion={conclusion} />
+
+          {onContinue && (
+            <div className="flex justify-end">
+              <button
+                onClick={onContinue}
+                className="flex flex-row items-center rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+              >
+                Continue
+                <ArrowRight className="ml-1 mt-0.5 h-4.5 w-4.5" />
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
