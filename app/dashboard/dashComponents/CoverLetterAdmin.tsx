@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Upload, Sparkles, Loader2, FileCheck, RotateCcw, SquareKanban } from "lucide-react";
 import StepperBubbles, { type StepDefinition } from "./StepBubbles";
 import Step1UploadContext from "./step1coverletter";
-import StepPersonalizeMatch from "./StepPersonalizeMatch";
+import StepPersonalizeMatch from "./StepOverview";
 import type { AnalysisConclusion } from "@/lib/AI/schemas";
 
 interface SavedCv {

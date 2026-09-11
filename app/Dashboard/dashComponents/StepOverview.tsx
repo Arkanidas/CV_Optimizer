@@ -24,15 +24,7 @@ interface StepPersonalizeMatchProps {
   onContinue?: () => void;
 }
 
-export default function StepPersonalizeMatch({
-  jobDescription,
-  cvText,
-  matchPercentage,
-  matches,
-  conclusion,
-  onAnalysisComplete,
-  onContinue,
-}: StepPersonalizeMatchProps) {
+export default function StepPersonalizeMatch({jobDescription, cvText, matchPercentage, matches, conclusion, onAnalysisComplete, onContinue,}: StepPersonalizeMatchProps) {
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
 
@@ -109,14 +101,14 @@ export default function StepPersonalizeMatch({
             Job Description
           </p>
           <hr className="my-2 border-white/10" />
-          <div className="max-h-80 overflow-y-auto whitespace-pre-wrap text-sm mt-1 leading-relaxed text-white/95">
+          <div className="max-h-80 overflow-y-scroll whitespace-pre-wrap text-sm mt-1 leading-relaxed text-white/95">
             {jobDescription || <span className="text-white/30">No job description found.</span>}
           </div>
 
           {displayCards.length > 0 && (
             <div className="mt-4 border-t border-white/10 pt-4">
               <p className="mb-3 text-sm font-medium uppercase tracking-widest text-violet-300">
-                Job requirement qualification:
+                Job requirement qualifications:
               </p>
               <div className="flex flex-wrap gap-2">
                 {displayCards.map((card, i) => (
@@ -133,7 +125,7 @@ export default function StepPersonalizeMatch({
           )}
         </div>
 
-        {/* Ring + status — available to every tier now */}
+        {/* Ring + status symbol*/}
         <div className="flex flex-col items-center gap-3 md:px-2 md:pt-6">
           <MatchRing percent={matchPercent} />
           <MatchStatusText percent={matchPercent} />

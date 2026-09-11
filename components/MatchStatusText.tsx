@@ -1,6 +1,7 @@
 "use client";
 
 import SplitText from "@/components/SplitText"; 
+import { PulsatingDots } from "@/components/pulsating-dots";
 
 interface MatchStatusTextProps {
   percent: number | null; 
@@ -15,7 +16,16 @@ function getMatchLabel(percent: number): string {
 }
 
 export default function MatchStatusText({ percent }: MatchStatusTextProps) {
-  const text = percent === null ? "Loading match..." : getMatchLabel(percent);
+
+    if (percent === null) {
+    return (
+      <div className="flex justify-center items-center gap-1">
+        <p className="text-sm text-white/50">Loading</p>
+        <PulsatingDots className="w-8" />
+      </div>
+    );
+  }
+  const text = getMatchLabel(percent);
 
   return (
     <SplitText
