@@ -94,11 +94,8 @@ export async function generateStructuredWithClaude<T>(params: {
 
     let input = toolUseBlock.input;
 
-    // Defensive coercion: occasionally a nested array/object field comes
-    // back as a JSON-encoded string instead of true JSON. Attempt to parse
-    // any string-typed field that looks like a JSON array/object before
-    // validating against the schema.
     if (typeof input === "object" && input !== null) {
+
       for (const key of Object.keys(input)) {
         const value = (input as any)[key];
         if (
@@ -108,7 +105,23 @@ export async function generateStructuredWithClaude<T>(params: {
           try {
             (input as any)[key] = JSON.parse(value);
           } catch {
-            // leave as-is; schema.parse below will surface the real error
+            console.error("Error parsing JSON for key:", key, "value:", value);
+          }
+        }
+      }
+
+      if (schema instanceof z.ZodObject) {
+        const shape = schema.shape as Record<string, z.ZodTypeAny>;
+        for (const key of Object.keys(shape)) {
+          const fieldSchema = shape[key];
+          const expectsArray =
+            fieldSchema instanceof z.ZodArray ||
+            (fieldSchema instanceof z.ZodOptional &&
+              fieldSchema._def.innerType instanceof z.ZodArray);
+
+          const value = (input as any)[key];
+          if (expectsArray && value && typeof value === "object" && !Array.isArray(value)) {
+            (input as any)[key] = Object.values(value).flat();
           }
         }
       }

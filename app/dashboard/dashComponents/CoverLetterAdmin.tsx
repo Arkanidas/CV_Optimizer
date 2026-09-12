@@ -63,7 +63,7 @@ export default function CoverLetterWizard() {
         setWizardData(parsed.wizardData ?? {});
       }
     } catch {
-      // corrupted/old storage shape — just start fresh, no need to surface an error
+      console.error("Error parsing storage key"); 
     }
     setHydrated(true);
   }, []);

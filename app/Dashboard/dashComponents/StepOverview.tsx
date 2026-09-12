@@ -170,7 +170,7 @@ export default function StepPersonalizeMatch({jobDescription, cvText, matchPerce
             <div className="flex justify-end">
               <button
                 onClick={onContinue}
-                className="flex flex-row items-center rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+                className="flex flex-row cursor-pointer items-center rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
               >
                 Continue
                 <ArrowRight className="ml-1 mt-0.5 h-4.5 w-4.5" />

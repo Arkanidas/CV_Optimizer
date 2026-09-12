@@ -9,7 +9,11 @@ export const JDRequirementSchema = z.object({
   verifiableFromCv: z.boolean().describe("true if this is a skill, experience, qualification, or education that a CV could reasonably confirm or deny. false if this is scheduling, availability, location/commute, salary, or any other logistics that no CV can ever answer."),
 });
 
-export const JDExtractionSchema = z.object({requirements: z.array(JDRequirementSchema),});
+export const JDExtractionSchema = z.object({
+  requirements: z.array(JDRequirementSchema).describe(
+    "A single FLAT array of requirement objects. Do NOT group or nest requirements by category, importance, or any other key — every requirement, regardless of type, goes directly into this one array."
+  ),
+});
 
 export const CvEntrySchema = z.object({
   id: z.string().describe("A short unique id you assign, e.g. 'exp_1', 'skill_2'"),

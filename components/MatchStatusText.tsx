@@ -19,9 +19,9 @@ export default function MatchStatusText({ percent }: MatchStatusTextProps) {
 
     if (percent === null) {
     return (
-      <div className="flex justify-center items-center gap-1">
-        <p className="text-sm text-white/50">Loading</p>
-        <PulsatingDots className="w-8" />
+      <div className="flex justify-center items-center gap-0.5">
+        <p className="text-md text-white/50">Loading</p>
+        <PulsatingDots className="w-4 mt-2" />
       </div>
     );
   }

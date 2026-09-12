@@ -119,18 +119,18 @@ export default function Step1UploadContext({ savedCvs, onContinue, }: Step1Uploa
         </p>
         <textarea
           value={jobDescription}
-          maxLength={6000}
+          maxLength={5500}
           minLength={500}
           onChange={(e) => setJobDescription(e.target.value)}
           rows={8}
           placeholder="Paste the job description here..."
           className={`mt-3 resize-y min-h-[280px] w-full rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
-           jobDescription.length >= 6000
+           jobDescription.length >= 5500
             ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
             : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"}`}          
         />
         <p className="mt-1 text-right text-xs text-white/30">
-          {jobDescription.trim().length}/6000 characters
+          {jobDescription.trim().length}/5500 characters
         </p>
       </div>
 

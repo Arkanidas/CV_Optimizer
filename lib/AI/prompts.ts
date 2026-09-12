@@ -17,6 +17,8 @@ For each requirement, also mark "verifiableFromCv": true or false.
 - false: work schedule, availability, start date, location/commute requirements, willingness to work on-site, salary expectations, or any other logistical/administrative requirement. A CV can never confirm these regardless of how well-written it is — mark them false so they are excluded from matching.
 
 For each requirement, also provide a "shortLabel" — a compact 2-4 word version suitable for a small UI chip (e.g. "Customer service experience.", "Swedish fluency", "B driving license", "English fluency"). Keep "requirement" as the fuller, more descriptive version — shortLabel is only for tight display, not a replacement for detail.
+
+IMPORTANT: Only extract requirements from content actually describing the role, responsibilities, and desired qualifications for the candidate. Ignore general company background, marketing copy, "About us" sections, company achievements, or descriptions of the company's product/technology that are not themselves things the candidate needs to have or do. Do not invent requirements from company-description text just because it mentions technical-sounding concepts — a company using large-scale data infrastructure does not mean the candidate needs experience with that infrastructure, unless the role description itself says so.
 `;
 
 
