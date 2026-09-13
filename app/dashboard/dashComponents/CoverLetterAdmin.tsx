@@ -6,6 +6,7 @@ import StepperBubbles, { type StepDefinition } from "./StepBubbles";
 import Step1UploadContext from "./step1coverletter";
 import StepPersonalizeMatch from "./StepOverview";
 import type { AnalysisConclusion } from "@/lib/AI/schemas";
+import StepPersonalize from "./StepPersonalise";
 
 interface SavedCv {
   id: string;
@@ -179,19 +180,12 @@ export default function CoverLetterWizard() {
           />
         )}
 
-        {currentStepIndex > 1 && (
-          <div className="flex flex-col items-center gap-3 py-10 text-center">
-            <p className="text-sm text-white/50">
-              Step {currentStepIndex + 1} — {steps[currentStepIndex].label} —
-              coming in the next build pass.
-            </p>
-            <button
-              onClick={() => setCurrentStepIndex((i) => i - 1)}
-              className="text-sm text-violet-300 hover:text-violet-200"
-            >
-              ← Back
-            </button>
-          </div>
+        {currentStepIndex === 2 && (
+          <StepPersonalize
+          whyCompany={wizardData.whyCompany}
+          onBack={() => setCurrentStepIndex((i) => i - 1)}
+          onWhyCompanyChange={(value) =>
+           setWizardData((prev) => ({ ...prev, whyCompany: value }))}/>
         )}
       </div>
     </div>
