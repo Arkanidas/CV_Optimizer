@@ -22,23 +22,23 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, on
     <div className="flex flex-col gap-6">
       <div>
         <h3 className="text-base font-semibold text-white">Personalise your cover letter</h3>
-        <p className="mt-1 text-sm text-white/50">
-          A few honest answers here go a long way — this is what makes your letter sound like you, not a template.
-        </p>
+         <p className="mt-1 text-sm text-white/50">
+           A few honest answers here go a long way — this is what makes your letter sound like you, not a template.
+         </p>
       </div>
 
       <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-        <p className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">
-          Why do you want to apply for this job?
-        </p>
-        <hr className="my-2 border-white/10" />
+        <h3 className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">Why this company?</h3>
+          <p className="mb-4 ml-0.5 text-sm text-white/50">
+          Explain in detail why you want to work for this company specifically - this 
+          </p>
         <textarea
           value={localWhyCompany}
           maxLength={1000}
           onChange={handleChange}
           rows={6}
           placeholder="What drew you to this role or company specifically? A product you use, something about their mission, a problem you'd like to help solve..."
-          className={`mt-1 w-full resize rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
+          className={`mt-1 w-full resize-none rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
             localWhyCompany.length >= 1000
               ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
               : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"
@@ -47,6 +47,7 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, on
         <p className="mt-2 self-end text-xs text-white/30">
           {localWhyCompany.length} / 1000
         </p>
+        <h3 className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">Why this company?</h3>
       </div>
        {onBack && (
         <button
