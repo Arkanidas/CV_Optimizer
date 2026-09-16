@@ -30,24 +30,46 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, on
       <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
         <h3 className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">Why this company?</h3>
           <p className="mb-4 ml-0.5 text-sm text-white/50">
-          Explain in detail why you want to work for this company specifically - this 
+          Explain in detail why you want to work for this company specifically - the more detailed & specific, the better outcome 
           </p>
         <textarea
           value={localWhyCompany}
-          maxLength={1000}
+          maxLength={550}
           onChange={handleChange}
-          rows={6}
-          placeholder="What drew you to this role or company specifically? A product you use, something about their mission, a problem you'd like to help solve..."
+          rows={5}
+          placeholder="I have followed the company for a while and I really like how you combine technology with sustainability. I also like that the role seems to involve working closely with both developers and designers "
           className={`mt-1 w-full resize-none rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
-            localWhyCompany.length >= 1000
+            localWhyCompany.length >= 550
               ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
               : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"
           }`}
         />
         <p className="mt-2 self-end text-xs text-white/30">
-          {localWhyCompany.length} / 1000
+          {localWhyCompany.length} / 550
         </p>
-        <h3 className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">Why this company?</h3>
+      </div>
+
+       <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <h3 className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">Why this specific role?</h3>
+          <p className="mb-4 ml-0.5 text-sm text-white/50">
+          Explain in detail why you want to work for this company specifically - the more detailed & specific, the better outcome 
+          </p>
+        <textarea
+          value={localWhyCompany}
+          maxLength={550}
+          onChange={handleChange}
+          rows={5}
+          placeholder="I like that this role combines frontend development with UX and that I would get to work on products used by many people"
+          className={`mt-1 w-full resize-none rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
+            localWhyCompany.length >= 550
+              ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
+              : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"
+          }`}
+        />
+        <p className="mt-2 self-end text-xs text-white/30">
+          {localWhyCompany.length} / 550
+        </p>
+       
       </div>
        {onBack && (
         <button
