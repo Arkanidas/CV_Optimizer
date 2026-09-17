@@ -7,6 +7,7 @@ import Step1UploadContext from "./step1coverletter";
 import StepPersonalizeMatch from "./StepOverview";
 import type { AnalysisConclusion } from "@/lib/AI/schemas";
 import StepPersonalize from "./StepPersonalise";
+import type { ToneOption } from "@/lib/AI/tiers";
 
 interface SavedCv {
   id: string;
@@ -22,7 +23,9 @@ interface WizardData {
   matchPercentage?: number;
   matches?: any;
   whyCompany?: string;
-  tone?: "formal" | "casual";
+  whyRole?: string;
+  additionalInfo?: string;
+  tone?: ToneOption | null;
   generatedLetter?: string;
   conclusion?: AnalysisConclusion;
 }
@@ -182,10 +185,17 @@ export default function CoverLetterWizard() {
 
         {currentStepIndex === 2 && (
           <StepPersonalize
-          whyCompany={wizardData.whyCompany}
-          onBack={() => setCurrentStepIndex((i) => i - 1)}
-          onWhyCompanyChange={(value) =>
-           setWizardData((prev) => ({ ...prev, whyCompany: value }))}/>
+            whyCompany={wizardData.whyCompany}
+            onBack={() => setCurrentStepIndex((i) => i - 1)}
+            whyRole={wizardData.whyRole}
+            onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
+            additionalInfo={wizardData.additionalInfo}
+            onAdditionalInfoChange={(value) => setWizardData((prev) => ({ ...prev, additionalInfo: value }))}
+            tone={wizardData.tone}
+            onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
+            onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
+            onContinue={() => setCurrentStepIndex((i) => i + 1)}
+          />
         )}
       </div>
     </div>

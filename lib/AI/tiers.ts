@@ -18,6 +18,36 @@ export const STRENGTH_GAP_LIMIT_BY_TIER: Record<SubscriptionTier, number> = {
   pro: 4,
 };
 
+export type ToneOption = | "formal"| "casual"| "professional"| "balanced"| "traditional"| "silly";
+
+export const TONE_ORDER: ToneOption[] = [
+  "formal",
+  "casual",
+  "professional",
+  "balanced",
+  "traditional",
+  "silly",
+];
+
+export const TONE_LABELS: Record<ToneOption, string> = {
+  formal: "Formal",
+  casual: "Casual",
+  professional: "Professional",
+  balanced: "Balanced",
+  traditional: "Traditional",
+  silly: "Silly",
+};
+
+
+export const TONE_TIER_REQUIREMENT: Record<ToneOption, SubscriptionTier> = {
+  formal: "free",
+  casual: "free",
+  professional: "standard",
+  balanced: "standard",
+  traditional: "pro",
+  silly: "pro",
+};
+
 
 // hasTierAccess("pro", "standard") -> true
 // hasTierAccess("free", "standard") -> false
