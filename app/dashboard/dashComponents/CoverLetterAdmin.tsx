@@ -8,6 +8,7 @@ import StepPersonalizeMatch from "./StepOverview";
 import type { AnalysisConclusion } from "@/lib/AI/schemas";
 import StepPersonalize from "./StepPersonalise";
 import type { ToneOption } from "@/lib/AI/tiers";
+import AnalyzeStep from "./AnalyzeStep";
 
 interface SavedCv {
   id: string;
@@ -197,6 +198,12 @@ export default function CoverLetterWizard() {
             onContinue={() => setCurrentStepIndex((i) => i + 1)}
           />
         )}
+       {currentStepIndex === 3 && (
+          <AnalyzeStep      
+            onBack={() => setCurrentStepIndex((i) => i - 1)}        
+          />
+        )}
+
       </div>
     </div>
   );

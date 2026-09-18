@@ -19,6 +19,9 @@ interface StepPersonalizeQuestionsProps {
   onContinue?: () => void;
 }
 
+const MIN_REQUIRED_LENGTH = 100;
+const MAX_LENGTH = 400;
+
 export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, whyRole = "",onWhyRoleChange,additionalInfo = "",onAdditionalInfoChange,tone = null, onToneChange, onBack, onContinue,}: StepPersonalizeQuestionsProps) {
   const { data: session } = useSession();
   const userTier = session?.user?.tier ?? "free";
@@ -27,6 +30,7 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, wh
   const [localWhyRole, setLocalWhyRole] = useState(whyRole);
   const [localAdditionalInfo, setLocalAdditionalInfo] = useState(additionalInfo);
   const [localTone, setLocalTone] = useState<ToneOption | null>(tone);
+  const [attemptedContinue, setAttemptedContinue] = useState(false);
 
   function handleWhyCompanyChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setLocalWhyCompany(e.target.value);
@@ -48,7 +52,28 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, wh
     onToneChange?.(value);
   }
 
-  const canContinue = localTone !== null;
+  const isWhyCompanyValid = localWhyCompany.trim().length >= MIN_REQUIRED_LENGTH;
+  const isWhyRoleValid = localWhyRole.trim().length >= MIN_REQUIRED_LENGTH;
+  const isToneValid = localTone !== null;
+  const canContinue = isWhyCompanyValid && isWhyRoleValid && isToneValid;
+
+  function handleContinueClick() {
+    if (!canContinue) {
+      setAttemptedContinue(true);
+      return;
+    }
+    onContinue?.();
+  }
+
+  function requiredBorderClass(value: string, isValid: boolean) {
+    const showInvalid = attemptedContinue && !isValid;
+    const tooLong = value.length >= MAX_LENGTH;
+    if (showInvalid || tooLong) {
+      return "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30";
+    }
+    return "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30";
+  }
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -57,6 +82,11 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, wh
         <p className="mt-1 text-sm text-white/50">
           A few honest answers here go a long way — this is what makes your letter sound like you, not a template.
         </p>
+        {attemptedContinue && !canContinue && (
+          <p className="mt-2 text-sm font-medium text-red-400">
+            All marked areas needs to be filled.
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -67,18 +97,17 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, wh
         <textarea
           value={localWhyCompany}
           required
-          maxLength={550}
+          maxLength={MAX_LENGTH}
           onChange={handleWhyCompanyChange}
-          rows={5}
+          rows={4}
           placeholder="I have followed the company for a while and I really like how you combine technology with sustainability. I also like that the role seems to involve working closely with both developers and designers "
-          className={`mt-1 w-full resize-none rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
-            localWhyCompany.length >= 550
-              ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
-              : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"
-          }`}
+          className={`mt-1 w-full resize-none rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${requiredBorderClass(
+            localWhyCompany,
+            isWhyCompanyValid
+          )}`}
         />
         <p className="mt-2 self-end text-xs text-white/30">
-          {localWhyCompany.length} / 550
+          {localWhyCompany.length} / {MAX_LENGTH}
         </p>
       </div>
 
@@ -89,19 +118,18 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, wh
         </p>
         <textarea
           value={localWhyRole}
-          maxLength={550}
+          maxLength={MAX_LENGTH}
           required
           onChange={handleWhyRoleChange}
-          rows={5}
+          rows={4}
           placeholder="I like that this role combines frontend development with UX and that I would get to work on products used by many people"
-          className={`mt-1 w-full resize-none rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
-            localWhyRole.length >= 550
-              ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
-              : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"
-          }`}
+          className={`mt-1 w-full resize-none rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${requiredBorderClass(
+            localWhyRole,
+            isWhyRoleValid
+          )}`}
         />
         <p className="mt-2 self-end text-xs text-white/30">
-          {localWhyRole.length} / 550
+          {localWhyRole.length} / {MAX_LENGTH}
         </p>
       </div>
 
@@ -115,18 +143,18 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, wh
         </p>
         <textarea
           value={localAdditionalInfo}
-          maxLength={550}
+          maxLength={400}
           onChange={handleAdditionalInfoChange}
-          rows={5}
+          rows={4}
           placeholder="I changed career direction after discovering that I enjoy technical problem-solving much more than my previous field."
           className={`mt-1 w-full resize-none rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
-            localAdditionalInfo.length >= 550
+            localAdditionalInfo.length >= 400
               ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
               : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"
           }`}
         />
         <p className="mt-2 self-end text-xs text-white/30">
-          {localAdditionalInfo.length} / 550
+          {localAdditionalInfo.length} / {MAX_LENGTH}
         </p>
       </div>
 
@@ -138,7 +166,7 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, wh
           Choose the tone your cover letter should be written in.
         </p>
         <ToneSelector tier={userTier} selected={localTone} onSelect={handleToneSelect} />
-        {!canContinue && (
+      {!isToneValid && (
           <p className="mt-3 text-xs text-white/30">Select a tone to continue.</p>
         )}
       </div>
@@ -155,11 +183,14 @@ export default function StepPersonalize({whyCompany = "", onWhyCompanyChange, wh
           <span />
         )}
 
-        {onContinue && (
+       {onContinue && (
           <button
-            onClick={onContinue}
-            disabled={!canContinue}
-            className="flex items-center rounded-xl bg-violet-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+            onClick={handleContinueClick}
+            className={`flex items-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors ${
+              canContinue
+                ? "cursor-pointer bg-violet-500 text-white hover:bg-violet-400"
+                : "cursor-not-allowed bg-white/10 text-white/30"
+            }`}
           >
             Continue
             <ArrowRight className="ml-2 mt-0.5 h-4.5 w-4.5" />
