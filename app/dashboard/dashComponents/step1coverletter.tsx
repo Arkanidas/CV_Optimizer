@@ -18,22 +18,33 @@ interface Step1UploadContextProps {
   }) => void;
 }
 
-export default function Step1UploadContext({ savedCvs, onContinue, }: Step1UploadContextProps) {
+const MIN_JD_LENGTH = 2000;
+const MAX_JD_LENGTH = 5500;
+
+export default function Step1UploadContext({ savedCvs, onContinue }: Step1UploadContextProps) {
   const [mode, setMode] = useState<"select" | "upload">(savedCvs.length > 0 ? "select" : "upload");
   const [selectedCvId, setSelectedCvId] = useState<string | null>(savedCvs[0]?.id ?? null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
+  const [attemptedContinue, setAttemptedContinue] = useState(false);
 
-  const isFormValid = jobDescription.trim().length >= 300 && ((mode === "select" && selectedCvId) || (mode === "upload" && uploadedFile));
+  const isJobDescriptionValid = jobDescription.trim().length >= MIN_JD_LENGTH;
+  const hasCvSource = (mode === "select" && selectedCvId) || (mode === "upload" && uploadedFile);
+  const isFormValid = isJobDescriptionValid && hasCvSource;
 
   function handleContinue() {
-    if (!isFormValid) return;
+    if (!isFormValid) {
+      setAttemptedContinue(true);
+      return;
+    }
     onContinue({
       cvId: mode === "select" ? selectedCvId ?? undefined : undefined,
       uploadedFile: mode === "upload" ? uploadedFile ?? undefined : undefined,
       jobDescription: jobDescription.trim(),
     });
   }
+
+  const showJdError = attemptedContinue && !isJobDescriptionValid;
 
   return (
     <div className="flex flex-col gap-6">
@@ -113,32 +124,40 @@ export default function Step1UploadContext({ savedCvs, onContinue, }: Step1Uploa
       </div>
 
       <div>
-        <h3 className="text-xl font-semibold text-white">Job description</h3>
+        <h3 className="text-xl font-semibold text-white">Job Description</h3>
         <p className="mt-1 text-sm text-white/50">
-          Paste the full job description, the more detail the better the Cover Letter.
+          Paste the full job description, the more detail the better the Cover Letter - We also recommend not including about us sections or company history, as this will not be relevant
         </p>
+        {showJdError && (
+          <p className="mt-2 text-sm font-medium text-red-400">
+            A minimum of {MIN_JD_LENGTH} characters is needed for a JD.
+          </p>
+        )}
         <textarea
           value={jobDescription}
-          maxLength={5500}
-          minLength={500}
+          maxLength={MAX_JD_LENGTH}
           onChange={(e) => setJobDescription(e.target.value)}
           rows={8}
           placeholder="Paste the job description here..."
-          className={`mt-3 resize-y min-h-[280px] w-full rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
-           jobDescription.length >= 5500
-            ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
-            : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"}`}          
+          className={`mt-3 min-h-[280px] w-full resize-y rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
+            showJdError || jobDescription.length >= MAX_JD_LENGTH
+              ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
+              : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"
+          }`}
         />
         <p className="mt-1 text-right text-xs text-white/30">
-          {jobDescription.trim().length}/5500 characters
+          {jobDescription.trim().length}/{MAX_JD_LENGTH} characters · min {MIN_JD_LENGTH}
         </p>
       </div>
 
       <button
         type="button"
         onClick={handleContinue}
-        disabled={!isFormValid}
-        className="ml-auto rounded-xl cursor-pointer bg-violet-500 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+        className={`ml-auto rounded-xl px-6 py-2.5 text-sm font-semibold transition-colors ${
+          isFormValid
+            ? "cursor-pointer bg-violet-500 text-white hover:bg-violet-400"
+            : "cursor-not-allowed bg-white/10 text-white/30"
+        }`}
       >
         Continue
       </button>
