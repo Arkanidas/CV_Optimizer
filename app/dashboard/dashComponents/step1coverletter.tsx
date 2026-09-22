@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Upload, FileText } from "lucide-react";
 
 interface SavedCv {
@@ -45,6 +45,16 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
   }
 
   const showJdError = attemptedContinue && !isJobDescriptionValid;
+
+  useEffect(() => {
+  if (!attemptedContinue) return;
+
+  const timer = setTimeout(() => {
+    setAttemptedContinue(false);
+  }, 8000);
+
+  return () => clearTimeout(timer);
+}, [attemptedContinue]);
 
   return (
     <div className="flex flex-col gap-6">
