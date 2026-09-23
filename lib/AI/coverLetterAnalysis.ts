@@ -1,6 +1,6 @@
 import { generateStructuredWithClaude, type SubscriptionTier } from "./claude";
-import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema, CvValidationSchema, AnalysisConclusionSchema, type JDExtraction,type CvExtraction, type MatchingResults, type CvValidation, type AnalysisConclusion} from "./schemas";
-import { JD_EXTRACTION_PROMPT, CV_EXTRACTION_PROMPT, MATCHING_PROMPT, CV_VALIDATION_PROMPT, ANALYSIS_CONCLUSION_PROMPT } from "./prompts";
+import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema, CvValidationSchema, AnalysisConclusionSchema, JdValidationSchema, type JDExtraction,type CvExtraction, type MatchingResults, type CvValidation, type AnalysisConclusion, type JdValidation} from "./schemas";
+import { JD_EXTRACTION_PROMPT, CV_EXTRACTION_PROMPT, MATCHING_PROMPT, CV_VALIDATION_PROMPT, ANALYSIS_CONCLUSION_PROMPT, JD_VALIDATION_PROMPT } from "./prompts";
 import { monthsBetween } from "@/lib/dateMath";
 
 export async function extractJdRequirements(jobDescription: string, tier: SubscriptionTier): Promise<JDExtraction> {
@@ -32,7 +32,7 @@ export async function extractCvEntries(cvText: string, tier: SubscriptionTier): 
 
 export async function validateCvText(cvText: string): Promise<CvValidation> {
   return generateStructuredWithClaude({
-    tier: "free", // always Haiku — this is a gate, not a paid feature
+    tier: "free", 
     system: CV_VALIDATION_PROMPT,
     prompt: cvText,
     schema: CvValidationSchema,
@@ -72,5 +72,16 @@ export async function generateAnalysisConclusion(
     schema: AnalysisConclusionSchema,
     toolName: "generate_analysis_conclusion",
     maxTokens: 10000,
+  });
+}
+
+export async function validateJdText(jobDescription: string): Promise<JdValidation> {
+  return generateStructuredWithClaude({
+    tier: "free", 
+    system: JD_VALIDATION_PROMPT,
+    prompt: jobDescription,
+    schema: JdValidationSchema,
+    toolName: "validate_jd",
+    maxTokens: 256,
   });
 }

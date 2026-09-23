@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Upload, FileText } from "lucide-react";
 
 interface SavedCv {
@@ -18,7 +18,7 @@ interface Step1UploadContextProps {
   }) => void;
 }
 
-const MIN_JD_LENGTH = 2000;
+const MIN_JD_LENGTH = 1300;
 const MAX_JD_LENGTH = 5500;
 
 export default function Step1UploadContext({ savedCvs, onContinue }: Step1UploadContextProps) {
@@ -27,16 +27,53 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [attemptedContinue, setAttemptedContinue] = useState(false);
+  const [jdErrorMessage, setJdErrorMessage] = useState("");
+  const [validating, setValidating] = useState(false);
 
-  const isJobDescriptionValid = jobDescription.trim().length >= MIN_JD_LENGTH;
+  const isJobDescriptionLongEnough = jobDescription.trim().length >= MIN_JD_LENGTH;
   const hasCvSource = (mode === "select" && selectedCvId) || (mode === "upload" && uploadedFile);
-  const isFormValid = isJobDescriptionValid && hasCvSource;
+  const isFormValid = isJobDescriptionLongEnough && hasCvSource;
 
-  function handleContinue() {
+  useEffect(() => {
+    if (!attemptedContinue) return;
+    const timer = setTimeout(() => {
+      setAttemptedContinue(false);
+      setJdErrorMessage("");
+    }, 7000);
+    return () => clearTimeout(timer);
+  }, [attemptedContinue]);
+
+  async function handleContinue() {
     if (!isFormValid) {
+      setJdErrorMessage(`A minimum of ${MIN_JD_LENGTH} characters is needed for a JD.`);
       setAttemptedContinue(true);
       return;
     }
+
+    setValidating(true);
+    try {
+      const res = await fetch("/api/cover-letter/validate-jd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobDescription: jobDescription.trim() }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.valid) {
+        setJdErrorMessage("Cannot analyze that type of text, please add a valid Job Description.");
+        setAttemptedContinue(true);
+        setValidating(false);
+        return;
+      }
+    } catch (err) {
+      console.error("JD validation request failed:", err);
+      setJdErrorMessage("Something went wrong checking your job description. Please try again.");
+      setAttemptedContinue(true);
+      setValidating(false);
+      return;
+    }
+
+    setValidating(false);
     onContinue({
       cvId: mode === "select" ? selectedCvId ?? undefined : undefined,
       uploadedFile: mode === "upload" ? uploadedFile ?? undefined : undefined,
@@ -44,17 +81,7 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
     });
   }
 
-  const showJdError = attemptedContinue && !isJobDescriptionValid;
-
-  useEffect(() => {
-  if (!attemptedContinue) return;
-
-  const timer = setTimeout(() => {
-    setAttemptedContinue(false);
-  }, 8000);
-
-  return () => clearTimeout(timer);
-}, [attemptedContinue]);
+  const showJdError = attemptedContinue && jdErrorMessage !== "";
 
   return (
     <div className="flex flex-col gap-6">
@@ -139,9 +166,7 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
           Paste the full job description, the more detail the better the Cover Letter - We also recommend not including about us sections or company history, as this will not be relevant
         </p>
         {showJdError && (
-          <p className="mt-2 text-sm font-medium text-red-400">
-            A minimum of {MIN_JD_LENGTH} characters is needed for a JD.
-          </p>
+          <p className="mt-2 text-sm font-medium text-red-400">{jdErrorMessage}</p>
         )}
         <textarea
           value={jobDescription}
@@ -163,13 +188,14 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
       <button
         type="button"
         onClick={handleContinue}
+        disabled={validating}
         className={`ml-auto rounded-xl px-6 py-2.5 text-sm font-semibold transition-colors ${
-          isFormValid
+          isFormValid && !validating
             ? "cursor-pointer bg-violet-500 text-white hover:bg-violet-400"
             : "cursor-not-allowed bg-white/10 text-white/30"
         }`}
       >
-        Continue
+        {validating ? "Checking..." : "Continue"}
       </button>
     </div>
   );

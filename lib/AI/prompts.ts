@@ -59,6 +59,10 @@ export const CV_VALIDATION_PROMPT = `You are checking whether a piece of text is
 
 A real CV typically includes: identifiable work history or education with plausible details, not just section headers with no substance. Be skeptical of text that only has structural keywords (like "Experience" or "Education") but no actual, specific content underneath them.`;
 
+export const JD_VALIDATION_PROMPT = `You are checking whether a piece of text is a genuine job description/job posting, as opposed to random text, gibberish, an unrelated document, or content not actually describing a job opening.
+
+A real job description typically describes: a role, responsibilities, and/or qualifications a candidate would need. Be skeptical of text that is well-formed language but is clearly about something other than a job (a story, an article, a recipe, etc.), and equally skeptical of text that is gibberish or nonsensical regardless of length.`;
+
 export const ANALYSIS_CONCLUSION_PROMPT = `You are writing a short, honest, direct analysis conclusion for a candidate, based on how well their CV matches a specific job description.
 
 You will be given the match percentage (already calculated) and the full list of matched/unmatched requirements.
