@@ -29,6 +29,7 @@ interface WizardData {
   tone?: ToneOption | null;
   generatedLetter?: string;
   conclusion?: AnalysisConclusion;
+  highlightedQualifications?: string[];
 }
 
 
@@ -185,18 +186,22 @@ export default function CoverLetterWizard() {
         )}
 
         {currentStepIndex === 2 && (
-          <StepPersonalize
-            whyCompany={wizardData.whyCompany}
-            onBack={() => setCurrentStepIndex((i) => i - 1)}
-            whyRole={wizardData.whyRole}
-            onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
-            additionalInfo={wizardData.additionalInfo}
-            onAdditionalInfoChange={(value) => setWizardData((prev) => ({ ...prev, additionalInfo: value }))}
-            tone={wizardData.tone}
-            onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
-            onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
-            onContinue={() => setCurrentStepIndex((i) => i + 1)}
-          />
+         <StepPersonalize
+           whyCompany={wizardData.whyCompany}
+           onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
+           whyRole={wizardData.whyRole}
+           onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
+           additionalInfo={wizardData.additionalInfo}
+           onAdditionalInfoChange={(value) => setWizardData((prev) => ({ ...prev, additionalInfo: value }))}
+           tone={wizardData.tone}
+           onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
+           matches={wizardData.matches}
+           highlightedQualifications={wizardData.highlightedQualifications}
+           onHighlightedQualificationsChange={(ids) =>
+              setWizardData((prev) => ({ ...prev, highlightedQualifications: ids }))}
+           onBack={() => setCurrentStepIndex((i) => i - 1)}
+          onContinue={() => setCurrentStepIndex((i) => i + 1)}
+  />
         )}
        {currentStepIndex === 3 && (
           <AnalyzeStep      

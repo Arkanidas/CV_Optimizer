@@ -1,7 +1,7 @@
 "use client";
 
 import type { AnalysisConclusion as AnalysisConclusionType } from "@/lib/AI/schemas";
-import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 interface AnalysisConclusionProps {
   conclusion: AnalysisConclusionType;
