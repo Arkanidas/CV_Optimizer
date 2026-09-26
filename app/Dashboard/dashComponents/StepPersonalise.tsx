@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import ToneSelector from "@/components/ToneSelector";
@@ -271,8 +271,8 @@ export default function StepPersonalize({
                 : "cursor-not-allowed bg-white/10 text-white/30"
             }`}
           >
-            Continue
-            <ArrowRight className="ml-2 mt-0.5 h-4.5 w-4.5" />
+            Generate
+            <Sparkles className="ml-2 mt-0.5 h-4.5 w-4.5" />
           </button>
         )}
       </div>

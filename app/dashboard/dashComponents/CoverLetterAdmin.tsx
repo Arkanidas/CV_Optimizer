@@ -8,7 +8,8 @@ import StepPersonalizeMatch from "./StepOverview";
 import type { AnalysisConclusion } from "@/lib/AI/schemas";
 import StepPersonalize from "./StepPersonalise";
 import type { ToneOption } from "@/lib/AI/tiers";
-import AnalyzeStep from "./AnalyzeStep";
+import StepGenerating from "./StepGenerating";
+import StepReview from "./StepReview";
 
 interface SavedCv {
   id: string;
@@ -204,10 +205,25 @@ export default function CoverLetterWizard() {
   />
         )}
        {currentStepIndex === 3 && (
-          <AnalyzeStep      
-            onBack={() => setCurrentStepIndex((i) => i - 1)}        
-          />
+         <StepGenerating
+          cvText={wizardData.cvText ?? ""}
+          jobDescription={wizardData.jobDescription ?? ""}
+          whyCompany={wizardData.whyCompany ?? ""}
+          whyRole={wizardData.whyRole ?? ""}
+          additionalInfo={wizardData.additionalInfo}
+          tone={wizardData.tone ?? "professional"}
+          highlightedQualifications={wizardData.highlightedQualifications ?? []}
+          matches={wizardData.matches}
+          generatedLetter={wizardData.generatedLetter}
+          onGenerated={(letter) => {
+           setWizardData((prev) => ({ ...prev, generatedLetter: letter }));
+           setCurrentStepIndex((i) => i + 1);}}/>
         )}
+
+      {currentStepIndex === 4 && (
+       <StepReview generatedLetter={wizardData.generatedLetter} />
+       )}
+
 
       </div>
     </div>
