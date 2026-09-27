@@ -154,78 +154,81 @@ export default function CoverLetterWizard() {
         )}
       </div>
 
-      <div className="rounded-2xl border border-white/10 border-2 bg-white/[0.02] p-6 backdrop-blur-md">
-        {currentStepIndex === 0 &&
-          (loadingCvs ? (
-            <p className="text-sm text-white/40">Loading your saved CVs...</p>
-          ) : (
-            <>
-              {extractError && (
-                <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                  {extractError}
-                </div>
-              )}
-              <Step1UploadContext
-                savedCvs={savedCvs}
-                onContinue={handleStep1Continue}
-              />
-            </>
-          ))}
-
-        {currentStepIndex === 1 && (
-          <StepPersonalizeMatch
-            jobDescription={wizardData.jobDescription ?? ""}
-            cvText={wizardData.cvText ?? ""}
-            matchPercentage={wizardData.matchPercentage}
-            matches={wizardData.matches}
-            conclusion={wizardData.conclusion}
-            onAnalysisComplete={(matchPercentage, matches, conclusion) =>
-              setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
-            }
-            onContinue={() => setCurrentStepIndex(2)}
-          />
-        )}
-
-        {currentStepIndex === 2 && (
-         <StepPersonalize
-           whyCompany={wizardData.whyCompany}
-           onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
-           whyRole={wizardData.whyRole}
-           onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
-           additionalInfo={wizardData.additionalInfo}
-           onAdditionalInfoChange={(value) => setWizardData((prev) => ({ ...prev, additionalInfo: value }))}
-           tone={wizardData.tone}
-           onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
-           matches={wizardData.matches}
-           highlightedQualifications={wizardData.highlightedQualifications}
-           onHighlightedQualificationsChange={(ids) =>
-              setWizardData((prev) => ({ ...prev, highlightedQualifications: ids }))}
-           onBack={() => setCurrentStepIndex((i) => i - 1)}
-          onContinue={() => setCurrentStepIndex((i) => i + 1)}
+      {currentStepIndex === 3 ? (
+  <StepGenerating
+    cvText={wizardData.cvText ?? ""}
+    jobDescription={wizardData.jobDescription ?? ""}
+    whyCompany={wizardData.whyCompany ?? ""}
+    whyRole={wizardData.whyRole ?? ""}
+    additionalInfo={wizardData.additionalInfo}
+    tone={wizardData.tone ?? "professional"}
+    highlightedQualifications={wizardData.highlightedQualifications ?? []}
+    matches={wizardData.matches}
+    generatedLetter={wizardData.generatedLetter}
+    onGenerated={(letter) => {
+      // setWizardData((prev) => ({ ...prev, generatedLetter: letter }));
+      // setCurrentStepIndex((i) => i + 1);
+    }}
   />
-        )}
-       {currentStepIndex === 3 && (
-         <StepGenerating
-          cvText={wizardData.cvText ?? ""}
-          jobDescription={wizardData.jobDescription ?? ""}
-          whyCompany={wizardData.whyCompany ?? ""}
-          whyRole={wizardData.whyRole ?? ""}
-          additionalInfo={wizardData.additionalInfo}
-          tone={wizardData.tone ?? "professional"}
-          highlightedQualifications={wizardData.highlightedQualifications ?? []}
-          matches={wizardData.matches}
-          generatedLetter={wizardData.generatedLetter}
-          onGenerated={(letter) => {
-           setWizardData((prev) => ({ ...prev, generatedLetter: letter }));
-           setCurrentStepIndex((i) => i + 1);}}/>
-        )}
+) : (
+  <div className="rounded-2xl border-2 border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
+    {currentStepIndex === 0 &&
+      (loadingCvs ? (
+        <p className="text-sm text-white/40">Loading your saved CVs...</p>
+      ) : (
+        <>
+          {extractError && (
+            <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {extractError}
+            </div>
+          )}
+          <Step1UploadContext
+            savedCvs={savedCvs}
+            onContinue={handleStep1Continue}
+          />
+        </>
+      ))}
 
-      {currentStepIndex === 4 && (
+    {currentStepIndex === 1 && (
+      <StepPersonalizeMatch
+        jobDescription={wizardData.jobDescription ?? ""}
+        cvText={wizardData.cvText ?? ""}
+        matchPercentage={wizardData.matchPercentage}
+        matches={wizardData.matches}
+        conclusion={wizardData.conclusion}
+        onAnalysisComplete={(matchPercentage, matches, conclusion) =>
+          setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
+        }
+        onContinue={() => setCurrentStepIndex(2)}
+      />
+    )}
+
+    {currentStepIndex === 2 && (
+      <StepPersonalize
+        whyCompany={wizardData.whyCompany}
+        onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
+        whyRole={wizardData.whyRole}
+        onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
+        additionalInfo={wizardData.additionalInfo}
+        onAdditionalInfoChange={(value) => setWizardData((prev) => ({ ...prev, additionalInfo: value }))}
+        tone={wizardData.tone}
+        onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
+        matches={wizardData.matches}
+        highlightedQualifications={wizardData.highlightedQualifications}
+        onHighlightedQualificationsChange={(ids) =>
+          setWizardData((prev) => ({ ...prev, highlightedQualifications: ids }))
+        }
+        onBack={() => setCurrentStepIndex((i) => i - 1)}
+        onContinue={() => setCurrentStepIndex((i) => i + 1)}
+      />
+    )}
+
+    {currentStepIndex === 4 && (
        <StepReview generatedLetter={wizardData.generatedLetter} />
        )}
 
-
-      </div>
+     </div>
+)}
     </div>
   );
 }

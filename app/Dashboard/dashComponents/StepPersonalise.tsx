@@ -53,6 +53,7 @@ export default function StepPersonalize({
   const [localTone, setLocalTone] = useState<ToneOption | null>(tone);
   const [localHighlighted, setLocalHighlighted] = useState<string[]>(highlightedQualifications);
   const [attemptedContinue, setAttemptedContinue] = useState(false);
+ 
 
   useEffect(() => {
     if (!attemptedContinue) return;
@@ -272,7 +273,7 @@ export default function StepPersonalize({
             }`}
           >
             Generate
-            <Sparkles className="ml-2 mt-0.5 h-4.5 w-4.5" />
+            <Sparkles className="ml-2 mt-0.5 h-4 w-4" />
           </button>
         )}
       </div>

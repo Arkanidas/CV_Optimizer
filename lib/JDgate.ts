@@ -6,11 +6,14 @@ export function looksLikeJobDescription(text: string): boolean {
     // English
     "responsibilities", "requirements", "qualifications", "experience",
     "we are looking for", "you will", "your role", "apply", "candidate",
-    "skills", "position", "team",
+    "skills", "position", "team", "duties", "benefits", "full-time",
+    "part-time", "ideal candidate", "join us", "we're hiring", "hiring",
     // Swedish
-    "ansvarsområden", "krav", "kvalifikationer", "erfarenhet",
+     "ansvarsområden", "krav", "kvalifikationer", "erfarenhet",
     "vi söker", "du kommer", "din roll", "ansök", "kandidat",
-    "kompetens", "tjänst", "team",
+    "kompetens", "tjänst", "team", "arbetsuppgifter", "meriterande",
+    "tillgänglig", "trivs", "lagspelare", "anställning", "rekrytering",
+    "heltid", "deltid", "extraarbete", "vikariat", "söker dig",
   ];
   const keywordHits = jdKeywords.filter((kw) => lower.includes(kw)).length;
 
@@ -21,5 +24,5 @@ export function looksLikeJobDescription(text: string): boolean {
   const avgWordLength = words.length > 0 ? text.replace(/\s/g, "").length / words.length : 0;
   const hasReasonableWordShape = words.length >= 20 && avgWordLength < 12;
 
-  return keywordHits >= 2 && hasReasonableWordShape;
+  return keywordHits >= 1 && hasReasonableWordShape;
 }

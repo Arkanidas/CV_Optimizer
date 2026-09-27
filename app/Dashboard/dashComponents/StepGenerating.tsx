@@ -85,8 +85,8 @@ export default function StepGenerating({
         </div>
       ) : (
         <>
-          <Swirling className="size-24 text-violet-400" />
-          <p className="text-sm text-white/50">Writing your cover letter...</p>
+          <Swirling className="size-50 text-violet-400 flex justify-center" />
+          <h2 className="text-xl text-white/50">Writing your cover letter...</h2>
         </>
       )}
     </div>

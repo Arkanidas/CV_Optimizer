@@ -1,6 +1,6 @@
 import { generateStructuredWithClaude, generateWithClaude, type SubscriptionTier } from "./claude";
-import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema,CvValidationSchema,AnalysisConclusionSchema,JdValidationSchema,type JDExtraction,type CvExtraction,type MatchingResults,type CvValidation,type AnalysisConclusion,type JdValidation,} from "./schemas";
-import {JD_EXTRACTION_PROMPT,CV_EXTRACTION_PROMPT,MATCHING_PROMPT,CV_VALIDATION_PROMPT,ANALYSIS_CONCLUSION_PROMPT,JD_VALIDATION_PROMPT,COVER_LETTER_GENERATION_PROMPT,TONE_WRITING_GUIDANCE,} from "./prompts";
+import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema,CvValidationSchema,AnalysisConclusionSchema,JdValidationSchema,type JDExtraction,type CvExtraction,type MatchingResults,type CvValidation,type AnalysisConclusion,type JdValidation, TextAnswerValidationSchema, TextAnswerValidation,} from "./schemas";
+import {JD_EXTRACTION_PROMPT,CV_EXTRACTION_PROMPT,MATCHING_PROMPT,CV_VALIDATION_PROMPT,ANALYSIS_CONCLUSION_PROMPT,JD_VALIDATION_PROMPT,COVER_LETTER_GENERATION_PROMPT,TONE_WRITING_GUIDANCE, TEXT_ANSWER_VALIDATION_PROMPT,} from "./prompts";
 import { monthsBetween } from "@/lib/dateMath";
 import type { ToneOption } from "./tiers";
 
@@ -99,6 +99,17 @@ function buildEvidenceBlock(highlightedQualifications: string[],matches: Matchin
       return `- ${reqText}${evidence ? `: ${evidence}` : ""}`;
     })
     .join("\n");
+}
+
+export async function validateTextAnswer(answer: string): Promise<TextAnswerValidation> {
+  return generateStructuredWithClaude({
+    tier: "free",
+    system: TEXT_ANSWER_VALIDATION_PROMPT,
+    prompt: answer,
+    schema: TextAnswerValidationSchema,
+    toolName: "validate_text_answer",
+    maxTokens: 200,
+  });
 }
 
 export async function generateCoverLetterText(params: {

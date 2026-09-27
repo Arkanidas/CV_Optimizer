@@ -121,3 +121,7 @@ CLARITY: Keep sentences reasonably short and readable. Avoid corporate jargon an
 ENTHUSIASM: The letter should feel genuinely interested and engaged, not going through the motions, but this enthusiasm must come from specific, real reasons, not generic excitement.
 
 Return ONLY the finished cover letter text. No preamble, no explanation, no markdown formatting, no placeholder brackets like [Company Name], everything must be filled in with the real information provided.`;
+
+export const TEXT_ANSWER_VALIDATION_PROMPT = `You are checking whether a short piece of text is a genuine, coherent attempt to answer a personal question in a job application (such as "why do you want to work here" or "why this role"), as opposed to gibberish, keyboard-mashing, or completely unrelated/nonsensical text.
+
+The answer does not need to be well-written, long, or even particularly convincing, it just needs to be a real, coherent attempt at answering. Be lenient with short or imperfect answers. Only reject text that is gibberish, nonsensical, or has no genuine relation to answering the question at all.`;
