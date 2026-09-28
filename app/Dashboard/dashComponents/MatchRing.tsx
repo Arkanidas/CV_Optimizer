@@ -12,8 +12,8 @@ const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 function getColor(percent: number): string {
-  if (percent < 25) return "#f87171"; 
-  if (percent < 75) return "#facc15"; 
+  if (percent < 25) return "#ff2525"; 
+  if (percent < 75) return "#ffef0d"; 
   return "#4ade80";
 }
 
@@ -31,7 +31,7 @@ export default function MatchRing({ percent }: MatchRingProps) {
     function tick(now: number) {
       const elapsed = now - start;
       const progress = Math.min(1, elapsed / duration);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out: fast start, slow finish
+      const eased = 1 - Math.pow(1 - progress, 3); 
       setDisplayPercent(Math.round(eased * target));
       if (progress < 1) frameRef.current = requestAnimationFrame(tick);
     }

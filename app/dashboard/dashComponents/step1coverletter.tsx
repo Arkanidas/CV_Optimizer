@@ -18,7 +18,7 @@ interface Step1UploadContextProps {
   }) => void;
 }
 
-const MIN_JD_LENGTH = 1300;
+const MIN_JD_LENGTH = 1100;
 const MAX_JD_LENGTH = 5500;
 
 export default function Step1UploadContext({ savedCvs, onContinue }: Step1UploadContextProps) {

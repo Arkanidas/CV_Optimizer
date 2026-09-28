@@ -17,9 +17,6 @@ export function looksLikeJobDescription(text: string): boolean {
   ];
   const keywordHits = jdKeywords.filter((kw) => lower.includes(kw)).length;
 
-  // Real prose has a reasonable ratio of actual dictionary-shaped words to
-  // total characters. Pure gibberish tends to be one giant unbroken token
-  // or have an abnormally low ratio of whitespace/punctuation to letters.
   const words = text.trim().split(/\s+/).filter(Boolean);
   const avgWordLength = words.length > 0 ? text.replace(/\s/g, "").length / words.length : 0;
   const hasReasonableWordShape = words.length >= 20 && avgWordLength < 12;

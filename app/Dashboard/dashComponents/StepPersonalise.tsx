@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import ToneSelector from "@/components/ToneSelector";
@@ -53,14 +53,17 @@ export default function StepPersonalize({
   const [localTone, setLocalTone] = useState<ToneOption | null>(tone);
   const [localHighlighted, setLocalHighlighted] = useState<string[]>(highlightedQualifications);
   const [attemptedContinue, setAttemptedContinue] = useState(false);
- 
+  const [validating, setValidating] = useState(false);
+  const [gibberishError, setGibberishError] = useState("");
 
   useEffect(() => {
     if (!attemptedContinue) return;
-    const timer = setTimeout(() => setAttemptedContinue(false), 7000);
+    const timer = setTimeout(() => {
+      setAttemptedContinue(false);
+      setGibberishError("");
+    }, 7000);
     return () => clearTimeout(timer);
   }, [attemptedContinue]);
-
 
   useEffect(() => {
     onHighlightedQualificationsChange?.(localHighlighted);
@@ -102,16 +105,51 @@ export default function StepPersonalize({
   const isToneValid = localTone !== null;
   const canContinue = isWhyCompanyValid && isWhyRoleValid && isToneValid;
 
-  function handleContinueClick() {
+  async function handleContinueClick() {
     if (!canContinue) {
       setAttemptedContinue(true);
       return;
     }
+
+    setValidating(true);
+    setGibberishError("");
+
+    try {
+      const [companyRes, roleRes] = await Promise.all([
+        fetch("/api/cover-letter/validate-answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: localWhyCompany }),
+        }),
+        fetch("/api/cover-letter/validate-answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: localWhyRole }),
+        }),
+      ]);
+      const companyData = await companyRes.json();
+      const roleData = await roleRes.json();
+
+      if (!companyRes.ok || !companyData.valid || !roleRes.ok || !roleData.valid) {
+        setGibberishError("Please write a genuine answer, not random text.");
+        setAttemptedContinue(true);
+        setValidating(false);
+        return;
+      }
+    } catch (err) {
+      console.error("Answer validation request failed:", err);
+      setGibberishError("Something went wrong checking your answers. Please try again.");
+      setAttemptedContinue(true);
+      setValidating(false);
+      return;
+    }
+
+    setValidating(false);
     onContinue?.();
   }
 
   function requiredBorderClass(value: string, isValid: boolean) {
-    const showInvalid = attemptedContinue && !isValid;
+    const showInvalid = attemptedContinue && (!isValid || gibberishError !== "");
     const tooLong = value.length >= MAX_LENGTH;
     if (showInvalid || tooLong) {
       return "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30";
@@ -133,9 +171,9 @@ export default function StepPersonalize({
         <p className="mt-1 text-sm text-white/50">
           A few honest answers here go a long way — this is what makes your letter sound like you, not a template.
         </p>
-        {attemptedContinue && !canContinue && (
+        {attemptedContinue && (!canContinue || gibberishError) && (
           <p className="mt-2 text-sm font-medium text-red-400">
-            All marked areas needs to be filled.
+            {gibberishError || "All marked areas needs to be filled."}
           </p>
         )}
       </div>
@@ -266,14 +304,15 @@ export default function StepPersonalize({
         {onContinue && (
           <button
             onClick={handleContinueClick}
+            disabled={validating}
             className={`flex items-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors ${
-              canContinue
+              canContinue && !validating
                 ? "cursor-pointer bg-violet-500 text-white hover:bg-violet-400"
                 : "cursor-not-allowed bg-white/10 text-white/30"
             }`}
           >
-            Generate
-            <Sparkles className="ml-2 mt-0.5 h-4 w-4" />
+            {validating ? "Checking..." : "Generate"}
+            {!validating && <Sparkles className="ml-2 mt-0.5 h-4 w-4" />}
           </button>
         )}
       </div>

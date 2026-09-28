@@ -8,7 +8,8 @@ interface MatchStatusTextProps {
 }
 
 function getMatchLabel(percent: number): string {
-  if (percent >= 90) return "Excellent match!";
+  if (percent === 100) return "Perfect match!";
+  if (percent >= 90 && percent < 100) return "Excellent match!";
   if (percent >= 80) return "Very good match!"; 
   if (percent >= 60) return "Good match!";
   if (percent >= 40) return "Decent match";
