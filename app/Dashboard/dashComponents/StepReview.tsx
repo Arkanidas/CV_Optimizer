@@ -1,28 +1,36 @@
 "use client";
 
+import { useState } from "react";
+import LetterEditor from "./coverLetterTemplates/LetterEditor";
+import CoverLetterPreview from "./coverLetterTemplates/CoverLetterPreview";
+
 interface StepReviewProps {
   generatedLetter?: string;
+  onGeneratedLetterChange?: (value: string) => void;
 }
 
-export default function StepReview({ generatedLetter }: StepReviewProps) {
-  return (
-    <div className="flex flex-col items-center gap-6">
-      <div>
-        <h3 className="text-base font-semibold text-white">Review your cover letter</h3>
-        <p className="mt-1 text-sm text-white/50">
-          Here's your generated cover letter — give it a read before downloading.
-        </p>
-      </div>
+export default function StepReview({
+  generatedLetter = "",
+  onGeneratedLetterChange,
+}: StepReviewProps) {
+  const [localLetter, setLocalLetter] = useState(generatedLetter);
 
-      <div className="max-h-[80vh] w-full overflow-y-auto rounded-2xl border border-white/10 bg-white/[0.03] p-8 sm:p-10 md:w-[80%]">
-        {generatedLetter ? (
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/90">
-            {generatedLetter}
-          </p>
-        ) : (
-          <p className="text-sm text-white/30">No cover letter generated yet.</p>
-        )}
-      </div>
+  function handleLetterChange(value: string) {
+    setLocalLetter(value);
+    onGeneratedLetterChange?.(value);
+  }
+
+  return (
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      {/* Left: workspace that will later swap Editor / Templates / Format */}
+      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace">
+        <LetterEditor value={localLetter} onChange={handleLetterChange} />
+      </section>
+
+      {/* Right: always mounted — only receives letter, never unmounts on left-pane changes */}
+      <section className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:self-start" aria-label="Formatted cover letter preview">
+        <CoverLetterPreview letter={localLetter} />
+      </section>
     </div>
   );
 }

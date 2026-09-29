@@ -58,9 +58,7 @@ export default function CoverLetterWizard() {
   const [extractError, setExtractError] = useState("");
   const [hydrated, setHydrated] = useState(false);
 
-  // Restore from sessionStorage AFTER mount (not during initial render) —
-  // this avoids a server/client hydration mismatch, since the server always
-  // renders the default (empty) state first.
+
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -140,95 +138,100 @@ export default function CoverLetterWizard() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex items-center justify-between">
-        <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
-        {currentStepIndex > 0 && (
-          <button
-            onClick={handleStartOver}
-            className="ml-4 flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/50 transition hover:bg-white/[0.08] hover:text-white/80"
-          >
-            <RotateCcw className="h-3 w-3" />
-            Start over
-          </button>
-        )}
-      </div>
+  <div className="flex flex-col gap-8">
+    <div className="flex items-center justify-between">
+      <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
+      {currentStepIndex > 0 && (
+        <button
+          onClick={handleStartOver}
+          className="ml-4 flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/50 transition hover:bg-white/[0.08] hover:text-white/80"
+        >
+          <RotateCcw className="h-3 w-3" />
+          Start over
+        </button>
+      )}
+    </div>
 
-      {currentStepIndex === 3 ? (
-  <StepGenerating
-    cvText={wizardData.cvText ?? ""}
-    jobDescription={wizardData.jobDescription ?? ""}
-    whyCompany={wizardData.whyCompany ?? ""}
-    whyRole={wizardData.whyRole ?? ""}
-    additionalInfo={wizardData.additionalInfo}
-    tone={wizardData.tone ?? "professional"}
-    highlightedQualifications={wizardData.highlightedQualifications ?? []}
-    matches={wizardData.matches}
-    generatedLetter={wizardData.generatedLetter}
-    onGenerated={(letter) => {
-      // setWizardData((prev) => ({ ...prev, generatedLetter: letter }));
-      // setCurrentStepIndex((i) => i + 1);
-    }}
-  />
-) : (
-  <div className="rounded-2xl border-2 border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
-    {currentStepIndex === 0 &&
-      (loadingCvs ? (
-        <p className="text-sm text-white/40">Loading your saved CVs...</p>
-      ) : (
-        <>
-          {extractError && (
-            <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-              {extractError}
-            </div>
-          )}
-          <Step1UploadContext
-            savedCvs={savedCvs}
-            onContinue={handleStep1Continue}
-          />
-        </>
-      ))}
-
-    {currentStepIndex === 1 && (
-      <StepPersonalizeMatch
-        jobDescription={wizardData.jobDescription ?? ""}
+    {currentStepIndex === 3 && (
+      <StepGenerating
         cvText={wizardData.cvText ?? ""}
-        matchPercentage={wizardData.matchPercentage}
-        matches={wizardData.matches}
-        conclusion={wizardData.conclusion}
-        onAnalysisComplete={(matchPercentage, matches, conclusion) =>
-          setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
-        }
-        onContinue={() => setCurrentStepIndex(2)}
-      />
-    )}
-
-    {currentStepIndex === 2 && (
-      <StepPersonalize
-        whyCompany={wizardData.whyCompany}
-        onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
-        whyRole={wizardData.whyRole}
-        onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
+        jobDescription={wizardData.jobDescription ?? ""}
+        whyCompany={wizardData.whyCompany ?? ""}
+        whyRole={wizardData.whyRole ?? ""}
         additionalInfo={wizardData.additionalInfo}
-        onAdditionalInfoChange={(value) => setWizardData((prev) => ({ ...prev, additionalInfo: value }))}
-        tone={wizardData.tone}
-        onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
+        tone={wizardData.tone ?? "professional"}
+        highlightedQualifications={wizardData.highlightedQualifications ?? []}
         matches={wizardData.matches}
-        highlightedQualifications={wizardData.highlightedQualifications}
-        onHighlightedQualificationsChange={(ids) =>
-          setWizardData((prev) => ({ ...prev, highlightedQualifications: ids }))
-        }
-        onBack={() => setCurrentStepIndex((i) => i - 1)}
-        onContinue={() => setCurrentStepIndex((i) => i + 1)}
+        generatedLetter={wizardData.generatedLetter}
+        onGenerated={(letter) => {
+          setWizardData((prev) => ({ ...prev, generatedLetter: letter }));
+          setCurrentStepIndex((i) => i + 1);
+        }}
       />
     )}
 
     {currentStepIndex === 4 && (
-       <StepReview generatedLetter={wizardData.generatedLetter} />
-       )}
+      <StepReview
+        generatedLetter={wizardData.generatedLetter}
+        onGeneratedLetterChange={(value) =>
+          setWizardData((prev) => ({ ...prev, generatedLetter: value }))
+        }
+      />
+    )}
 
-     </div>
-)}
-    </div>
-  );
+    {currentStepIndex !== 3 && currentStepIndex !== 4 && (
+      <div className="rounded-2xl border-2 border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
+        {currentStepIndex === 0 &&
+          (loadingCvs ? (
+            <p className="text-sm text-white/40">Loading your saved CVs...</p>
+          ) : (
+            <>
+              {extractError && (
+                <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {extractError}
+                </div>
+              )}
+              <Step1UploadContext
+                savedCvs={savedCvs}
+                onContinue={handleStep1Continue}/>
+            </>
+          ))}
+
+        {currentStepIndex === 1 && (
+          <StepPersonalizeMatch
+            jobDescription={wizardData.jobDescription ?? ""}
+            cvText={wizardData.cvText ?? ""}
+            matchPercentage={wizardData.matchPercentage}
+            matches={wizardData.matches}
+            conclusion={wizardData.conclusion}
+            onAnalysisComplete={(matchPercentage, matches, conclusion) =>
+              setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
+            }
+            onContinue={() => setCurrentStepIndex(2)}
+          />
+        )}
+
+        {currentStepIndex === 2 && (
+          <StepPersonalize
+            whyCompany={wizardData.whyCompany}
+            onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
+            whyRole={wizardData.whyRole}
+            onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
+            additionalInfo={wizardData.additionalInfo}
+            onAdditionalInfoChange={(value) => setWizardData((prev) => ({ ...prev, additionalInfo: value }))}
+            tone={wizardData.tone}
+            onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
+            matches={wizardData.matches}
+            highlightedQualifications={wizardData.highlightedQualifications}
+            onHighlightedQualificationsChange={(ids) =>
+              setWizardData((prev) => ({ ...prev, highlightedQualifications: ids }))
+            }
+            onBack={() => setCurrentStepIndex((i) => i - 1)}
+            onContinue={() => setCurrentStepIndex((i) => i + 1)}
+          />
+        )}
+      </div>
+    )}
+  </div>
+);
 }
