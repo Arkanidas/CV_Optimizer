@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import LetterEditor from "./coverLetterTemplates/LetterEditor";
-import CoverLetterPreview from "./coverLetterTemplates/CoverLetterPreview";
-import WorkspaceTabs from "./coverLetterTemplates/WorkspaceTabs";
-import FormatPanel from "./coverLetterTemplates/FormatPanel";
+import LetterEditor from "./CoverLetterTools/LetterEditor";
+import CoverLetterPreview from "./CoverLetterTools/CoverLetterPreview";
+import WorkspaceTabs from "./CoverLetterTools/WorkspaceTabs";
+import FormatPanel from "./CoverLetterTools/FormatPanel";
 import {
   DEFAULT_LETTER_FORMAT,
   type LetterFormat,
   type ReviewPane,
-} from "./coverLetterTemplates/letterFormat";
+} from "./CoverLetterTools/letterFormat";
 
 interface StepReviewProps {
   generatedLetter?: string;
