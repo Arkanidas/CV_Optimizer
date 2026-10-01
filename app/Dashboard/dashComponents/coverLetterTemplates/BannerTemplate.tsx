@@ -1,10 +1,5 @@
 import { splitCoverLetterParagraphs } from "./splitLetter";
-import {
-  BODY_FONT_OPTIONS,
-  DETAILS_FONT_OPTIONS,
-  fontCss,
-  type LetterFormat,
-} from "./letterFormat";
+import {BODY_FONT_OPTIONS,DETAILS_FONT_OPTIONS,fontCss,type LetterFormat,} from "./letterFormat";
 
 interface BannerTemplateProps {
   letter: string;

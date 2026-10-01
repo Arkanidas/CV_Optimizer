@@ -31,7 +31,7 @@ export default function StepReview({
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace">
+      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace ">
         <div className="flex w-full max-w-[650px] flex-col gap-4">
           <WorkspaceTabs active={activePane} onChange={setActivePane} />
 
@@ -39,12 +39,12 @@ export default function StepReview({
             <LetterEditor value={localLetter} onChange={handleLetterChange} />
           )}
 
-          {activePane === "format" && (
+          {activePane === "format" && ( 
             <FormatPanel format={format} onChange={setFormat} />
           )}
 
           {activePane === "templates" && (
-            <div className="flex min-h-[700px] items-center justify-center rounded-sm border border-dashed border-white/15 bg-white/[0.02] px-8 text-center text-sm text-white/35">
+            <div className="flex min-h-[770px] w-170 items-center justify-center rounded-sm border border-dashed border-white/15 bg-white/[0.02] px-8 text-center text-sm text-white/35">
               Template gallery — coming next
             </div>
           )}
@@ -52,8 +52,7 @@ export default function StepReview({
       </section>
 
       <section
-        className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:self-start"
-        aria-label="Formatted cover letter preview"
+        className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:self-start" aria-label="Formatted cover letter preview"
       >
         <CoverLetterPreview letter={localLetter} format={format} />
       </section>

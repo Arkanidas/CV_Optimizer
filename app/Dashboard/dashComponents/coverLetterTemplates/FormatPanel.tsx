@@ -20,7 +20,7 @@ export default function FormatPanel({ format, onChange }: FormatPanelProps) {
   }
 
   return (
-    <div className="flex min-h-[700px] w-full max-w-[650px] flex-col gap-8 rounded-sm border border-white/10 bg-white/[0.03] px-8 py-8">
+    <div className="flex min-h-[750px] w-full max-w-[750px] flex-col gap-8 rounded-sm border border-white/10 bg-white/[0.03] px-8 py-8">
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-white/90">Body font size</h3>
