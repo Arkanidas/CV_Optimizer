@@ -10,6 +10,8 @@ import {
   type LetterFormat,
   type ReviewPane,
 } from "./CoverLetterTools/letterFormat";
+import TempleteGallery from "./CoverLetterTools/TemplateGallery";
+import { LETTER_TEMPLATES } from "./CoverLetterTools/templates/templateRegistry";
 
 interface StepReviewProps {
   generatedLetter?: string;
@@ -23,6 +25,7 @@ export default function StepReview({
   const [localLetter, setLocalLetter] = useState(generatedLetter);
   const [activePane, setActivePane] = useState<ReviewPane>("editor");
   const [format, setFormat] = useState<LetterFormat>(DEFAULT_LETTER_FORMAT);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(LETTER_TEMPLATES[0].id);
 
   function handleLetterChange(value: string) {
     setLocalLetter(value);
@@ -44,9 +47,7 @@ export default function StepReview({
           )}
 
           {activePane === "templates" && (
-            <div className="flex min-h-[770px] w-170 items-center justify-center rounded-sm border border-dashed border-white/15 bg-white/[0.02] px-8 text-center text-sm text-white/35">
-              Template gallery — coming next
-            </div>
+            <TempleteGallery selectedId={selectedTemplateId} onSelect={setSelectedTemplateId} />
           )}
         </div>
       </section>

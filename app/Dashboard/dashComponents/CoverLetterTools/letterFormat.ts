@@ -40,13 +40,15 @@ export interface LetterFormat {
   bodyFontId: string;
   detailsFontId: string;
   fileType: DownloadFileType;
+  accentColor: string;
 }
 
 export const DEFAULT_LETTER_FORMAT: LetterFormat = {
-  fontSize: 15,
+  fontSize: 12,
   bodyFontId: "georgia",
   detailsFontId: "georgia",
   fileType: "pdf",
+  accentColor: ACCENT_COLOR_OPTIONS[0],
 };
 
 export function fontCss(options: FontOption[], id: string): string {
