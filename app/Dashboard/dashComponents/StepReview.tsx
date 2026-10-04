@@ -55,7 +55,7 @@ export default function StepReview({
       <section
         className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:self-start" aria-label="Formatted cover letter preview"
       >
-        <CoverLetterPreview letter={localLetter} format={format} />
+        <CoverLetterPreview letter={localLetter} format={format} templateId={selectedTemplateId} />
       </section>
     </div>
   );

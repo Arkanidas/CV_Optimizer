@@ -1,25 +1,41 @@
-import type { ParsedLetter } from "../letterParser";
-import type { LetterFormat } from "../letterFormat";
+import { splitCoverLetterParagraphs } from "../splitLetter";
+import { BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
-export default function ClassicTemplate({
-  parsed,
-  format,
-}: {
-  parsed: ParsedLetter;
+interface ClassicTemplateProps {
+  letter: string;
   format: LetterFormat;
-}) {
+}
+
+export default function ClassicTemplate({ letter, format }: ClassicTemplateProps) {
+  const paragraphs = splitCoverLetterParagraphs(letter);
+  const bodyFont = fontCss(BODY_FONT_OPTIONS, format.bodyFontId);
+  const detailsFont = fontCss(DETAILS_FONT_OPTIONS, format.detailsFontId);
+  
   return (
-    <div className="flex flex-col gap-4">
-      {parsed.greeting && <p>{parsed.greeting}</p>}
-      {parsed.paragraphs.map((p, i) => (
-        <p key={i}>{p}</p>
-      ))}
-      {parsed.signOff && (
-        <div className="mt-4">
-          <p>{parsed.signOff}</p>
-          <p className="font-semibold">{parsed.senderName}</p>
-        </div>
-      )}
-    </div>
+    <article className="flex min-h-full flex-col bg-white text-[#1c1917]">
+      {/* ...each template's own header/accent styling here... */}
+      <div className="flex-1 px-10 py-10 sm:px-12">
+        {paragraphs.length === 0 ? (
+          <p
+            className="leading-relaxed text-stone-400"
+            style={{ fontFamily: bodyFont, fontSize: `${format.fontSize}pt` }}
+          >
+            Your formatted letter will appear here as you type.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {paragraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                className="whitespace-pre-wrap leading-[1.75] text-stone-800"
+                style={{ fontFamily: bodyFont, fontSize: `${format.fontSize}pt` }}
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        )}
+      </div>
+    </article>
   );
 }

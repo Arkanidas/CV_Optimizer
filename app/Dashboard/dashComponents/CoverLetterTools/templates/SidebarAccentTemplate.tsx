@@ -1,34 +1,41 @@
-import type { ParsedLetter } from "../letterParser";
-import type { LetterFormat } from "../letterFormat";
+import { splitCoverLetterParagraphs } from "../splitLetter";
+import { BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
-export default function SidebarAccentTemplate({
-  parsed,
-  format,
-}: {
-  parsed: ParsedLetter;
+interface SidebarAccentTemplateProps {
+  letter: string;
   format: LetterFormat;
-}) {
-  return (
-    <div className="relative flex flex-col pl-6">
-      <div
-        className="absolute -left-10 top-0 h-full w-2 sm:-left-14"
-        style={{ backgroundColor: format.accentColor }}
-      />
-      <p className="mb-6 text-lg font-semibold" style={{ color: format.accentColor }}>
-        {parsed.senderName || "Your Name"}
-      </p>
-      {parsed.greeting && <p>{parsed.greeting}</p>}
-      <div className="mt-4 flex flex-col gap-4">
-        {parsed.paragraphs.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
+}
+
+export default function SidebarAccentTemplate({ letter, format }: SidebarAccentTemplateProps) {
+  const paragraphs = splitCoverLetterParagraphs(letter);
+  const bodyFont = fontCss(BODY_FONT_OPTIONS, format.bodyFontId);
+  const detailsFont = fontCss(DETAILS_FONT_OPTIONS, format.detailsFontId);
+
+return (
+    <article className="flex min-h-full flex-col bg-white text-[#1c1917]">
+      {/* ...each template's own header/accent styling here... */}
+      <div className="flex-1 px-10 py-10 sm:px-12">
+        {paragraphs.length === 0 ? (
+          <p
+            className="leading-relaxed text-stone-400"
+            style={{ fontFamily: bodyFont, fontSize: `${format.fontSize}pt` }}
+          >
+            Your formatted letter will appear here as you type.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {paragraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                className="whitespace-pre-wrap leading-[1.75] text-stone-800"
+                style={{ fontFamily: bodyFont, fontSize: `${format.fontSize}pt` }}
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
-      {parsed.signOff && (
-        <div className="mt-4">
-          <p>{parsed.signOff}</p>
-          <p className="font-semibold">{parsed.senderName}</p>
-        </div>
-      )}
-    </div>
+    </article>
   );
 }
