@@ -232,7 +232,7 @@ export default function StepPersonalize({
           <p className="ml-2 mt-0.5 text-xs text-white/30">(optional)</p>
         </h3>
         <p className="mb-4 ml-0.5 text-sm text-white/50">
-          Is there anything else you'd like us to know that isn't obvious from your CV?
+          Is there anything else you'd like us to know that isn't obvious from your CV or maybe something the AI analyzer missed?
         </p>
         <textarea
           value={localAdditionalInfo}

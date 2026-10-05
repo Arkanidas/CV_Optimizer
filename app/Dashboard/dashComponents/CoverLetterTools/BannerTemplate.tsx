@@ -15,7 +15,7 @@ export default function BannerTemplate({ letter, format }: BannerTemplateProps) 
     <article className="flex min-h-full flex-col bg-[#f6f1e8] text-[#1c1917]">
       <header className="relative bg-[#12100e] px-8 pb-8 pt-7">
         <div className="h-px w-full bg-[#c4a574]/40" />
-        <div className="mt-6 flex justify-center">
+         <div className="mt-6 flex justify-center">
           <div className="bg-[#c4a574] px-8 py-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
             <p
               className="text-xl tracking-wide text-[#12100e] sm:text-2xl"
