@@ -102,7 +102,7 @@ If the job description is in another language, use the natural, correct equivale
 
 LANGUAGE: Write the entire letter in the same language as the job description.
 
-LENGTH: 250 to 400 words, one page. This is a hard cap — do not exceed it. Length is one of the most common recruiter complaints about cover letters; respect this.
+LENGTH: 250 to 400 words depending on the type of job explained in the Job description, one page. This is a hard cap — do not exceed it. Length is one of the most common recruiter complaints about cover letters; respect this.
 
 TONE: Follow the specific tone guidance provided below.
 
@@ -120,7 +120,11 @@ CLARITY: Keep sentences reasonably short and readable. Avoid corporate jargon an
 
 ENTHUSIASM: The letter should feel genuinely interested and engaged, not going through the motions, but this enthusiasm must come from specific, real reasons, not generic excitement.
 
-Return ONLY the finished cover letter text. No preamble, no explanation, no markdown formatting, no placeholder brackets like [Company Name], everything must be filled in with the real information provided.`;
+Return ONLY the finished cover letter text. No preamble, no explanation, no markdown formatting, no placeholder brackets like [Company Name], everything must be filled in with the real information provided.
+
+End the letter immediately after the sign-off name. Do not add any contact information, phone number, email address, or other details after the closing signature — the letter should end with the candidate's name and nothing else.`;
+
+
 
 export const TEXT_ANSWER_VALIDATION_PROMPT = `You are checking whether a short piece of text is a genuine, coherent attempt to answer a personal question in a job application (such as "why do you want to work here" or "why this role"), as opposed to gibberish, keyboard-mashing, or completely unrelated/nonsensical text.
 

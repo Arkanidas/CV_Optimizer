@@ -10,8 +10,8 @@ import {
   type LetterFormat,
   type ReviewPane,
 } from "./CoverLetterTools/letterFormat";
-import TempleteGallery from "./CoverLetterTools/TemplateGallery";
 import { LETTER_TEMPLATES } from "./CoverLetterTools/templates/templateRegistry";
+import TemplateGallery from "./CoverLetterTools/TemplateGallery";
 
 interface StepReviewProps {
   generatedLetter?: string;
@@ -34,7 +34,7 @@ export default function StepReview({
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace ">
+      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace">
         <div className="flex w-full max-w-[650px] flex-col gap-4">
           <WorkspaceTabs active={activePane} onChange={setActivePane} />
 
@@ -47,13 +47,13 @@ export default function StepReview({
           )}
 
           {activePane === "templates" && (
-            <TempleteGallery selectedId={selectedTemplateId} onSelect={setSelectedTemplateId} />
+           <TemplateGallery selectedId={selectedTemplateId} onSelect={setSelectedTemplateId} format={format} />
           )}
         </div>
       </section>
 
       <section
-        className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:self-start" aria-label="Formatted cover letter preview"
+        className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:self-start" aria-label="Formatted cover letter preview border border-3 border-white "
       >
         <CoverLetterPreview letter={localLetter} format={format} templateId={selectedTemplateId} />
       </section>
