@@ -12,7 +12,7 @@ interface TemplateGalleryProps {
 
 export default function TemplateGallery({ selectedId, onSelect, format }: TemplateGalleryProps) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 border border-2 border-red-400 ">
       {LETTER_TEMPLATES.map((template) => (
         <button
           key={template.id}

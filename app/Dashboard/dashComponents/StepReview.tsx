@@ -10,8 +10,8 @@ import {
   type LetterFormat,
   type ReviewPane,
 } from "./CoverLetterTools/letterFormat";
+import TempleteGallery from "./CoverLetterTools/TemplateGallery";
 import { LETTER_TEMPLATES } from "./CoverLetterTools/templates/templateRegistry";
-import TemplateGallery from "./CoverLetterTools/TemplateGallery";
 
 interface StepReviewProps {
   generatedLetter?: string;
@@ -33,8 +33,13 @@ export default function StepReview({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace">
+    <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-2">
+      {/* Thin divider between the two panes. Scoped to this grid's own
+          height only — it has nothing to do with the stepper bubbles
+          above, which live in a separate parent component. */}
+      <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-white/10 lg:block" />
+
+      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace ">
         <div className="flex w-full max-w-[650px] flex-col gap-4">
           <WorkspaceTabs active={activePane} onChange={setActivePane} />
 
@@ -42,18 +47,19 @@ export default function StepReview({
             <LetterEditor value={localLetter} onChange={handleLetterChange} />
           )}
 
-          {activePane === "format" && ( 
+          {activePane === "format" && (
             <FormatPanel format={format} onChange={setFormat} />
           )}
 
           {activePane === "templates" && (
-           <TemplateGallery selectedId={selectedTemplateId} onSelect={setSelectedTemplateId} format={format} />
+            <TempleteGallery selectedId={selectedTemplateId} onSelect={setSelectedTemplateId} format={format} />
           )}
         </div>
       </section>
 
       <section
-        className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:self-start" aria-label="Formatted cover letter preview border border-3 border-white "
+        className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:max-h-[calc(100vh-140px)] lg:self-start lg:overflow-y-auto"
+        aria-label="Formatted cover letter preview"
       >
         <CoverLetterPreview letter={localLetter} format={format} templateId={selectedTemplateId} />
       </section>

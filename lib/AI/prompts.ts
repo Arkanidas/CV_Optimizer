@@ -21,6 +21,11 @@ For each requirement, also mark "verifiableFromCv": true or false.
 For each requirement, also provide a "shortLabel" — a compact 2-4 word version suitable for a small UI chip (e.g. "Customer service experience.", "Swedish fluency", "B driving license", "English fluency"). Keep "requirement" as the fuller, more descriptive version — shortLabel is only for tight display, not a replacement for detail.
 
 IMPORTANT: Only extract requirements from content actually describing the role, responsibilities, and desired qualifications for the candidate. Ignore general company background, marketing copy, "About us" sections, company achievements, or descriptions of the company's product/technology that are not themselves things the candidate needs to have or do. Do not invent requirements from company-description text just because it mentions technical-sounding concepts — a company using large-scale data infrastructure does not mean the candidate needs experience with that infrastructure, unless the role description itself says so.
+
+In addition to traits, skills, and qualifications, also think about what the role fundamentally IS as an occupation — what specific type of hands-on work this person would actually be doing day to day. Whenever the role centers on a distinct trade, specialized function, or hands-on activity (e.g. event staffing, nursing, electrical work, software development, sales field visits, cooking, machine operation), include exactly one requirement in category "direct_experience" representing genuine prior hands-on experience actually performing that specific type of work — separate from the personality traits and soft skills the role also requires. Mark it "must_have" and "verifiableFromCv": true. Only skip this if the role is genuinely a true entry-level position requiring no prior occupational background of any kind.
+
+Be careful to distinguish this from personality traits: "comfortable meeting new people" is a soft skill; "has actually worked events, promotional campaigns, or field marketing before" is direct occupational experience. A candidate can have the right personality without ever having done the job itself — this requirement exists specifically to capture that distinction.
+
 `;
 
 export const TONE_WRITING_GUIDANCE: Record<ToneOption, string> = {
@@ -57,12 +62,17 @@ SPECIAL HANDLING FOR "YEARS OF EXPERIENCE" REQUIREMENTS: Some requirements speci
 - State the combined total explicitly in your rationale (e.g. "Combined support experience across two roles totals 2 years, 8 months, meeting the 2+ year requirement.").
 - Only mark this as unmatched if the correctly-summed combined duration genuinely falls short of the stated requirement — never because individual entries don't each independently meet it.
 
-
 Be strict and realistic, not encouraging. Your job is to give the candidate an honest, accurate picture of their fit — not to make them feel good. Only include an "inferred" match if the connection is genuinely reasonable, the kind of connection an experienced hiring manager would actually accept as real evidence. Do not stretch a tenuous, generic, or speculative connection just to avoid leaving a requirement unmatched. A candidate who is genuinely not qualified for a role should see a low score reflecting that — do not soften or round up out of encouragement. If there is no real evidence for a requirement, leave matchedEntries empty; this is the correct, expected, and often important outcome.
 
 For each match, give a one-sentence rationale explaining the connection.
 
-IMPORTANT: Every requirement from the JD requirements list must appear exactly once in your output, even if no matching evidence exists — in that case, return an empty matchedEntries array for that requirement. Do not omit unmatched requirements, and do not force a weak or invented match just to avoid an empty array.`;
+IMPORTANT: Every requirement from the JD requirements list must appear exactly once in your output, even if no matching evidence exists — in that case, return an empty matchedEntries array for that requirement. Do not omit unmatched requirements, and do not force a weak or invented match just to avoid an empty array.
+
+SPECIAL HANDLING FOR "direct_experience" CATEGORY REQUIREMENTS: These represent whether the candidate has genuinely, literally performed this specific type of work before — not just compatible personality traits or adjacent skills. Be notably stricter here than with other categories:
+- Only mark "direct" if the CV shows the candidate actually held a role doing this specific kind of work (or something extremely close to it).
+- Only mark "inferred" if the CV shows a closely adjacent occupation doing genuinely similar hands-on work (e.g. other field/promotional/live-event work) — NOT general customer service, retail, or office work, even if those jobs involved talking to people or working on a team.
+- If the candidate has never done this type of work or anything genuinely close to it, leave this requirement unmatched. This is often the single most important signal for whether someone is truly ready for this specific role, so do not stretch a connection here the way you might for a softer trait.
+`;
 
 export const CV_VALIDATION_PROMPT = `You are checking whether a piece of text is a genuine CV/resume, as opposed to random text, a template with no real content, a different type of document, or an attempt to abuse a CV-processing tool.
 
