@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { LayoutTemplate, PencilLine, SlidersHorizontal } from "lucide-react";
 import type { ReviewPane } from "./letterFormat";
 
@@ -27,14 +28,21 @@ export default function WorkspaceTabs({ active, onChange }: WorkspaceTabsProps) 
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition ${
-                isActive
-                  ? "bg-white text-stone-900 shadow-sm"
-                  : "text-white/55 hover:text-white/90"
+              className={`relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                isActive ? "text-stone-900" : "text-white/55 hover:text-white/90"
               }`}
             >
-              <Icon className="h-3.5 w-3.5" />
-              {tab.label}
+              {isActive && (
+                <motion.span
+                  layoutId="workspace-tab-pill"
+                  className="absolute inset-0 rounded-full bg-white shadow-sm"
+                  transition={{ type: "spring", stiffness: 400, damping: 40 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-1.5">
+                <Icon className="h-3.5 w-3.5" />
+                {tab.label}
+              </span>
             </button>
           );
         })}

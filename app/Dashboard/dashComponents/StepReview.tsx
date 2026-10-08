@@ -33,16 +33,23 @@ export default function StepReview({
   }
 
   return (
-    <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-2">
-      {/* Thin divider between the two panes. Scoped to this grid's own
-          height only — it has nothing to do with the stepper bubbles
-          above, which live in a separate parent component. */}
+    <div className="relative grid grid-cols-1 items-start gap-x-8 gap-y-4 lg:grid-cols-2">
       <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-white/10 lg:block" />
 
-      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace ">
-        <div className="flex w-full max-w-[650px] flex-col gap-4">
+      {/* Row 1, left: the pane tabs */}
+      <div className="flex min-w-0 justify-center">
+        <div className="w-full max-w-[650px]">
           <WorkspaceTabs active={activePane} onChange={setActivePane} />
+        </div>
+      </div>
 
+      {/* Row 1, right: empty — its only job is occupying row 1 on this
+          column so row 2 lines up with the left column's row 2 */}
+      <div aria-hidden className="hidden lg:block" />
+
+      {/* Row 2, left: whichever pane is active */}
+      <section className="flex min-w-0 justify-center" aria-label="Cover letter workspace">
+        <div className="w-full max-w-[650px]">
           {activePane === "editor" && (
             <LetterEditor value={localLetter} onChange={handleLetterChange} />
           )}
@@ -52,11 +59,13 @@ export default function StepReview({
           )}
 
           {activePane === "templates" && (
-            <TempleteGallery selectedId={selectedTemplateId} onSelect={setSelectedTemplateId} format={format} />
+            <TempleteGallery selectedId={selectedTemplateId} onSelect={setSelectedTemplateId} format={format}/>
           )}
         </div>
       </section>
 
+      {/* Row 2, right: the preview — its top now aligns exactly with
+          the left column's row-2 content, since both share row 2 */}
       <section
         className="flex min-w-0 justify-center lg:sticky lg:top-4 lg:max-h-[calc(100vh-140px)] lg:self-start lg:overflow-y-auto"
         aria-label="Formatted cover letter preview"

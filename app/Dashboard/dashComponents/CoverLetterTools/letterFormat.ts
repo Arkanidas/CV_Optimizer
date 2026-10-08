@@ -35,8 +35,12 @@ export const ACCENT_COLOR_OPTIONS: string[] = [
 export const FONT_SIZE_MIN = 11;
 export const FONT_SIZE_MAX = 16;
 
+export const DETAILS_FONT_SIZE_MIN = 9;
+export const DETAILS_FONT_SIZE_MAX = 14;
+
 export interface LetterFormat {
   fontSize: number;
+  detailsFontSize: number;
   bodyFontId: string;
   detailsFontId: string;
   fileType: DownloadFileType;
@@ -45,6 +49,7 @@ export interface LetterFormat {
 
 export const DEFAULT_LETTER_FORMAT: LetterFormat = {
   fontSize: 12,
+  detailsFontSize: 10,
   bodyFontId: "georgia",
   detailsFontId: "georgia",
   fileType: "pdf",

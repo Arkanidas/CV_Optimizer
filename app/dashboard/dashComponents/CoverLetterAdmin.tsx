@@ -137,20 +137,31 @@ export default function CoverLetterWizard() {
     setExtractError("");
   }
 
+  const isLastStep = currentStepIndex === steps.length - 1;
+  
   return (
   <div className="flex flex-col gap-8">
-    <div className="flex items-center justify-between">
+   <div className="relative flex items-center justify-end">
+  {isLastStep ? (
+    <h2 className="absolute left-1/2 -translate-x-1/2 text-3xl font-semibold text-white">
+      Cover Letter ready
+    </h2>
+  ) : (
+    <div className="absolute left-0 right-20">
       <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
-      {currentStepIndex > 0 && (
-        <button
-          onClick={handleStartOver}
-          className="ml-4 flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/50 transition hover:bg-white/[0.08] hover:text-white/80"
-        >
-          <RotateCcw className="h-3 w-3" />
-          Start over
-        </button>
-      )}
     </div>
+  )}
+
+  {currentStepIndex > 0 && (
+    <button
+      onClick={handleStartOver}
+      className="ml-4 flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/50 transition hover:bg-white/[0.08] hover:text-white/80"
+    >
+      <RotateCcw className="h-3 w-3" />
+      Start over
+    </button>
+  )}
+</div>
 
     {currentStepIndex === 3 && (
       <StepGenerating
