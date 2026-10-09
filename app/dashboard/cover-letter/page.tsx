@@ -4,7 +4,7 @@ export default function CoverLetterOptimizationPage() {
   return (
     <>
      
-      <div className="mt-6">
+      <div>
         <CoverLetterWizard />
       </div>
     </>

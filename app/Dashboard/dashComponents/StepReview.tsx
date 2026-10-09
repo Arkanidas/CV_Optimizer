@@ -5,11 +5,7 @@ import LetterEditor from "./CoverLetterTools/LetterEditor";
 import CoverLetterPreview from "./CoverLetterTools/CoverLetterPreview";
 import WorkspaceTabs from "./CoverLetterTools/WorkspaceTabs";
 import FormatPanel from "./CoverLetterTools/FormatPanel";
-import {
-  DEFAULT_LETTER_FORMAT,
-  type LetterFormat,
-  type ReviewPane,
-} from "./CoverLetterTools/letterFormat";
+import {DEFAULT_LETTER_FORMAT,type LetterFormat,type ReviewPane,} from "./CoverLetterTools/letterFormat";
 import TempleteGallery from "./CoverLetterTools/TemplateGallery";
 import { LETTER_TEMPLATES } from "./CoverLetterTools/templates/templateRegistry";
 
@@ -18,10 +14,7 @@ interface StepReviewProps {
   onGeneratedLetterChange?: (value: string) => void;
 }
 
-export default function StepReview({
-  generatedLetter = "",
-  onGeneratedLetterChange,
-}: StepReviewProps) {
+export default function StepReview({generatedLetter = "",onGeneratedLetterChange,}: StepReviewProps) {
   const [localLetter, setLocalLetter] = useState(generatedLetter);
   const [activePane, setActivePane] = useState<ReviewPane>("editor");
   const [format, setFormat] = useState<LetterFormat>(DEFAULT_LETTER_FORMAT);

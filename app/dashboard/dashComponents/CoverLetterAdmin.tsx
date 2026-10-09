@@ -10,6 +10,7 @@ import StepPersonalize from "./StepPersonalise";
 import type { ToneOption } from "@/lib/AI/tiers";
 import StepGenerating from "./StepGenerating";
 import StepReview from "./StepReview";
+import ToastBanner from "./ToastBanner";
 
 interface SavedCv {
   id: string;
@@ -57,8 +58,10 @@ export default function CoverLetterWizard() {
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const [showReadyToast, setShowReadyToast] = useState(false);
 
 
+  
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -73,7 +76,7 @@ export default function CoverLetterWizard() {
     setHydrated(true);
   }, []);
 
-  // Persist on every change, once we're past the initial restore.
+
   useEffect(() => {
     if (!hydrated) return;
     sessionStorage.setItem(
@@ -138,30 +141,36 @@ export default function CoverLetterWizard() {
   }
 
   const isLastStep = currentStepIndex === steps.length - 1;
-  
+
+  useEffect(() => {
+  setShowReadyToast(isLastStep);
+}, [isLastStep]);
+
   return (
   <div className="flex flex-col gap-8">
-   <div className="relative flex items-center justify-end">
-  {isLastStep ? (
-    <h2 className="absolute left-1/2 -translate-x-1/2 text-3xl font-semibold text-white">
-      Cover Letter ready
-    </h2>
-  ) : (
+   <ToastBanner open={showReadyToast} title="Your cover letter is ready" message="Review and customize it before downloading or copying." onClose={() => setShowReadyToast(false)}/>
+    
+{!isLastStep && (
+  <div className="relative flex items-center justify-end">
     <div className="absolute left-0 right-20">
-      <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
+      <StepperBubbles
+        steps={steps}
+        currentStepIndex={currentStepIndex}
+      />
     </div>
-  )}
 
-  {currentStepIndex > 0 && (
-    <button
-      onClick={handleStartOver}
-      className="ml-4 flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/50 transition hover:bg-white/[0.08] hover:text-white/80"
-    >
-      <RotateCcw className="h-3 w-3" />
-      Start over
-    </button>
-  )}
-</div>
+  </div>
+)}
+
+    {currentStepIndex > 0 && (
+      <button
+        onClick={handleStartOver}
+        className="ml-4 flex shrink-0 items-center fixed gap-1.5 rounded-full border-white/10 bg-white/[0.04] px-3 py-1.5 text-lg text-white/50 transition hover:bg-white/[0.08] hover:text-white/80"
+      >
+        <RotateCcw className="h-3 w-3" />
+        
+      </button>
+    )}
 
     {currentStepIndex === 3 && (
       <StepGenerating
