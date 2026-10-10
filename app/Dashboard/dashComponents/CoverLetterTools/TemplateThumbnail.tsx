@@ -17,7 +17,7 @@ const THUMB_WIDTH = 160;
 
 export default function TemplateThumbnail({ Component, format }: TemplateThumbnailProps) {
   return (
-    <PageStage width={THUMB_WIDTH} className="rounded-md border border-black/5 bg-white">
+    <PageStage width={THUMB_WIDTH} className="rounded-md border border-black/5 bg-white text-left">
       <Component letter={SAMPLE_LETTER} format={format} />
     </PageStage>
   );
