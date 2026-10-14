@@ -9,6 +9,9 @@ import MonogramTemplate from "./Monogram";
 import UnderlineTemplate from "./Underline";
 import DiagonalRibbonTemplate from "./Ribbon";
 import DottedGridTemplate from "./DottedGrid";
+import PolygonTemplate from "./PolygonTemplate";
+import HoneycombTemplate from "./HoneycombTemplate";
+import MetalTemplate from "./MetalTemplate";
 
 export interface TemplateComponentProps {
   letter: string;
@@ -32,4 +35,7 @@ export const LETTER_TEMPLATES: TemplateDefinition[] = [
   { id: "underline", name: "Underline", swatch: "#dc2626", Component: UnderlineTemplate },
   { id: "ribbon", name: "Ribbon", swatch: "#7c3aed", Component: DiagonalRibbonTemplate },
   { id: "dotted-grid", name: "Dotted Grid", swatch: "#0891b2", Component: DottedGridTemplate },
+  { id: "polygon", name: "Polygon", swatch: "#6aa7a0", Component: PolygonTemplate },
+  { id: "honeycomb", name: "Honeycomb", swatch: "#86c99a", Component: HoneycombTemplate },
+  { id: "metal", name: "Metal", swatch: "#9aa3ad", Component: MetalTemplate },
 ];
