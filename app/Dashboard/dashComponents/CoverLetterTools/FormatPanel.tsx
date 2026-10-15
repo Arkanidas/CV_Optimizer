@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import FontSelect from "./FontSelect";
 import FontSizeSlider from "./FontSizeSlider";
 import {
@@ -10,12 +11,16 @@ import {
   FONT_SIZE_MAX,
   FONT_SIZE_MIN,
   type DownloadFileType,
-  type LetterFormat,
+  type FormatSettings,
 } from "./letterFormat";
+import type { ContactDetails } from "@/lib/AI/schemas";
 
 interface FormatPanelProps {
-  format: LetterFormat;
-  onChange: (format: LetterFormat) => void;
+  format: FormatSettings;
+  onChange: (format: FormatSettings) => void;
+  contact: ContactDetails;
+  onContactChange: (contact: ContactDetails) => void;
+  contactLoading?: boolean;
 }
 
 const FILE_TYPES: { id: DownloadFileType; label: string }[] = [
@@ -23,13 +28,54 @@ const FILE_TYPES: { id: DownloadFileType; label: string }[] = [
   { id: "docx", label: "DOCX" },
 ];
 
-export default function FormatPanel({ format, onChange }: FormatPanelProps) {
-  function update(patch: Partial<LetterFormat>) {
+interface DetailFieldProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  maxLength: number;
+  type?: "text" | "email" | "tel";
+  disabled?: boolean;
+}
+
+function DetailField({ label, value, onChange, maxLength, type = "text", disabled }: DetailFieldProps) {
+  const id = useId();
+
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <label htmlFor={id} className="text-xs font-medium text-white/70">
+        {label}
+      </label>
+      <input
+        id={id}
+        type={type}
+        value={value}
+        maxLength={maxLength}
+        disabled={disabled}
+        placeholder={`Add ${label.toLowerCase()}`}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-white/90 transition placeholder:text-white/25 focus:border-violet-400/50 focus:outline-none focus:ring-1 focus:ring-violet-400/30 disabled:cursor-wait disabled:opacity-50"
+      />
+    </div>
+  );
+}
+
+export default function FormatPanel({
+  format,
+  onChange,
+  contact,
+  onContactChange,
+  contactLoading = false,
+}: FormatPanelProps) {
+  function update(patch: Partial<FormatSettings>) {
     onChange({ ...format, ...patch });
   }
 
+  function updateContact(patch: Partial<ContactDetails>) {
+    onContactChange({ ...contact, ...patch });
+  }
+
   return (
-    <div className="flex flex-col gap-6 rounded-sm border border-white/10 bg-white/[0.03] p-5">
+    <div className="flex max-h-[calc(100vh-9rem)] flex-col gap-6 overflow-y-auto rounded-2xl border border-white/10 bg-white/[0.03] p-5 [scrollbar-color:rgba(255,255,255,0.2)_transparent] [scrollbar-width:thin]">
       <section className="flex flex-col gap-5">
         <div>
           <h3 className="text-sm font-medium uppercase tracking-widest text-violet-300">Text</h3>
@@ -65,6 +111,60 @@ export default function FormatPanel({ format, onChange }: FormatPanelProps) {
             value={format.detailsFontId}
             onChange={(id) => update({ detailsFontId: id })}
           />
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <div>
+          <h3 className="text-sm font-medium uppercase tracking-widest text-violet-300">
+            Personal details
+          </h3>
+          <hr className="mt-2 border-white/10" />
+          {contactLoading && (
+            <p className="mt-2 text-xs text-white/40">Reading your details from your CV...</p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <DetailField
+            label="First name"
+            value={contact.firstName}
+            maxLength={40}
+            disabled={contactLoading}
+            onChange={(value) => updateContact({ firstName: value })}
+          />
+          <DetailField
+            label="Last name"
+            value={contact.lastName}
+            maxLength={40}
+            disabled={contactLoading}
+            onChange={(value) => updateContact({ lastName: value })}
+          />
+          <DetailField
+            label="Email"
+            type="email"
+            value={contact.email}
+            maxLength={80}
+            disabled={contactLoading}
+            onChange={(value) => updateContact({ email: value })}
+          />
+          <DetailField
+            label="Phone"
+            type="tel"
+            value={contact.phone}
+            maxLength={25}
+            disabled={contactLoading}
+            onChange={(value) => updateContact({ phone: value })}
+          />
+          <div className="col-span-2">
+            <DetailField
+              label="Location"
+              value={contact.location}
+              maxLength={60}
+              disabled={contactLoading}
+              onChange={(value) => updateContact({ location: value })}
+            />
+          </div>
         </div>
       </section>
 

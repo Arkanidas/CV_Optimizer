@@ -5,7 +5,7 @@ import { Upload, Sparkles, Loader2, FileCheck, RotateCcw, SquareKanban } from "l
 import StepperBubbles, { type StepDefinition } from "./StepBubbles";
 import Step1UploadContext from "./step1coverletter";
 import StepPersonalizeMatch from "./StepOverview";
-import type { AnalysisConclusion } from "@/lib/AI/schemas";
+import type { AnalysisConclusion, ContactDetails } from "@/lib/AI/schemas";
 import StepPersonalize from "./StepPersonalise";
 import type { ToneOption } from "@/lib/AI/tiers";
 import StepGenerating from "./StepGenerating";
@@ -32,6 +32,7 @@ interface WizardData {
   generatedLetter?: string;
   conclusion?: AnalysisConclusion;
   highlightedQualifications?: string[];
+  contactDetails?: ContactDetails;
 }
 
 
@@ -190,14 +191,19 @@ export default function CoverLetterWizard() {
       />
     )}
 
-    {currentStepIndex === 4 && (
-      <StepReview
-        generatedLetter={wizardData.generatedLetter}
-        onGeneratedLetterChange={(value) =>
-          setWizardData((prev) => ({ ...prev, generatedLetter: value }))
-        }
-      />
-    )}
+   {currentStepIndex === 4 && (
+  <StepReview
+    generatedLetter={wizardData.generatedLetter}
+    onGeneratedLetterChange={(value) =>
+      setWizardData((prev) => ({ ...prev, generatedLetter: value }))
+    }
+    cvText={wizardData.cvText}
+    contactDetails={wizardData.contactDetails}
+    onContactDetailsChange={(value) =>
+      setWizardData((prev) => ({ ...prev, contactDetails: value }))
+    }
+  />
+)}
 
     {currentStepIndex !== 3 && currentStepIndex !== 4 && (
       <div className="rounded-2xl border-2 border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">

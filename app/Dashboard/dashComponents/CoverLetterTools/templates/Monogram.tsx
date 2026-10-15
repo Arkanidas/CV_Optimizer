@@ -1,5 +1,4 @@
 import { splitCoverLetterParagraphs } from "../splitLetter";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { getInitials } from "../initials";
 import { BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
@@ -12,7 +11,6 @@ export default function MonogramTemplate({ letter, format }: MonogramTemplatePro
   const paragraphs = splitCoverLetterParagraphs(letter);
   const bodyFont = fontCss(BODY_FONT_OPTIONS, format.bodyFontId);
   const detailsFont = fontCss(DETAILS_FONT_OPTIONS, format.detailsFontId);
-  const initials = getInitials(PLACEHOLDER_CONTACT.name);
 
   return (
     <article className="flex min-h-full flex-col text-[#1c1917]"
@@ -35,19 +33,19 @@ export default function MonogramTemplate({ letter, format }: MonogramTemplatePro
             fontFamily: detailsFont,
           }}
         >
-          {initials}
+          {getInitials(format.contact.name)}
         </div>
 
         <div>
           <p className="text-xl font-semibold" style={{ fontFamily: detailsFont }}>
-            {PLACEHOLDER_CONTACT.name}
+            {format.contact.name}
           </p>
           <div
             className="mt-1 flex flex-col gap-0.5 text-xs text-stone-600"
             style={{ fontFamily: detailsFont }}
           >
-            <span>{PLACEHOLDER_CONTACT.email}</span>
-            <span>{PLACEHOLDER_CONTACT.phone}</span>
+            <span>{format.contact.email}</span>
+            <span>{format.contact.phone}</span>
           </div>
         </div>
       </header>

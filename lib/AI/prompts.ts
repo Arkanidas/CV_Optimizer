@@ -139,3 +139,11 @@ End the letter immediately after the sign-off name. Do not add any contact infor
 export const TEXT_ANSWER_VALIDATION_PROMPT = `You are checking whether a short piece of text is a genuine, coherent attempt to answer a personal question in a job application (such as "why do you want to work here" or "why this role"), as opposed to gibberish, keyboard-mashing, or completely unrelated/nonsensical text.
 
 The answer does not need to be well-written, long, or even particularly convincing, it just needs to be a real, coherent attempt at answering. Be lenient with short or imperfect answers. Only reject text that is gibberish, nonsensical, or has no genuine relation to answering the question at all.`;
+
+export const CV_CONTACT_EXTRACTION_PROMPT = `You are reading the top of a CV/resume to extract the candidate's own contact details.
+
+Rules:
+- Copy each value exactly as it is written. Do not reformat, translate, correct or guess.
+- Only use details that belong to the candidate. Ignore anything belonging to employers, schools or referees.
+- If a detail is not present, return an empty string for it. Never invent one.
+- If the candidate has several given names, put them all in firstName and the family name in lastName.`;

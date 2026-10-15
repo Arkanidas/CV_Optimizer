@@ -1,3 +1,5 @@
+import type { DisplayContact } from "./contactDetails";
+
 export type ReviewPane = "templates" | "format" | "editor";
 export type DownloadFileType = "pdf" | "docx";
 
@@ -38,7 +40,8 @@ export const FONT_SIZE_MAX = 16;
 export const DETAILS_FONT_SIZE_MIN = 9;
 export const DETAILS_FONT_SIZE_MAX = 14;
 
-export interface LetterFormat {
+
+export interface FormatSettings {
   fontSize: number;
   detailsFontSize: number;
   bodyFontId: string;
@@ -47,7 +50,12 @@ export interface LetterFormat {
   accentColor: string;
 }
 
-export const DEFAULT_LETTER_FORMAT: LetterFormat = {
+
+export interface LetterFormat extends FormatSettings {
+  contact: DisplayContact;
+}
+
+export const DEFAULT_LETTER_FORMAT: FormatSettings = {
   fontSize: 12,
   detailsFontSize: 10,
   bodyFontId: "georgia",

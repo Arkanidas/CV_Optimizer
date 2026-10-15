@@ -1,5 +1,4 @@
 import { splitCoverLetterParagraphs } from "../splitLetter";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
 interface CompassTemplateProps {
@@ -19,15 +18,15 @@ export default function CompassTemplate({ letter, format }: CompassTemplateProps
           className="text-2xl font-semibold tracking-wide"
           style={{ fontFamily: detailsFont, color: format.accentColor }}
         >
-          {PLACEHOLDER_CONTACT.name}
+          {format.contact.name}
         </p>
         <div
           className="flex flex-col items-end gap-1 text-right text-xs text-stone-500"
           style={{ fontFamily: detailsFont }}
         >
-          <span>{PLACEHOLDER_CONTACT.email}</span>
-          <span>{PLACEHOLDER_CONTACT.phone}</span>
-          <span>{PLACEHOLDER_CONTACT.address}</span>
+          <span>{format.contact.email}</span>
+          <span>{format.contact.phone}</span>
+          <span>{format.contact.address}</span>
         </div>
       </header>
 

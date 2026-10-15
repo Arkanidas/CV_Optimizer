@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import LetterBody from "../LetterBody";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
 interface MetalTemplateProps {
@@ -75,7 +74,7 @@ export default function MetalTemplate({ letter, format }: MetalTemplateProps) {
               fontSize: `${format.detailsFontSize * 2.2}pt`,
             }}
           >
-            {PLACEHOLDER_CONTACT.name}
+            {format.contact.name}
           </p>
 
           <div
@@ -87,9 +86,9 @@ export default function MetalTemplate({ letter, format }: MetalTemplateProps) {
               fontSize: `${format.detailsFontSize}pt`,
             }}
           >
-            <span>{PLACEHOLDER_CONTACT.email}</span>
-            <span>{PLACEHOLDER_CONTACT.phone}</span>
-            <span>{PLACEHOLDER_CONTACT.address}</span>
+            <span>{format.contact.email}</span>
+            <span>{format.contact.phone}</span>
+            <span>{format.contact.address}</span>
           </div>
         </div>
       </MetalPlate>

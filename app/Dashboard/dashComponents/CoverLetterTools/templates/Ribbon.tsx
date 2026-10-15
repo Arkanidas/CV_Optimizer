@@ -1,5 +1,4 @@
 import { splitCoverLetterParagraphs } from "../splitLetter";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
 interface DiagonalRibbonTemplateProps {
@@ -32,15 +31,15 @@ export default function DiagonalRibbonTemplate({ letter, format }: DiagonalRibbo
 
       <header className="px-10 pb-4 pt-10 sm:px-12">
         <p className="text-2xl font-semibold" style={{ fontFamily: detailsFont }}>
-          {PLACEHOLDER_CONTACT.name}
+          {format.contact.name}
         </p>
         <div
           className="mt-2 flex flex-col gap-0.5 text-xs text-stone-500"
           style={{ fontFamily: detailsFont }}
         >
-          <span>{PLACEHOLDER_CONTACT.email}</span>
-          <span>{PLACEHOLDER_CONTACT.phone}</span>
-          <span>{PLACEHOLDER_CONTACT.address}</span>
+          <span>{format.contact.email}</span>
+          <span>{format.contact.phone}</span>
+          <span>{format.contact.address}</span>
         </div>
       </header>
 

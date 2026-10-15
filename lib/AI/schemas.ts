@@ -15,6 +15,13 @@ export const JdValidationSchema = z.object({
   reason: z.string().describe("One short sentence explaining the classification"),
 });
 
+export const ContactDetailsSchema = z.object({
+  firstName: z.string().describe("The candidate's given name(s) exactly as written in the CV header. Empty string if not found."),
+  lastName: z.string().describe("The candidate's family name exactly as written in the CV header. Empty string if not found."),
+  email: z.string().describe("The candidate's own email address exactly as written. Empty string if not found."),
+  phone: z.string().describe("The candidate's own phone number exactly as written, including any country code. Empty string if not found."),
+  location: z.string().describe("The candidate's own home city and/or country as written in the header or contact line, for example 'Stockholm, Sverige'. Never an employer's or school's location. Empty string if not stated."),
+});
 
 export const JDExtractionSchema = z.object({
   requirements: z.array(JDRequirementSchema).describe(
@@ -94,3 +101,4 @@ export type MatchingResults = z.infer<typeof MatchingResultsSchema>;
 export type CvValidation = z.infer<typeof CvValidationSchema>;
 export type JdValidation = z.infer<typeof JdValidationSchema>;
 export type TextAnswerValidation = z.infer<typeof TextAnswerValidationSchema>;
+export type ContactDetails = z.infer<typeof ContactDetailsSchema>;

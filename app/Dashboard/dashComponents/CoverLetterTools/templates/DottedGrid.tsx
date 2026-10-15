@@ -1,5 +1,4 @@
 import { splitCoverLetterParagraphs } from "../splitLetter";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
 interface DottedGridTemplateProps {
@@ -57,15 +56,15 @@ export default function DottedGridTemplate({ letter, format }: DottedGridTemplat
             className="text-2xl font-semibold"
             style={{ fontFamily: detailsFont, color: format.accentColor }}
           >
-            {PLACEHOLDER_CONTACT.name}
+            {format.contact.name}
           </p>
           <div
             className="mt-2 flex flex-col gap-0.5 text-xs text-stone-500"
             style={{ fontFamily: detailsFont }}
           >
-            <span>{PLACEHOLDER_CONTACT.email}</span>
-            <span>{PLACEHOLDER_CONTACT.phone}</span>
-            <span>{PLACEHOLDER_CONTACT.address}</span>
+            <span>{format.contact.email}</span>
+            <span>{format.contact.phone}</span>
+            <span>{format.contact.address}</span>
           </div>
         </div>
       </header>

@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import polygonBanner from "@/app/assets/polygon.png";
 import LetterBody from "../LetterBody";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
 interface PolygonTemplateProps {
@@ -53,7 +52,7 @@ export default function PolygonTemplate({ letter, format }: PolygonTemplateProps
     <article className="flex min-h-full flex-col bg-white text-[#1c1917]">
       {/* "isolate" keeps the blend mode inside the banner so it can't
           blend with anything else on the page. */}
-      <header className="relative isolate h-[250px] shrink-0 overflow-hidden">
+      <header className="relative isolate h-[200px] shrink-0 overflow-hidden">
         <PolygonLayer accentColor={format.accentColor} position="center" />
 
         <div className="relative flex h-full items-center justify-center px-12">
@@ -65,7 +64,7 @@ export default function PolygonTemplate({ letter, format }: PolygonTemplateProps
               className="font-semibold tracking-wide text-stone-900"
               style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.2}pt` }}
             >
-              {PLACEHOLDER_CONTACT.name}
+              {format.contact.name}
             </p>
           </div>
         </div>
@@ -75,9 +74,9 @@ export default function PolygonTemplate({ letter, format }: PolygonTemplateProps
         className="flex flex-col gap-0.5 px-12 pt-6 text-stone-500"
         style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}
       >
-        <span>{PLACEHOLDER_CONTACT.email}</span>
-        <span>{PLACEHOLDER_CONTACT.phone}</span>
-        <span>{PLACEHOLDER_CONTACT.address}</span>
+        <span>{format.contact.email}</span>
+        <span>{format.contact.phone}</span>
+        <span>{format.contact.address}</span>
       </div>
 
       <div className="flex-1 px-12 py-8">

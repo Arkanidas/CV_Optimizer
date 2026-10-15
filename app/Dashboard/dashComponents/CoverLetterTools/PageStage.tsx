@@ -12,9 +12,6 @@ interface PageStageProps {
   width: number;
   children: ReactNode;
   className?: string;
-  // false (default): fixed single page, cropped. Used by gallery thumbnails.
-  // true: the paper grows taller than A4 when the text needs it, and the
-  // wrapper resizes to match. Used by the live preview.
   fitContent?: boolean;
 }
 

@@ -1,6 +1,6 @@
 import { generateStructuredWithClaude, generateWithClaude, type SubscriptionTier } from "./claude";
-import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema,CvValidationSchema,AnalysisConclusionSchema,JdValidationSchema,type JDExtraction,type CvExtraction,type MatchingResults,type CvValidation,type AnalysisConclusion,type JdValidation, TextAnswerValidationSchema, TextAnswerValidation,} from "./schemas";
-import {JD_EXTRACTION_PROMPT,CV_EXTRACTION_PROMPT,MATCHING_PROMPT,CV_VALIDATION_PROMPT,ANALYSIS_CONCLUSION_PROMPT,JD_VALIDATION_PROMPT,COVER_LETTER_GENERATION_PROMPT,TONE_WRITING_GUIDANCE, TEXT_ANSWER_VALIDATION_PROMPT,} from "./prompts";
+import {JDExtractionSchema,CvExtractionSchema,MatchingResultsSchema,CvValidationSchema,AnalysisConclusionSchema,JdValidationSchema,ContactDetailsSchema, type ContactDetails, type JDExtraction,type CvExtraction,type MatchingResults,type CvValidation,type AnalysisConclusion,type JdValidation, TextAnswerValidationSchema, TextAnswerValidation,} from "./schemas";
+import {JD_EXTRACTION_PROMPT,CV_EXTRACTION_PROMPT,MATCHING_PROMPT,CV_VALIDATION_PROMPT,ANALYSIS_CONCLUSION_PROMPT,JD_VALIDATION_PROMPT,COVER_LETTER_GENERATION_PROMPT,TONE_WRITING_GUIDANCE, TEXT_ANSWER_VALIDATION_PROMPT,CV_CONTACT_EXTRACTION_PROMPT} from "./prompts";
 import { monthsBetween } from "@/lib/dateMath";
 import type { ToneOption } from "./tiers";
 
@@ -154,4 +154,33 @@ Write the cover letter now, following all the rules in your instructions.`;
     prompt,
     maxTokens: 2048,
   });
+}
+
+const normalizeText = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
+const digitsOnly = (s: string) => s.replace(/\D/g, "");
+
+export async function extractContactDetails(cvText: string): Promise<ContactDetails> {
+  
+  const header = cvText.slice(0, 2500);
+
+  const result = await generateStructuredWithClaude({
+    tier: "free", 
+    system: CV_CONTACT_EXTRACTION_PROMPT,
+    prompt: header,
+    schema: ContactDetailsSchema,
+    toolName: "extract_cv_contact",
+    maxTokens: 400,
+  });
+
+  const email = result.email.trim();
+  const phone = result.phone.trim();
+  const phoneDigits = digitsOnly(phone);
+
+  return {
+    firstName: result.firstName.trim(),
+    lastName: result.lastName.trim(),
+    location: result.location.trim(),
+    email: email && normalizeText(cvText).includes(normalizeText(email)) ? email : "",
+    phone: phoneDigits.length >= 6 && digitsOnly(cvText).includes(phoneDigits) ? phone : "",
+  };
 }

@@ -1,5 +1,4 @@
 import LetterBody from "../LetterBody";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
 interface HoneycombTemplateProps {
@@ -52,16 +51,16 @@ export default function HoneycombTemplate({ letter, format }: HoneycombTemplateP
             color: INK_COLOR,
           }}
         >
-          {PLACEHOLDER_CONTACT.name}
+          {format.contact.name}
         </p>
 
         <div
           className="flex flex-col items-end gap-0.5 text-right text-stone-600"
           style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}
         >
-          <span>{PLACEHOLDER_CONTACT.email}</span>
-          <span>{PLACEHOLDER_CONTACT.phone}</span>
-          <span>{PLACEHOLDER_CONTACT.address}</span>
+          <span>{format.contact.email}</span>
+          <span>{format.contact.phone}</span>
+          <span>{format.contact.address}</span>
         </div>
       </header>
 

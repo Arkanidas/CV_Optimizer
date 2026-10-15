@@ -1,5 +1,4 @@
 import { splitCoverLetterParagraphs } from "../splitLetter";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
 interface PlainLetterTemplateProps {
@@ -18,10 +17,10 @@ export default function PlainLetterTemplate({ letter, format }: PlainLetterTempl
         className="flex flex-col gap-1 px-10 pt-10 text-xs text-stone-500 sm:px-12"
         style={{ fontFamily: detailsFont }}
       >
-        <span className="text-sm font-semibold text-stone-900">{PLACEHOLDER_CONTACT.name}</span>
-        <span>{PLACEHOLDER_CONTACT.email}</span>
-        <span>{PLACEHOLDER_CONTACT.phone}</span>
-        <span>{PLACEHOLDER_CONTACT.address}</span>
+        <span className="text-sm font-semibold text-stone-900">{format.contact.name}</span>
+        <span>{format.contact.email}</span>
+        <span>{format.contact.phone}</span>
+        <span>{format.contact.address}</span>
       </div>
 
       <div className="flex-1 px-10 py-8 sm:px-12">

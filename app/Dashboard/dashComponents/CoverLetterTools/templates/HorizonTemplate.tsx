@@ -1,5 +1,4 @@
 import { splitCoverLetterParagraphs } from "../splitLetter";
-import { PLACEHOLDER_CONTACT } from "../placeholderContact";
 import { BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, fontCss, type LetterFormat } from "../letterFormat";
 
 interface HorizonTemplateProps {
@@ -19,7 +18,7 @@ export default function HorizonTemplate({ letter, format }: HorizonTemplateProps
           className="text-2xl font-semibold tracking-wide text-white"
           style={{ fontFamily: detailsFont }}
         >
-          {PLACEHOLDER_CONTACT.name}
+          {format.contact.name}
         </p>
       </header>
 
@@ -27,9 +26,9 @@ export default function HorizonTemplate({ letter, format }: HorizonTemplateProps
         className="flex flex-col gap-1 px-10 pt-6 text-xs text-stone-500 sm:px-12"
         style={{ fontFamily: detailsFont }}
       >
-        <span>{PLACEHOLDER_CONTACT.email}</span>
-        <span>{PLACEHOLDER_CONTACT.phone}</span>
-        <span>{PLACEHOLDER_CONTACT.address}</span>
+        <span>{format.contact.email}</span>
+        <span>{format.contact.phone}</span>
+        <span>{format.contact.address}</span>
       </div>
 
       <div className="flex-1 px-10 py-8 sm:px-12">

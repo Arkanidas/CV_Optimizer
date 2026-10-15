@@ -2,12 +2,12 @@
 
 import { LETTER_TEMPLATES } from "./templates/templateRegistry";
 import TemplateThumbnail from "./TemplateThumbnail";
-import type { LetterFormat } from "./letterFormat";
+import type { FormatSettings } from "./letterFormat";
 
 interface TemplateGalleryProps {
   selectedId: string;
   onSelect: (id: string) => void;
-  format: LetterFormat;
+  format: FormatSettings;
 }
 
 export default function TemplateGallery({ selectedId, onSelect, format }: TemplateGalleryProps) {
