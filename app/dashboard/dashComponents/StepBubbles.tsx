@@ -21,7 +21,7 @@ export default function StepperBubbles({steps, currentStepIndex,}: StepperBubble
     <div className="relative w-full py-2">
       <div className="absolute left-[22px] right-[22px] top-[30px] h-1 bg-white/10 " />
       <div
-        className="absolute left-[22px] top-[30px] h-1 bg-violet-400/60 transition-all duration-500 ease-out"
+        className="absolute left-[22px] top-[50px] h-1 bg-violet-400/60 transition-all duration-500 ease-out border border-2 border-red-500"
         style={{ width: `calc((100% - 44px) * ${progressPercent / 100})` }}
       />
 
