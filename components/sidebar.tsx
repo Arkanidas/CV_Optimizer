@@ -76,7 +76,7 @@ export default function Sidebar({ theme }: SidebarProps) {
               isLight ? "text-black/40" : "text-white/35"
             }`}
           >
-            Workspace sas
+            Workspace
           </p>
 
           <div className="mt-3 flex flex-col gap-2">
