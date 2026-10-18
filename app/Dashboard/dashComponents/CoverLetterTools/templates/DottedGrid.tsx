@@ -54,13 +54,14 @@ export default function DottedGridTemplate({ letter, format }: DottedGridTemplat
         <div className="relative">
           <p
             className="text-2xl font-semibold"
-            style={{ fontFamily: detailsFont, color: format.accentColor }}
+           style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.2}pt` }}
+
           >
             {format.contact.name}
           </p>
           <div
             className="mt-2 flex flex-col gap-0.5 text-xs text-stone-500"
-            style={{ fontFamily: detailsFont }}
+            style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}
           >
             <span>{format.contact.email}</span>
             <span>{format.contact.phone}</span>

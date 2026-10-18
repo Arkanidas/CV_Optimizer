@@ -16,13 +16,13 @@ export default function CompassTemplate({ letter, format }: CompassTemplateProps
       <header className="flex items-start justify-between gap-6 px-10 pt-10 sm:px-12">
         <p
           className="text-2xl font-semibold tracking-wide"
-          style={{ fontFamily: detailsFont, color: format.accentColor }}
+         style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.2}pt` }}
         >
           {format.contact.name}
         </p>
         <div
           className="flex flex-col items-end gap-1 text-right text-xs text-stone-500"
-          style={{ fontFamily: detailsFont }}
+          style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}
         >
           <span>{format.contact.email}</span>
           <span>{format.contact.phone}</span>

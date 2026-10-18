@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import { Download } from "lucide-react";
 import FontSelect from "./FontSelect";
 import FontSizeSlider from "./FontSizeSlider";
 import {
@@ -21,6 +22,7 @@ interface FormatPanelProps {
   contact: ContactDetails;
   onContactChange: (contact: ContactDetails) => void;
   contactLoading?: boolean;
+  onDownload?: () => void;
 }
 
 const FILE_TYPES: { id: DownloadFileType; label: string }[] = [
@@ -65,6 +67,7 @@ export default function FormatPanel({
   contact,
   onContactChange,
   contactLoading = false,
+  onDownload,
 }: FormatPanelProps) {
   function update(patch: Partial<FormatSettings>) {
     onChange({ ...format, ...patch });
@@ -75,7 +78,7 @@ export default function FormatPanel({
   }
 
   return (
-    <div className="flex max-h-[calc(100vh-9rem)] flex-col gap-6 overflow-y-auto rounded-2xl border border-white/10 bg-white/[0.03] p-5 [scrollbar-color:rgba(255,255,255,0.2)_transparent] [scrollbar-width:thin]">
+    <div className="flex max-h-[calc(100vh-7rem)] flex-col gap-6 overflow-y-auto rounded-2xl border border-white/10 bg-white/[0.03] p-5 [scrollbar-color:rgba(255,255,255,0.2)_transparent] [scrollbar-width:thin]">
       <section className="flex flex-col gap-5">
         <div>
           <h3 className="text-sm font-medium uppercase tracking-widest text-violet-300">Text</h3>
@@ -190,6 +193,15 @@ export default function FormatPanel({
               {type.label}
             </button>
           ))}
+
+          <button
+            type="button"
+            onClick={onDownload}
+            className="col-span-2 mt-2 flex items-center justify-center gap-2 rounded-xl border border-transparent bg-violet-500 px-4 py-2.5 cursor-pointer text-sm font-semibold text-white transition-colors hover:bg-violet-400"
+          >
+            <Download className="h-4 w-4" />
+            Download {format.fileType.toUpperCase()}
+          </button>
         </div>
       </section>
     </div>

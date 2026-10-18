@@ -16,7 +16,7 @@ export default function HorizonTemplate({ letter, format }: HorizonTemplateProps
       <header className="px-10 py-8 sm:px-12" style={{ backgroundColor: format.accentColor }}>
         <p
           className="text-2xl font-semibold tracking-wide text-white"
-          style={{ fontFamily: detailsFont }}
+          style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.2}pt` }}
         >
           {format.contact.name}
         </p>
@@ -24,7 +24,7 @@ export default function HorizonTemplate({ letter, format }: HorizonTemplateProps
 
       <div
         className="flex flex-col gap-1 px-10 pt-6 text-xs text-stone-500 sm:px-12"
-        style={{ fontFamily: detailsFont }}
+        style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}
       >
         <span>{format.contact.email}</span>
         <span>{format.contact.phone}</span>

@@ -30,12 +30,12 @@ export default function DiagonalRibbonTemplate({ letter, format }: DiagonalRibbo
       </div>
 
       <header className="px-10 pb-4 pt-10 sm:px-12">
-        <p className="text-2xl font-semibold" style={{ fontFamily: detailsFont }}>
+        <p className="text-2xl font-semibold" style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.2}pt` }}>
           {format.contact.name}
         </p>
         <div
           className="mt-2 flex flex-col gap-0.5 text-xs text-stone-500"
-          style={{ fontFamily: detailsFont }}
+          style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}
         >
           <span>{format.contact.email}</span>
           <span>{format.contact.phone}</span>

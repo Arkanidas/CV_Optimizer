@@ -77,7 +77,7 @@ export default function StepReview({generatedLetter = "", onGeneratedLetterChang
       <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-white/10 lg:block" />
 
       <section
-        className="flex min-w-0 justify-center lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto lg:pr-8 lg:[scrollbar-gutter:stable]"
+        className="flex min-w-0 justify-center lg:sticky lg:top-0 lg:max-h-[calc(100vh-4rem)] lg:max-h-screen lg:overflow-y-auto lg:pr-8 lg:[scrollbar-gutter:stable]"
         aria-label="Cover letter workspace"
       >
         <div className="flex w-full max-w-[650px] flex-col gap-4">

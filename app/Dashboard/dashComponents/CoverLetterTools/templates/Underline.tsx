@@ -14,7 +14,7 @@ export default function UnderlineTemplate({ letter, format }: UnderlineTemplateP
   return (
     <article className="flex min-h-full flex-col bg-white text-[#1c1917]">
       <header className="px-10 pb-6 pt-10 sm:px-12">
-        <p className="text-3xl font-semibold" style={{ fontFamily: detailsFont }}>
+        <p className="text-3xl font-semibold" style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.2}pt` }}>
           {format.contact.name}
         </p>
         {/* TWEAK ZONE — accent bar. h-1.5 = thickness, w-20 = length.
@@ -25,7 +25,7 @@ export default function UnderlineTemplate({ letter, format }: UnderlineTemplateP
         />
         <div
           className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500"
-          style={{ fontFamily: detailsFont }}
+          style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}
         >
           <span>{format.contact.email}</span>
           <span>{format.contact.phone}</span>

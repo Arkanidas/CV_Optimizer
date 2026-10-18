@@ -13,7 +13,7 @@ interface TemplateGalleryProps {
 export default function TemplateGallery({ selectedId, onSelect, format }: TemplateGalleryProps) {
   return (
   
-    <div className="h-[calc(100vh-9rem)] min-h-[320px] overflow-y-auto scroll-smooth p-1.5 [scrollbar-color:rgba(255,255,255,0.2)_transparent] [scrollbar-width:thin]">
+    <div className="h-[calc(100vh-7rem)] min-h-[320px] overflow-y-auto scroll-smooth p-1.5 [scrollbar-color:rgba(255,255,255,0.2)_transparent] [scrollbar-width:thin]">
       <div className="grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-3">
         {LETTER_TEMPLATES.map((template) => {
           const isSelected = selectedId === template.id;

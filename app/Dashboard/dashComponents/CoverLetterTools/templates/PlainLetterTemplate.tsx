@@ -15,9 +15,9 @@ export default function PlainLetterTemplate({ letter, format }: PlainLetterTempl
     <article className="flex min-h-full flex-col bg-white text-[#1c1917]">
       <div
         className="flex flex-col gap-1 px-10 pt-10 text-xs text-stone-500 sm:px-12"
-        style={{ fontFamily: detailsFont }}
+        style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}
       >
-        <span className="text-sm font-semibold text-stone-900">{format.contact.name}</span>
+        <span className="text-sm font-semibold text-stone-900 mb-2" style={{ fontSize: `${format.detailsFontSize * 2.2}pt` }}>{format.contact.name}</span>
         <span>{format.contact.email}</span>
         <span>{format.contact.phone}</span>
         <span>{format.contact.address}</span>

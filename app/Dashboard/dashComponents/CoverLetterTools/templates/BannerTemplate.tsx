@@ -19,14 +19,19 @@ export default function BannerTemplate({ letter, format }: BannerTemplateProps) 
           <div className="bg-[#c4a574] px-8 py-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
             <p
               className="text-xl tracking-wide text-[#12100e] sm:text-2xl"
-              style={{ fontFamily: detailsFont }}
+              style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2}pt` }}
             >
-              Cover Letter
+            {format.contact.name}
             </p>
           </div>
         </div>
       </header>
 
+      <div className="flex flex-col gap-1 px-10 pt-10 text-xs text-stone-500 sm:px-12" style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt` }}>
+        <span>{format.contact.email}</span>
+        <span>{format.contact.phone}</span>
+        <span>{format.contact.address}</span>
+      </div>
       <div className="flex-1 px-10 py-10 sm:px-12">
         {paragraphs.length === 0 ? (
           <p
