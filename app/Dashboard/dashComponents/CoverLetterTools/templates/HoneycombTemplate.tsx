@@ -48,7 +48,7 @@ export default function HoneycombTemplate({ letter, format }: HoneycombTemplateP
           style={{
             fontFamily: detailsFont,
             fontSize: `${format.detailsFontSize * 2.2}pt`,
-            color: INK_COLOR,
+            color: format.accentColor,
           }}
         >
           {format.contact.name}

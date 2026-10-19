@@ -13,7 +13,7 @@ interface CoverLetterPreviewProps {
   templateId: string;
 }
 
-const PREVIEW_WIDTH = 720;
+const PREVIEW_WIDTH = 750;
 
 export default function CoverLetterPreview({ letter, format, contact, templateId }: CoverLetterPreviewProps) {
   const template = LETTER_TEMPLATES.find((t) => t.id === templateId) ?? LETTER_TEMPLATES[0];

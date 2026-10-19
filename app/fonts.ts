@@ -1,84 +1,175 @@
 
 import {
-  Inter,
-  Roboto,
-  Open_Sans,
-  Lato,
-  Merriweather,
-  Montserrat,
   Poppins,
-  Playfair_Display,
-  Source_Sans_3,
-  DM_Sans,
+  Ubuntu,
+  Jost,
+  Geist,
+  Lexend,
+  Epilogue,
+  Coda,
+  Wix_Madefor_Text,
+  REM,
+  Tilt_Warp,
+  Pathway_Extreme,
+  Convergence,
+  Magra,
+  SUSE,
+  Piazzolla,
+  Marmelad,
+  Inder,
+  Fira_Sans,
+  Cherry_Swash,
+  Inter,
 } from "next/font/google";
 
-// 1. Initialize each font at module scope.
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+export const poppins = Poppins({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-poppins",
+  weight: ["400", "500", "600", "700"],
+});
 
-const roboto = Roboto({
+export const ubuntu = Ubuntu({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-ubuntu",
+   weight: ["400", "500"],
+});
+
+export const jost = Jost({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jost",
+});
+
+export const geist = Geist({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist",
+});
+
+export const lexend = Lexend({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-lexend",
+});
+
+export const epilogue = Epilogue({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-epilogue",
+});
+
+export const coda = Coda({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-coda",
+   weight: ["400"],
+});
+
+export const wixMadeforText = Wix_Madefor_Text({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-wix-madefor-text",
+});
+
+export const rem = REM({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-rem",
+});
+
+export const tiltWarp = Tilt_Warp({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-tilt-warp",
+});
+
+export const pathwayExtreme = Pathway_Extreme({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-pathway-extreme",
+});
+
+export const convergence = Convergence({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-convergence",
+  weight: ["400"],
+});
+
+export const magra = Magra({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-magra",
+   weight: ["400", "700"],
+});
+
+export const suse = SUSE({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-suse",
+});
+
+export const piazzolla = Piazzolla({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-piazzolla",
+});
+
+export const marmelad = Marmelad({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-marmelad",
+   weight: ["400"],
+});
+
+export const inder = Inder({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inder",
+   weight: ["400"],
+});
+
+export const firaSans = Fira_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-fira-sans",
+});
+
+export const cherrySwash = Cherry_Swash({
   subsets: ["latin"],
   weight: ["400", "700"],
   display: "swap",
+  variable: "--font-cherry-swash",
 });
 
-const openSans = Open_Sans({
+export const inter = Inter({
   subsets: ["latin"],
   display: "swap",
+  variable: "--font-inter",
 });
 
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-});
-
-const merriweather = Merriweather({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-});
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-});
-
-const playfairDisplay = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-});
-
-const sourceSans3 = Source_Sans_3({
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  display: "swap",
-});
-
-// 2. Reference the initialized fonts in the testing array.
-export const testFonts = [
-  { id: "inter", label: "Inter", font: inter },
-  { id: "roboto", label: "Roboto", font: roboto },
-  { id: "open-sans", label: "Open Sans", font: openSans },
-  { id: "lato", label: "Lato", font: lato },
-  { id: "merriweather", label: "Merriweather", font: merriweather },
-  { id: "montserrat", label: "Montserrat", font: montserrat },
-  { id: "poppins", label: "Poppins", font: poppins },
-  {
-    id: "playfair-display",
-    label: "Playfair Display",
-    font: playfairDisplay,
-  },
-  { id: "source-sans-3", label: "Source Sans 3", font: sourceSans3 },
-  { id: "dm-sans", label: "DM Sans", font: dmSans },
-];
+export const fontVariables = [
+  poppins.variable,
+  ubuntu.variable,
+  jost.variable,
+  geist.variable,
+  lexend.variable,
+  epilogue.variable,
+  coda.variable,
+  wixMadeforText.variable,
+  rem.variable,
+  tiltWarp.variable,
+  pathwayExtreme.variable,
+  convergence.variable,
+  magra.variable,
+  suse.variable,
+  piazzolla.variable,
+  marmelad.variable,
+  inder.variable,
+  firaSans.variable,
+  cherrySwash.variable,
+  inter.variable,
+].join(" ");

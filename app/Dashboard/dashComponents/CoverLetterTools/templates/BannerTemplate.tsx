@@ -13,7 +13,7 @@ export default function BannerTemplate({ letter, format }: BannerTemplateProps) 
 
   return (
     <article className="flex min-h-full flex-col bg-white text-[#1c1917] w-full">
-      <header className="relative bg-[#12100e] px-8 pb-8 pt-7 w-full ">
+      <header className="relative px-8 pb-8 pt-7" style={{ backgroundColor: format.accentColor }}>
         <div className="h-px w-full bg-[#c4a574]/40 " />
          <div className="mt-6 flex justify-center ">
           <div className="bg-[#c4a574] px-8 py-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">

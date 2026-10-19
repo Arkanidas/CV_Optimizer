@@ -81,7 +81,7 @@ export default function MetalTemplate({ letter, format }: MetalTemplateProps) {
             className="flex flex-col items-end gap-0.5 text-right"
             style={{
               ...engraved,
-              color: "#454d56",
+              color: format.accentColor,
               fontFamily: detailsFont,
               fontSize: `${format.detailsFontSize}pt`,
             }}

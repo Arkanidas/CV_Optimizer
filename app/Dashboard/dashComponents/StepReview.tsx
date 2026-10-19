@@ -98,17 +98,17 @@ export default function StepReview({generatedLetter = "", onGeneratedLetterChang
           )}
 
           {activePane === "templates" && (
-            <TempleteGallery
-              selectedId={selectedTemplateId}
-              onSelect={setSelectedTemplateId}
-              format={format}
-            />
+           <TempleteGallery
+             selectedId={selectedTemplateId}
+             onSelect={setSelectedTemplateId}
+             format={format}
+              onColorChange={(color) => setFormat((prev) => ({ ...prev, accentColor: color }))}/>
           )}
         </div>
       </section>
 
       <section
-        className="flex min-w-0 justify-center lg:-mr-8"
+        className="flex min-w-0 justify-center lg:-mr-11"
         aria-label="Formatted cover letter preview"
       >
         <CoverLetterPreview

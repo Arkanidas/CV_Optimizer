@@ -15,12 +15,7 @@ interface PageStageProps {
   fitContent?: boolean;
 }
 
-export default function PageStage({
-  width,
-  children,
-  className = "",
-  fitContent = false,
-}: PageStageProps) {
+export default function PageStage({width,children,className = "",fitContent = false,}: PageStageProps) {
   const scale = width / PAGE_STAGE_WIDTH;
   const stageRef = useRef<HTMLDivElement>(null);
   const [stageHeight, setStageHeight] = useState(PAGE_STAGE_HEIGHT);

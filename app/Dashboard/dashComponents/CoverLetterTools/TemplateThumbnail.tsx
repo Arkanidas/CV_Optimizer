@@ -15,7 +15,7 @@ export default function TemplateThumbnail({ Component, format }: TemplateThumbna
   const thumbFormat: LetterFormat = { ...format, contact: SAMPLE_CONTACT };
 
   return (
-    <PageStage width={THUMB_WIDTH} className="rounded-md border border-black/5 bg-white">
+    <PageStage width={THUMB_WIDTH} className="rounded-md border border-black/5 bg-white text-left">
       <Component letter={SAMPLE_LETTER} format={thumbFormat} />
     </PageStage>
   );
