@@ -10,6 +10,7 @@ import { EMPTY_CONTACT_DETAILS } from "./CoverLetterTools/contactDetails";
 import TempleteGallery from "./CoverLetterTools/TemplateGallery";
 import { LETTER_TEMPLATES } from "./CoverLetterTools/templates/templateRegistry";
 import type { ContactDetails } from "@/lib/AI/schemas";
+import { downloadLetter } from "./CoverLetterTools/exportLetter";
 
 interface StepReviewProps {
   generatedLetter?: string;
@@ -27,6 +28,28 @@ export default function StepReview({generatedLetter = "", onGeneratedLetterChang
   const [contact, setContact] = useState<ContactDetails>(contactDetails ?? EMPTY_CONTACT_DETAILS);
   const [extractingContact, setExtractingContact] = useState(false);
   const hasStartedExtraction = useRef(false);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState("");
+
+
+
+async function handleDownload() {
+  setDownloadError("");
+  setDownloading(true);
+  try {
+    await downloadLetter({
+      letter: localLetter,
+      format,
+      contact,
+      templateId: selectedTemplateId,
+    });
+  } catch (err) {
+    console.error("Download failed:", err);
+    setDownloadError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+  } finally {
+    setDownloading(false);
+  }
+}
 
   // Read the candidate's details from the CV once. contactDetails being
   // undefined means "never extracted"; once it is an object (extracted or
@@ -51,7 +74,6 @@ export default function StepReview({generatedLetter = "", onGeneratedLetterChang
           onContactDetailsChange?.(data.contact);
         }
       } catch (err) {
-        // Fields stay empty and the user can fill them in by hand.
         console.error("Contact extraction failed:", err);
       } finally {
         setExtractingContact(false);
@@ -94,6 +116,9 @@ export default function StepReview({generatedLetter = "", onGeneratedLetterChang
               contact={contact}
               onContactChange={handleContactChange}
               contactLoading={extractingContact}
+              onDownload={handleDownload}
+              downloading={downloading}
+              downloadError={downloadError}
             />
           )}
 

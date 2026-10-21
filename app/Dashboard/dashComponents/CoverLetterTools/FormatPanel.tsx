@@ -1,20 +1,12 @@
 "use client";
 
 import { useId } from "react";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import FontSelect from "./FontSelect";
 import FontSizeSlider from "./FontSizeSlider";
-import {
-  BODY_FONT_OPTIONS,
-  DETAILS_FONT_OPTIONS,
-  DETAILS_FONT_SIZE_MAX,
-  DETAILS_FONT_SIZE_MIN,
-  FONT_SIZE_MAX,
-  FONT_SIZE_MIN,
-  type DownloadFileType,
-  type FormatSettings,
-} from "./letterFormat";
+import {BODY_FONT_OPTIONS, DETAILS_FONT_OPTIONS, DETAILS_FONT_SIZE_MAX, DETAILS_FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_MIN, type DownloadFileType, type FormatSettings} from "./letterFormat";
 import type { ContactDetails } from "@/lib/AI/schemas";
+
 
 interface FormatPanelProps {
   format: FormatSettings;
@@ -23,6 +15,8 @@ interface FormatPanelProps {
   onContactChange: (contact: ContactDetails) => void;
   contactLoading?: boolean;
   onDownload?: () => void;
+  downloading?: boolean;
+  downloadError?: string;
 }
 
 const FILE_TYPES: { id: DownloadFileType; label: string }[] = [
@@ -61,14 +55,7 @@ function DetailField({ label, value, onChange, maxLength, type = "text", disable
   );
 }
 
-export default function FormatPanel({
-  format,
-  onChange,
-  contact,
-  onContactChange,
-  contactLoading = false,
-  onDownload,
-}: FormatPanelProps) {
+export default function FormatPanel({format,onChange,contact,onContactChange,contactLoading = false,onDownload,downloading = false,downloadError = "",}: FormatPanelProps) {
   function update(patch: Partial<FormatSettings>) {
     onChange({ ...format, ...patch });
   }
@@ -195,13 +182,16 @@ export default function FormatPanel({
           ))}
 
           <button
-            type="button"
-            onClick={onDownload}
-            className="col-span-2 mt-2 flex items-center justify-center gap-2 rounded-xl border border-transparent bg-violet-500 px-4 py-2.5 cursor-pointer text-sm font-semibold text-white transition-colors hover:bg-violet-400"
-          >
-            <Download className="h-4 w-4" />
-            Download {format.fileType.toUpperCase()}
-          </button>
+  type="button"
+  onClick={onDownload}
+  disabled={downloading}
+  className="col-span-2 flex items-center justify-center gap-2 rounded-xl border border-transparent bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60"
+>
+  {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+  {downloading ? "Preparing..." : `Download ${format.fileType.toUpperCase()}`}
+</button>
+
+{downloadError && <p className="col-span-2 text-xs text-red-400">{downloadError}</p>}
         </div>
       </section>
     </div>

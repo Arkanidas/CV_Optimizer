@@ -7,9 +7,9 @@ interface HoneycombTemplateProps {
 }
 
 // TWEAK ZONE
-const PAPER_COLOR = "#e9f6ea"; // the light green paper
-const INK_COLOR = "#14532d"; // name and rule
-const HEX_COLOR = "#166534"; // hexagon outlines
+const PAPER_COLOR = "#ffd67c"; // the light green paper
+const INK_COLOR = "#6d4b03"; // name and rule
+const HEX_COLOR = "#362500b9"; 
 const HEX_OPACITY = 0.1; // "barely visible": raise for stronger, lower for fainter
 const HEX_SIZE = 14; // side length in px: smaller = denser grid
 
@@ -47,7 +47,7 @@ export default function HoneycombTemplate({ letter, format }: HoneycombTemplateP
           className="font-semibold tracking-wide"
           style={{
             fontFamily: detailsFont,
-            fontSize: `${format.detailsFontSize * 2.2}pt`,
+            fontSize: `${format.detailsFontSize * 2.4}pt`,
             color: format.accentColor,
           }}
         >
