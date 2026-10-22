@@ -36,7 +36,6 @@ export default function BubbleHeaderTemplate({ letter, format }: BubbleHeaderTem
             className="font-semibold tracking-wide"
             style={{
               fontFamily: detailsFont,
-              color: format.accentColor,
               fontSize: `${format.detailsFontSize * 2.2}pt`,
             }}
           >

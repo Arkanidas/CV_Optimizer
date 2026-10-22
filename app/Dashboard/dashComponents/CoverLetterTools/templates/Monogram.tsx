@@ -26,7 +26,7 @@ export default function MonogramTemplate({ letter, format }: MonogramTemplatePro
             clipPath and use "rounded-full" on the className instead
             for a plain circle. */}
         <div
-          className="flex h-16 w-16 shrink-0 items-center justify-center text-lg font-semibold text-white"
+          className="flex h-18 w-20 shrink-0 items-center justify-center text-lg font-semibold text-white"
           style={{
             backgroundColor: format.accentColor,
             clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",

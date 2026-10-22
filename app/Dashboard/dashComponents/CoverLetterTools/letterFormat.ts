@@ -99,18 +99,20 @@ export const DETAILS_FONT_OPTIONS: FontOption[] = [
 
 export const ACCENT_COLOR_OPTIONS: string[] = [
   "#1e1b4b", // indigo-950 (default, keep first)
-  "#1d4ed8", // blue-700
+  "#1245d3", // blue-700
   "#0f766e", // teal-700
   "#166534", // green-800
   "#6d28d9", // violet-700
   "#be185d", // pink-700
   "#991b1b", // red-800
-  "#9a3412", // orange-800
-  "#374151", // gray-700
+  "#eea41a", // orange-800
+  "#374151", 
+  "#d103ec",
+  "#13eff7",  // gray-700
 ];
 
 export const FONT_SIZE_MIN = 11;
-export const FONT_SIZE_MAX = 16;
+export const FONT_SIZE_MAX = 15;
 
 export const DETAILS_FONT_SIZE_MIN = 9;
 export const DETAILS_FONT_SIZE_MAX = 14;
