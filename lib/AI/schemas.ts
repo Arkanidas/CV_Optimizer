@@ -78,11 +78,11 @@ export const AnalysisConclusionSchema = z.object({
     "2-4 sentences, written directly to the candidate using 'you', giving an honest, realistic overview of their fit for this specific role."
   ),
   strengths: z.array(z.string()).describe(
-    "Up to 4 short, specific points on what makes this candidate a good fit for this job."
-  ),
+  "Up to 4 short, specific points on what makes this candidate a good fit. A JSON array with one separate string per point, never a single combined string."
+),
   gaps: z.array(z.string()).describe(
-    "Up to 4 short, specific points on what's missing or weak for this job."
-  ),
+  "Up to 4 short, specific points on what's missing or weak for this job. A JSON array with one separate string per point, never a single combined string."
+),
   recommendation: z.string().describe(
     "One direct sentence telling the candidate whether it's worth proceeding to personalize a cover letter for this job or not."
   ),

@@ -56,6 +56,57 @@ export async function generateWithClaude(params: {
   }
 }
 
+function unwrapOptional(field: z.ZodTypeAny): z.ZodTypeAny {
+  return field instanceof z.ZodOptional ? (field.unwrap() as z.ZodTypeAny) : field;
+}
+
+function listFromString(value: string, allowPlainText: boolean): unknown[] | null {
+  const text = value.trim();
+
+  if (text.startsWith("[") || text.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(text);
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null; // broken JSON: let validation fail so the retry runs
+    }
+  }
+
+  if (!allowPlainText) return null;
+
+  // Plain text like "- point one\n- point two" becomes a real list
+  return text
+    .split(/\r?\n|;\s+/)
+    .map((item) => item.replace(/^\s*(?:[-•*–]|\d+[.)])\s*/, "").trim())
+    .filter(Boolean);
+}
+
+function coerceStructuredInput(schema: z.ZodTypeAny, input: unknown): unknown {
+  if (typeof input !== "object" || input === null || !(schema instanceof z.ZodObject)) {
+    return input;
+  }
+
+  const shape = schema.shape as Record<string, z.ZodTypeAny>;
+  const result: Record<string, unknown> = { ...(input as Record<string, unknown>) };
+
+  for (const key of Object.keys(shape)) {
+    const field = unwrapOptional(shape[key]);
+    if (!(field instanceof z.ZodArray)) continue;
+
+    const value = result[key];
+    const listOfStrings = (field as z.ZodArray<z.ZodTypeAny>).element instanceof z.ZodString;
+
+    if (typeof value === "string") {
+      const list = listFromString(value, listOfStrings);
+      if (list) result[key] = list;
+    } else if (value && typeof value === "object" && !Array.isArray(value)) {
+      // grouped by category instead of one flat array
+      result[key] = Object.values(value).flat();
+    }
+  }
+
+  return result;
+}
 
 export async function generateStructuredWithClaude<T>(params: {
   tier: SubscriptionTier;
@@ -92,42 +143,19 @@ export async function generateStructuredWithClaude<T>(params: {
       throw new Error("Claude did not return structured output");
     }
 
-    let input = toolUseBlock.input;
+ const coerced = coerceStructuredInput(schema, toolUseBlock.input);
+ const parsed = schema.safeParse(coerced);
 
-    if (typeof input === "object" && input !== null) {
+if (!parsed.success) {
+  // Temporary: shows what the bad value really looks like. Delete once seen.
+  console.error(
+    `Invalid structured output for ${toolName}:`,
+    JSON.stringify(toolUseBlock.input).slice(0, 600)
+  );
+  throw parsed.error;
+}
 
-      for (const key of Object.keys(input)) {
-        const value = (input as any)[key];
-        if (
-          typeof value === "string" &&
-          (value.trim().startsWith("[") || value.trim().startsWith("{"))
-        ) {
-          try {
-            (input as any)[key] = JSON.parse(value);
-          } catch {
-            console.error("Error parsing JSON for key:", key, "value:", value);
-          }
-        }
-      }
-
-      if (schema instanceof z.ZodObject) {
-        const shape = schema.shape as Record<string, z.ZodTypeAny>;
-        for (const key of Object.keys(shape)) {
-          const fieldSchema = shape[key];
-          const expectsArray =
-            fieldSchema instanceof z.ZodArray ||
-            (fieldSchema instanceof z.ZodOptional &&
-              fieldSchema._def.innerType instanceof z.ZodArray);
-
-          const value = (input as any)[key];
-          if (expectsArray && value && typeof value === "object" && !Array.isArray(value)) {
-            (input as any)[key] = Object.values(value).flat();
-          }
-        }
-      }
-    }
-
-    return schema.parse(input);
+return parsed.data;
   };
 
   try {
