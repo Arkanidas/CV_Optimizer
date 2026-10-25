@@ -30,9 +30,10 @@ interface WizardData {
   additionalInfo?: string;
   tone?: ToneOption | null;
   generatedLetter?: string;
-  conclusion?: AnalysisConclusion;
+  conclusion?: AnalysisConclusion | null;
   highlightedQualifications?: string[];
   contactDetails?: ContactDetails;
+  analysisRunId?: string;
 }
 
 
@@ -49,6 +50,17 @@ const STORAGE_KEY = "coverLetterWizardState";
 function getPersistableData(data: WizardData) {
   const { uploadedFile, ...rest } = data;
   return rest;
+}
+
+// One id per analysis. The server uses it to make sure a run is only paid
+// for once, even if the page is refreshed. The fallback covers pages opened
+// over plain http (for example from a phone on your network), where
+// crypto.randomUUID doesn't exist.
+function newRunId(): string {
+  return (
+    globalThis.crypto?.randomUUID?.() ??
+    `${Date.now()}-${Math.random().toString(36).slice(2, 12)}`
+  );
 }
 
 export default function CoverLetterWizard() {
@@ -119,7 +131,12 @@ export default function CoverLetterWizard() {
           return;
         }
 
-        setWizardData((prev) => ({ ...prev, ...data, cvText: result.text }));
+        setWizardData((prev) => ({
+          ...prev,
+          ...data,
+          cvText: result.text,
+          analysisRunId: newRunId(),
+        }));
         setExtracting(false);
         setCurrentStepIndex(1);
       } catch (err) {
@@ -130,7 +147,7 @@ export default function CoverLetterWizard() {
       return;
     }
 
-    setWizardData((prev) => ({ ...prev, ...data }));
+    setWizardData((prev) => ({ ...prev, ...data, analysisRunId: newRunId() }));
     setCurrentStepIndex(1);
   }
 
@@ -215,6 +232,7 @@ export default function CoverLetterWizard() {
               <Step1UploadContext
                 savedCvs={savedCvs}
                 onContinue={handleStep1Continue}/>
+                
             </>
           ))}
 
@@ -225,6 +243,7 @@ export default function CoverLetterWizard() {
             matchPercentage={wizardData.matchPercentage}
             matches={wizardData.matches}
             conclusion={wizardData.conclusion}
+            analysisRunId={wizardData.analysisRunId}
             onAnalysisComplete={(matchPercentage, matches, conclusion) =>
               setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
             }

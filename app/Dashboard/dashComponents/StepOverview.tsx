@@ -16,15 +16,51 @@ interface StepPersonalizeMatchProps {
   cvText: string;
   matchPercentage?: number;
   matches?: MatchingResults;
-  conclusion?: AnalysisConclusionType;
+  conclusion?: AnalysisConclusionType | null;
   onAnalysisComplete?: (
     matchPercentage: number,
     matches: MatchingResults,
-    conclusion: AnalysisConclusionType) => void;
+    conclusion: AnalysisConclusionType | null
+  ) => void;
   onContinue?: () => void;
+  analysisRunId?: string;
 }
 
-export default function StepPersonalizeMatch({jobDescription, cvText, matchPercentage, matches, conclusion, onAnalysisComplete, onContinue,}: StepPersonalizeMatchProps) {
+interface AnalysisResponse {
+  matches: MatchingResults;
+  matchPercentage: number;
+  conclusion: AnalysisConclusionType | null;
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// The request that claims the run does the work and simply waits. Any other
+// request for the same runId (a refresh, a second tab) gets "running" back
+// and polls until the first one has finished. Up to 80 x 3 s = 4 minutes.
+async function requestAnalysis(
+  runId: string,
+  cvText: string,
+  jobDescription: string
+): Promise<AnalysisResponse> {
+  for (let i = 0; i < 80; i++) {
+    const res = await fetch("/api/cover-letter/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ runId, cvText, jobDescription }),
+    });
+    const data = await res.json();
+
+    if (res.status === 202) {
+      await sleep(3000);
+      continue;
+    }
+    if (!res.ok) throw new Error(data.message || "Something went wrong analyzing your match.");
+    return data as AnalysisResponse;
+  }
+  throw new Error("The analysis is taking longer than expected. Please try again.");
+}
+
+export default function StepPersonalizeMatch({jobDescription,cvText,matchPercentage,matches,conclusion,onAnalysisComplete,onContinue,analysisRunId,}: StepPersonalizeMatchProps) {
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
 
@@ -35,48 +71,95 @@ export default function StepPersonalizeMatch({jobDescription, cvText, matchPerce
 
   const [matchPercent, setMatchPercent] = useState<number | null>(matchPercentage ?? null);
   const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const [conclusionRetrying, setConclusionRetrying] = useState(false);
+  const [conclusionError, setConclusionError] = useState("");
+
+  // A session saved before the run gate existed has no id, so there is
+  // nothing to start an analysis with. Shown as a notice instead of an
+  // endless spinner.
+  const needsFreshStart = !analysisRunId && matchPercentage === undefined && matches === undefined;
+
+  // Always call the latest callback without listing it as an effect
+  // dependency. A new function on every parent render is what used to
+  // restart the analysis.
+  const onCompleteRef = useRef(onAnalysisComplete);
+  useEffect(() => {
+    onCompleteRef.current = onAnalysisComplete;
+  });
+
+  // False once the component is really gone (for example after Start over),
+  // so a late response can't write old results into a new run.
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const startedForRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (matchPercentage !== undefined && matches !== undefined) {
       setMatchPercent(matchPercentage);
       return;
     }
+    if (!cvText || !jobDescription || !analysisRunId) return;
+    if (startedForRef.current === analysisRunId) return; // already running
+    startedForRef.current = analysisRunId;
 
-    let cancelled = false;
-
-    async function runAnalysis() {
+    async function run(runId: string) {
       setError("");
       setMatchPercent(null);
-
       try {
-        const res = await fetch("/api/cover-letter/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cvText, jobDescription }),
-        });
-        const data = await res.json();
-
-        if (!res.ok) {
-          if (!cancelled) setError(data.message || "Something went wrong analyzing your match.");
-          return;
-        }
-
-        if (!cancelled) {
-          setMatchPercent(data.matchPercentage);
-          onAnalysisComplete?.(data.matchPercentage, data.matches, data.conclusion);
-        }
+        const data = await requestAnalysis(runId, cvText, jobDescription);
+        if (!mountedRef.current) return;
+        setMatchPercent(data.matchPercentage);
+        onCompleteRef.current?.(data.matchPercentage, data.matches, data.conclusion ?? null);
       } catch (err) {
         console.error("Analysis error:", err);
-        if (!cancelled) setError("Something went wrong analyzing your match.");
+        startedForRef.current = null; // lets "Try again" start a new run
+        if (!mountedRef.current) return;
+        setError(
+          err instanceof Error && !(err instanceof SyntaxError)
+            ? err.message
+            : "Something went wrong analyzing your match."
+        );
       }
     }
 
-    if (cvText && jobDescription) runAnalysis();
+    run(analysisRunId);
+  }, [cvText, jobDescription, analysisRunId, matchPercentage, matches, attempt]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [cvText, jobDescription, matchPercentage, matches, onAnalysisComplete]);
+  function retryAnalysis() {
+    setError("");
+    setAttempt((n) => n + 1);
+  }
+
+  async function retryConclusion() {
+    if (!analysisRunId || matchPercentage === undefined || matches === undefined) return;
+    setConclusionRetrying(true);
+    setConclusionError("");
+    try {
+      const res = await fetch("/api/cover-letter/conclusion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ runId: analysisRunId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Couldn't write the summary.");
+      if (mountedRef.current) onCompleteRef.current?.(matchPercentage, matches, data.conclusion);
+    } catch (err) {
+      setConclusionError(
+        err instanceof Error && !(err instanceof SyntaxError)
+          ? err.message
+          : "Couldn't write the summary. Please try again."
+      );
+    } finally {
+      setConclusionRetrying(false);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -87,9 +170,22 @@ export default function StepPersonalizeMatch({jobDescription, cvText, matchPerce
         </p>
       </div>
 
+      {needsFreshStart && (
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          This saved session is from an older version of the app. Press Start over and upload again to run a fresh analysis.
+        </div>
+      )}
+
       {error && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          {error}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={retryAnalysis}
+            className="shrink-0 cursor-pointer rounded-lg border border-red-400/30 px-3 py-1 text-xs font-medium text-red-200 transition hover:bg-red-500/10"
+          >
+            Try again
+          </button>
         </div>
       )}
 
@@ -162,22 +258,38 @@ export default function StepPersonalizeMatch({jobDescription, cvText, matchPerce
         </div>
       </div>
 
-      {conclusion && (
-        <>
-          <AnalysisConclusion conclusion={conclusion} />
+      {conclusion && <AnalysisConclusion conclusion={conclusion} />}
 
-          {onContinue && (
-            <div className="flex justify-end">
-              <button
-                onClick={onContinue}
-                className="flex flex-row cursor-pointer items-center rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
-              >
-                Continue
-                <ArrowRight className="ml-1 mt-0.5 h-4.5 w-4.5" />
-              </button>
-            </div>
-          )}
-        </>
+      {/* The analysis worked but the written summary didn't: keep the
+          results and let the user retry only that last step. */}
+      {matchPercent !== null && conclusion === null && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-sm text-white/60">
+          <span>
+            {conclusionError || "The written summary couldn't be created this time. Your score and cards above are not affected."}
+          </span>
+          <button
+            type="button"
+            onClick={retryConclusion}
+            disabled={conclusionRetrying}
+            className="shrink-0 cursor-pointer rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-white/80 transition hover:bg-white/[0.06] disabled:cursor-wait disabled:opacity-50"
+          >
+            {conclusionRetrying ? "Writing..." : "Write summary"}
+          </button>
+        </div>
+      )}
+
+      {/* Shown as soon as the results exist, even if the summary failed,
+          so the user can never get stuck on this step. */}
+      {matchPercent !== null && onContinue && (
+        <div className="flex justify-end">
+          <button
+            onClick={onContinue}
+            className="flex flex-row cursor-pointer items-center rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+          >
+            Continue
+            <ArrowRight className="ml-1 mt-0.5 h-4.5 w-4.5" />
+          </button>
+        </div>
       )}
     </div>
   );
