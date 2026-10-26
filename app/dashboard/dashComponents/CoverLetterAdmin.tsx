@@ -11,6 +11,7 @@ import type { ToneOption } from "@/lib/AI/tiers";
 import StepGenerating from "./StepGenerating";
 import StepReview from "./StepReview";
 import ToastBanner from "./ToastBanner";
+import type { FormatSettings } from "./CoverLetterTools/letterFormat";
 
 interface SavedCv {
   id: string;
@@ -34,6 +35,8 @@ interface WizardData {
   highlightedQualifications?: string[];
   contactDetails?: ContactDetails;
   analysisRunId?: string;
+  letterFormat?: FormatSettings;
+  templateId?: string;
 }
 
 
@@ -203,7 +206,7 @@ export default function CoverLetterWizard() {
       />
     )}
 
-   {currentStepIndex === 4 && (
+{currentStepIndex === 4 && (
   <StepReview
     generatedLetter={wizardData.generatedLetter}
     onGeneratedLetterChange={(value) =>
@@ -214,6 +217,11 @@ export default function CoverLetterWizard() {
     onContactDetailsChange={(value) =>
       setWizardData((prev) => ({ ...prev, contactDetails: value }))
     }
+    analysisRunId={wizardData.analysisRunId}
+    initialFormat={wizardData.letterFormat}
+    onFormatChange={(value) => setWizardData((prev) => ({ ...prev, letterFormat: value }))}
+    initialTemplateId={wizardData.templateId}
+    onTemplateChange={(value) => setWizardData((prev) => ({ ...prev, templateId: value }))}
   />
 )}
 
