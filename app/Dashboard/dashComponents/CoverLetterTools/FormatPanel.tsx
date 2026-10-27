@@ -119,14 +119,14 @@ export default function FormatPanel({format,onChange,contact,onContactChange,con
           <DetailField
             label="First name"
             value={contact.firstName}
-            maxLength={40}
+            maxLength={12}
             disabled={contactLoading}
             onChange={(value) => updateContact({ firstName: value })}
           />
           <DetailField
             label="Last name"
             value={contact.lastName}
-            maxLength={40}
+            maxLength={20}
             disabled={contactLoading}
             onChange={(value) => updateContact({ lastName: value })}
           />
@@ -134,7 +134,7 @@ export default function FormatPanel({format,onChange,contact,onContactChange,con
             label="Email"
             type="email"
             value={contact.email}
-            maxLength={80}
+            maxLength={30}
             disabled={contactLoading}
             onChange={(value) => updateContact({ email: value })}
           />
@@ -142,7 +142,7 @@ export default function FormatPanel({format,onChange,contact,onContactChange,con
             label="Phone"
             type="tel"
             value={contact.phone}
-            maxLength={25}
+            maxLength={14}
             disabled={contactLoading}
             onChange={(value) => updateContact({ phone: value })}
           />
@@ -150,7 +150,7 @@ export default function FormatPanel({format,onChange,contact,onContactChange,con
             <DetailField
               label="Location"
               value={contact.location}
-              maxLength={60}
+              maxLength={20}
               disabled={contactLoading}
               onChange={(value) => updateContact({ location: value })}
             />
@@ -160,7 +160,7 @@ export default function FormatPanel({format,onChange,contact,onContactChange,con
 
       <hr className="border-white/10" />
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-2 ">
         <h4 className="text-sm font-medium text-white">File type</h4>
         <p className="text-xs text-white/40">
           Download will use this format. Nothing is exported yet.
@@ -171,7 +171,7 @@ export default function FormatPanel({format,onChange,contact,onContactChange,con
               key={type.id}
               type="button"
               onClick={() => update({ fileType: type.id })}
-              className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
+              className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition cursor-pointer ${
                 format.fileType === type.id
                   ? "border-violet-400/60 bg-violet-500/10 text-white"
                   : "border-white/10 bg-white/[0.03] text-white/60 hover:border-white/20 hover:text-white/90"
@@ -181,12 +181,7 @@ export default function FormatPanel({format,onChange,contact,onContactChange,con
             </button>
           ))}
 
-          <button
-  type="button"
-  onClick={onDownload}
-  disabled={downloading}
-  className="col-span-2 flex items-center justify-center gap-2 rounded-xl border border-transparent bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60"
->
+          <button type="button" onClick={onDownload} disabled={downloading} className="col-span-2 flex items-center justify-center cursor-pointer gap-2 rounded-xl border border-transparent bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60">
   {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
   {downloading ? "Preparing..." : `Download ${format.fileType.toUpperCase()}`}
 </button>

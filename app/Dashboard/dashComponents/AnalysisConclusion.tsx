@@ -16,6 +16,8 @@ const VERDICT_STYLES: Record<AnalysisConclusionType["verdict"], { label: string;
   poor_fit: { label: "Poor fit", text: "text-red-300", badge: "border-red-400/40 bg-red-500/10 text-red-300", },
 };
 
+const clean = (text: string) => text.replace(/<\/?item>/gi, "").trim();
+
 export default function AnalysisConclusion({ conclusion }: AnalysisConclusionProps) {
   const verdictStyle = VERDICT_STYLES[conclusion.verdict];
 
@@ -32,7 +34,7 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
         </span>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-white/80">{conclusion.summary}</p>
+      <p className="mt-3 text-sm leading-relaxed text-white/80">{clean(conclusion.summary)}</p>
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {conclusion.strengths.length > 0 && (
@@ -44,7 +46,7 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
               {conclusion.strengths.map((s, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                   <CheckCircle2 className="mt-0.5 h-4.5 w-4.5 shrink-0 text-emerald-400/70" />
-                  {s}
+                  {clean(s)}
                 </li>
               ))}
             </ul>
@@ -60,7 +62,7 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
               {conclusion.gaps.map((g, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                   <XCircle className="mt-0.5 h-4.5 w-4.5 shrink-0 text-red-400/60" />
-                  {g}
+                  {clean(g)}
                 </li>
               ))}
             </ul>
@@ -69,7 +71,7 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
       </div>
 
       <p className={`mt-5 border-t border-white/10 pt-4 text-sm font-medium ${verdictStyle.text}`}>
-        {conclusion.recommendation}
+        {clean(conclusion.recommendation)}
       </p>
 
       {conclusion.alternativeSuggestions && conclusion.alternativeSuggestions.length > 0 && (
@@ -80,7 +82,7 @@ export default function AnalysisConclusion({ conclusion }: AnalysisConclusionPro
           <ul className="flex flex-col gap-1.5 pl-4">
             {conclusion.alternativeSuggestions.map((role, i) => (
               <li key={i} className="list-disc text-sm text-white/70 marker:text-violet-400/60">
-                {role}
+                {clean(role)}
               </li>
             ))}
           </ul>

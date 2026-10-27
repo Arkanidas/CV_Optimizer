@@ -5,6 +5,7 @@ import type { SubscriptionTier } from "./tiers";
 
 export type { SubscriptionTier } 
 
+const clean = (text: string) => text.replace(/<\/?item>/gi, "").trim();
 
 if (!process.env.ANTHROPIC_API_KEY) {
   throw new Error("Missing ANTHROPIC_API_KEY in your environment variables");
@@ -60,25 +61,50 @@ function unwrapOptional(field: z.ZodTypeAny): z.ZodTypeAny {
   return field instanceof z.ZodOptional ? (field.unwrap() as z.ZodTypeAny) : field;
 }
 
+
+function itemsFromTags(text: string): string[] {
+  return Array.from(text.matchAll(/<item>([\s\S]*?)<\/item>/gi), (match) =>
+    match[1].trim()
+  ).filter(Boolean);
+}
+
 function listFromString(value: string, allowPlainText: boolean): unknown[] | null {
   const text = value.trim();
+
+  if (allowPlainText && /<item>/i.test(text)) {
+    const items = itemsFromTags(text);
+    if (items.length > 0) return items;
+  }
 
   if (text.startsWith("[") || text.startsWith("{")) {
     try {
       const parsed = JSON.parse(text);
       return Array.isArray(parsed) ? parsed : null;
     } catch {
-      return null; // broken JSON: let validation fail so the retry runs
+      return null; 
     }
   }
 
   if (!allowPlainText) return null;
 
-  // Plain text like "- point one\n- point two" becomes a real list
   return text
     .split(/\r?\n|;\s+/)
     .map((item) => item.replace(/^\s*(?:[-•*–]|\d+[.)])\s*/, "").trim())
     .filter(Boolean);
+}
+
+function stripItemTags(value: unknown): unknown {
+  if (typeof value === "string") return value.replace(/<\/?item>/gi, "").trim();
+  if (Array.isArray(value)) return value.map(stripItemTags);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, inner]) => [
+        key,
+        stripItemTags(inner),
+      ])
+    );
+  }
+  return value;
 }
 
 function coerceStructuredInput(schema: z.ZodTypeAny, input: unknown): unknown {
@@ -100,13 +126,15 @@ function coerceStructuredInput(schema: z.ZodTypeAny, input: unknown): unknown {
       const list = listFromString(value, listOfStrings);
       if (list) result[key] = list;
     } else if (value && typeof value === "object" && !Array.isArray(value)) {
-      // grouped by category instead of one flat array
+    
       result[key] = Object.values(value).flat();
     }
   }
 
-  return result;
+  return stripItemTags(result);
 }
+
+
 
 export async function generateStructuredWithClaude<T>(params: {
   tier: SubscriptionTier;
