@@ -183,7 +183,7 @@ export default function StepPersonalize({
           Why this company? <span className="text-red-400">*</span>
         </h3>
         <p className="mb-4 ml-0.5 text-sm text-white/50">
-          Explain in detail why you want to work for this company specifically - the more detailed & specific, the better outcome
+          Explain in detail why you want to work for this company specifically - The more detailed & specific, the better outcome
         </p>
         <textarea
           value={localWhyCompany}
@@ -202,12 +202,12 @@ export default function StepPersonalize({
         </p>
       </div>
 
-      <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">q
         <h3 className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">
           Why this specific role? <span className="text-red-400">*</span>
         </h3>
         <p className="mb-4 ml-0.5 text-sm text-white/50">
-          I like that this role combines frontend development with UX and that I would get to work on products used by many people.
+          Tell us why you want this specific job role and what excites you about it - The more detailed & specific, the better outcome.
         </p>
         <textarea
           value={localWhyRole}

@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-// Real A4 at 96 dpi: 210mm x 297mm = 794 x 1123 px. With the true pixel
-// size, "12 pt" inside the stage is a real 12 pt relative to the page, so
-// line counts and page breaks behave like a printed A4 letter.
-export const PAGE_STAGE_WIDTH = 850;
+
+// Dimensions of a single A4 page in pixels at 96dpi. 
+export const PAGE_STAGE_WIDTH = 794;
 export const PAGE_STAGE_HEIGHT = 1123;
 
 interface PageStageProps {

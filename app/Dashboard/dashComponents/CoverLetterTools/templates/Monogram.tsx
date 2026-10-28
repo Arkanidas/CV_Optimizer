@@ -21,17 +21,10 @@ export default function MonogramTemplate({ letter, format }: MonogramTemplatePro
       style={{ backgroundColor: `color-mix(in srgb, ${format.accentColor} 10%, white)` }}
     >
       <header className="flex items-center gap-5 px-10 pb-6 pt-10 sm:px-12">
-        {/* TWEAK ZONE — monogram shape. This clip-path makes a hexagon.
-            Swap the polygon points for a diamond/octagon, or delete
-            clipPath and use "rounded-full" on the className instead
-            for a plain circle. */}
+      
         <div
           className="flex h-18 w-20 shrink-0 items-center justify-center text-lg font-semibold text-white"
-          style={{
-            backgroundColor: format.accentColor,
-            clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-            fontFamily: detailsFont,
-          }}
+          style={{backgroundColor: format.accentColor, clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)", fontFamily: detailsFont,}}
         >
           {getInitials(format.contact.name)}
         </div>
@@ -42,10 +35,11 @@ export default function MonogramTemplate({ letter, format }: MonogramTemplatePro
           </p>
           <div
             className="mt-1 flex flex-col gap-0.5 text-xs text-stone-600"
-            style={{ fontFamily: detailsFont }}
+            style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize}pt`}}
           >
             <span>{format.contact.email}</span>
             <span>{format.contact.phone}</span>
+            <span>{format.contact.address}</span>
           </div>
         </div>
       </header>
