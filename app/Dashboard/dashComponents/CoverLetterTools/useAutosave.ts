@@ -19,12 +19,11 @@ const DEBOUNCE_MS = 1500; // wait this long after the last change
 const RETRY_MS = 5000; // after a failed save
 const BUSY_RECHECK_MS = 500; // a save is already running
 
-// Pass null while there's nothing worth saving yet.
+
 export function useAutosave(payload: AutosavePayload | null) {
   const [status, setStatus] = useState<SaveStatus>("idle");
 
-  // Timers read the newest payload when they fire, not the one from when
-  // they were created.
+
   const payloadRef = useRef<AutosavePayload | null>(payload);
   useEffect(() => {
     payloadRef.current = payload;
@@ -42,7 +41,7 @@ export function useAutosave(payload: AutosavePayload | null) {
     if (!current || !current.content.trim()) return;
 
     const currentBody = JSON.stringify(current);
-    if (currentBody === lastSavedRef.current) return; // nothing new
+    if (currentBody === lastSavedRef.current) return; 
 
     if (inFlightRef.current) {
       timerRef.current = setTimeout(save, BUSY_RECHECK_MS);

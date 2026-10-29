@@ -5,15 +5,16 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Mail, Settings, LogOut, ChevronUp, User as UserIcon } from "lucide-react";
+import { FileText, Mail, Settings, LogOut, ChevronUp, User as UserIcon, Sun, Moon } from "lucide-react";
 import logo from "@/app/assets/logo1.png";
 import SettingsModal from "@/components/SettingsModal";
 
 interface SidebarProps {
   theme: "dark" | "light";
+  onToggleTheme: () => void;
 }
 
-export default function Sidebar({ theme }: SidebarProps) {
+export default function Sidebar({ theme, onToggleTheme }: SidebarProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -163,6 +164,23 @@ export default function Sidebar({ theme }: SidebarProps) {
                 <Settings className={`h-4 w-4 ${isLight ? "text-black/40" : "text-white/40"}`} />
                 Settings
               </button>
+
+              {/* Theme toggle: deliberately does not close the menu */}
+              <button
+                onClick={onToggleTheme}
+                style={{ animationDelay: "100ms" }}
+                className={`flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm opacity-100 transition animate-stack-in cursor-pointer ${
+                  isLight ? "text-black/70 hover:text-black" : "text-white/70 hover:text-white"
+                }`}
+              >
+                {isLight ? (
+                  <Moon className="h-4 w-4 text-black/40" />
+                ) : (
+                  <Sun className="h-4 w-4 text-white/40" />
+                )}
+                {isLight ? "Dark mode" : "Light mode"}
+              </button>
+
               <button
                 onClick={handleLogout}
                 style={{ animationDelay: "200ms" }}

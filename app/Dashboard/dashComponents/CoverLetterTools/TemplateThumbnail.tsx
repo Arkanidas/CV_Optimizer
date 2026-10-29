@@ -7,15 +7,20 @@ import PageStage from "./PageStage";
 interface TemplateThumbnailProps {
   Component: ComponentType<{ letter: string; format: LetterFormat }>;
   format: FormatSettings;
+  width?: number;
 }
 
-const THUMB_WIDTH = 160;
+const DEFAULT_THUMB_WIDTH = 180;
 
-export default function TemplateThumbnail({ Component, format }: TemplateThumbnailProps) {
+export default function TemplateThumbnail({
+  Component,
+  format,
+  width = DEFAULT_THUMB_WIDTH,
+}: TemplateThumbnailProps) {
   const thumbFormat: LetterFormat = { ...format, contact: SAMPLE_CONTACT };
 
   return (
-    <PageStage width={THUMB_WIDTH} className="rounded-md border border-black/5 bg-white text-left">
+    <PageStage width={width} className="rounded-md border border-black/5 bg-white text-left ">
       <Component letter={SAMPLE_LETTER} format={thumbFormat} />
     </PageStage>
   );

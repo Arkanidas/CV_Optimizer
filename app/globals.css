@@ -2,6 +2,18 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Text with no explicit color would otherwise stay white on a light page */
+html[data-theme="light"] body {
+  color: #1c1917;
+  background: #ededed;
+}
+
 html,
 body {
   max-width: 100%;

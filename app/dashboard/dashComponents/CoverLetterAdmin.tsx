@@ -12,6 +12,8 @@ import StepGenerating from "./StepGenerating";
 import StepReview from "./StepReview";
 import ToastBanner from "./ToastBanner";
 import type { FormatSettings } from "./CoverLetterTools/letterFormat";
+import AutosaveIndicator from "./CoverLetterTools/AutosaveIndicator";
+import type { SaveStatus } from "./CoverLetterTools/useAutosave";
 
 interface SavedCv {
   id: string;
@@ -75,7 +77,7 @@ export default function CoverLetterWizard() {
   const [extractError, setExtractError] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const [showReadyToast, setShowReadyToast] = useState(false);
-
+ const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 
   
   useEffect(() => {
@@ -187,6 +189,7 @@ export default function CoverLetterWizard() {
     </button>
   )}
 </div>
+{isLastStep && <AutosaveIndicator status={saveStatus} />}
 
     {currentStepIndex === 3 && (
       <StepGenerating
@@ -222,6 +225,7 @@ export default function CoverLetterWizard() {
     onFormatChange={(value) => setWizardData((prev) => ({ ...prev, letterFormat: value }))}
     initialTemplateId={wizardData.templateId}
     onTemplateChange={(value) => setWizardData((prev) => ({ ...prev, templateId: value }))}
+    onSaveStatusChange={setSaveStatus}
   />
 )}
 

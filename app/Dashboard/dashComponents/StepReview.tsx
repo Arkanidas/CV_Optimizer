@@ -6,16 +6,11 @@ import CoverLetterPreview from "./CoverLetterTools/CoverLetterPreview";
 import WorkspaceTabs from "./CoverLetterTools/WorkspaceTabs";
 import FormatPanel from "./CoverLetterTools/FormatPanel";
 import TempleteGallery from "./CoverLetterTools/TemplateGallery";
-import AutosaveIndicator from "./CoverLetterTools/AutosaveIndicator";
-import { useAutosave } from "./CoverLetterTools/useAutosave";
+import { useAutosave, type SaveStatus  } from "./CoverLetterTools/useAutosave";
 import { downloadLetter } from "./CoverLetterTools/exportLetter";
 import { EMPTY_CONTACT_DETAILS } from "./CoverLetterTools/contactDetails";
 import { LETTER_TEMPLATES } from "./CoverLetterTools/templates/templateRegistry";
-import {
-  DEFAULT_LETTER_FORMAT,
-  type FormatSettings,
-  type ReviewPane,
-} from "./CoverLetterTools/letterFormat";
+import { DEFAULT_LETTER_FORMAT,type FormatSettings,type ReviewPane,} from "./CoverLetterTools/letterFormat";
 import type { ContactDetails } from "@/lib/AI/schemas";
 
 interface StepReviewProps {
@@ -29,6 +24,7 @@ interface StepReviewProps {
   onFormatChange?: (value: FormatSettings) => void;
   initialTemplateId?: string;
   onTemplateChange?: (value: string) => void;
+  onSaveStatusChange?: (status: SaveStatus) => void;
 }
 
 export default function StepReview({
@@ -42,6 +38,7 @@ export default function StepReview({
   onFormatChange,
   initialTemplateId,
   onTemplateChange,
+  onSaveStatusChange,
 }: StepReviewProps) {
   const [localLetter, setLocalLetter] = useState(generatedLetter);
   const [activePane, setActivePane] = useState<ReviewPane>("editor");
@@ -76,6 +73,10 @@ export default function StepReview({
         }
       : null
   );
+
+  useEffect(() => {
+  onSaveStatusChange?.(autosave.status);
+}, [autosave.status, onSaveStatusChange]);
 
   // Read the candidate's details from the CV once. contactDetails being
   // undefined means "never extracted"; once it is an object (extracted or
@@ -160,10 +161,10 @@ export default function StepReview({
         aria-label="Cover letter workspace"
       >
         <div className="flex w-full max-w-[650px] flex-col gap-4">
-          <div className="relative">
+       
             <WorkspaceTabs active={activePane} onChange={setActivePane} />
-            <AutosaveIndicator status={autosave.status} />
-          </div>
+          
+       
 
           {activePane === "editor" && (
             <LetterEditor value={localLetter} onChange={handleLetterChange} />
