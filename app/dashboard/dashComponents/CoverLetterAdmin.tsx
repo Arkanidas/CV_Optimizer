@@ -14,6 +14,7 @@ import ToastBanner from "./ToastBanner";
 import type { FormatSettings } from "./CoverLetterTools/letterFormat";
 import AutosaveIndicator from "./CoverLetterTools/AutosaveIndicator";
 import type { SaveStatus } from "./CoverLetterTools/useAutosave";
+import { WIZARD_STORAGE_KEY as STORAGE_KEY } from "./CoverLetterTools/wizardSession";
 
 interface SavedCv {
   id: string;
@@ -50,7 +51,7 @@ const steps: StepDefinition[] = [
   { id: "Review", label: "Review", icon: FileCheck },
 ];
 
-const STORAGE_KEY = "coverLetterWizardState";
+
 
 function getPersistableData(data: WizardData) {
   const { uploadedFile, ...rest } = data;
@@ -77,8 +78,8 @@ export default function CoverLetterWizard() {
   const [extractError, setExtractError] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const [showReadyToast, setShowReadyToast] = useState(false);
- const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
-
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [limitToastDismissed, setLimitToastDismissed] = useState(false);
   
   useEffect(() => {
     try {
@@ -161,6 +162,7 @@ export default function CoverLetterWizard() {
     setWizardData({});
     setCurrentStepIndex(0);
     setExtractError("");
+    setLimitToastDismissed(false);
   }
 
   const isLastStep = currentStepIndex === steps.length - 1;
@@ -169,9 +171,14 @@ export default function CoverLetterWizard() {
   setShowReadyToast(isLastStep);
 }, [isLastStep]);
 
+useEffect(() => {
+  if (saveStatus === "limit") setShowReadyToast(false);
+}, [saveStatus]);
+
   return (
   <div className="flex flex-col gap-8">
    <ToastBanner open={showReadyToast} title="Your cover letter is ready" message="Review and customize it before downloading or copying." onClose={() => setShowReadyToast(false)}/>
+   <ToastBanner variant="danger" open={isLastStep && saveStatus === "limit" && !limitToastDismissed} title="Your cover letter has reached its limit" message="Delete or upgrade to save more" onClose={() => setLimitToastDismissed(true)}/>
     
 <div className="flex items-center justify-between">
   {!isLastStep ? (

@@ -86,8 +86,8 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-lg font-semibold text-white">Your CV</h3>
-        <p className="mt-1 text-sm text-white/50">
+        <h3 className="text-lg font-semibold text-white light:text-stone-900">Your CV</h3>
+        <p className="mt-1 text-sm text-white/50 light:text-stone-600">
           Pick a CV you&apos;ve already saved, or upload a new one for this
           application.
         </p>
@@ -99,8 +99,8 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
             disabled={savedCvs.length === 0}
             className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
               mode === "select"
-                ? "border border-violet-400/50 bg-violet-500/20 text-violet-200"
-                : "border border-white/10 text-white/50 hover:text-white/80"
+                ? "border border-violet-400/50 bg-violet-500/20 text-violet-200 light:border-violet-500 light:bg-violet-100 light:text-violet-800"
+                : "border border-white/10 text-white/50 hover:text-white/80 light:border-black/15 light:text-stone-600 light:hover:text-stone-900"
             } disabled:cursor-not-allowed disabled:opacity-40`}
           >
             Use a saved CV
@@ -110,8 +110,8 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
             onClick={() => setMode("upload")}
             className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
               mode === "upload"
-                ? "border border-violet-400/50 bg-violet-500/20 text-violet-200"
-                : "border border-white/10 text-white/50 hover:text-white/80"
+                ? "border border-violet-400/50 bg-violet-500/20 text-violet-200 light:border-violet-500 light:bg-violet-100 light:text-violet-800"
+                : "border border-white/10 text-white/50 hover:text-white/80 light:border-black/15 light:text-stone-600 light:hover:text-stone-900"
             }`}
           >
             Upload new
@@ -127,14 +127,14 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
                 onClick={() => setSelectedCvId(cv.id)}
                 className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${
                   selectedCvId === cv.id
-                    ? "border-violet-400/60 bg-violet-500/10"
-                    : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                    ? "border-violet-400/60 bg-violet-500/10 light:border-violet-500 light:bg-violet-50"
+                    : "border-white/10 bg-white/[0.03] hover:border-white/20 light:border-black/10 light:bg-white light:hover:border-black/25"
                 }`}
               >
-                <FileText className="h-4 w-4 text-violet-300" />
+                <FileText className="h-4 w-4 text-violet-300 light:text-violet-600" />
                 <div>
-                  <p className="text-sm font-medium text-white">{cv.title}</p>
-                  <p className="text-xs text-white/40">
+                  <p className="text-sm font-medium text-white light:text-stone-900">{cv.title}</p>
+                  <p className="text-xs text-white/40 light:text-stone-500">
                     Updated {cv.updatedAt}
                   </p>
                 </div>
@@ -142,14 +142,14 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
             ))}
           </div>
         ) : (
-          <label className="mt-4 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-10 text-center transition-colors duration-100 hover:border-violet-400/50 hover:bg-violet-500/[0.03]">
-            <Upload className="h-6 w-6 text-violet-300" />
-            <span className="text-sm text-white/70">
+          <label className="mt-4 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-10 text-center transition-colors duration-100 hover:border-violet-400/50 hover:bg-violet-500/[0.03] light:border-black/20 light:bg-white light:hover:border-violet-500 light:hover:bg-violet-50">
+            <Upload className="h-6 w-6 text-violet-300 light:text-violet-600" />
+            <span className="text-sm text-white/70 light:text-stone-700">
               {uploadedFile
                 ? uploadedFile.name
                 : "Drop your CV here, or click to browse"}
             </span>
-            <span className="text-xs text-white/35">PDF or DOCX, up to 5MB</span>
+            <span className="text-xs text-white/35 light:text-stone-500">PDF or DOCX, up to 5MB</span>
             <input
               type="file"
               accept=".pdf,.docx"
@@ -161,12 +161,12 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
       </div>
 
       <div>
-        <h3 className="text-xl font-semibold text-white">Job Description</h3>
-        <p className="mt-1 text-sm text-white/50">
+        <h3 className="text-xl font-semibold text-white light:text-stone-900">Job Description</h3>
+        <p className="mt-1 text-sm text-white/50 light:text-stone-600">
           Paste the full job description, the more detail the better the Cover Letter - We also recommend not including about us sections or company history, as this will not be relevant
         </p>
         {showJdError && (
-          <p className="mt-2 text-sm font-medium text-red-400">{jdErrorMessage}</p>
+          <p className="mt-2 text-sm font-medium text-red-400 light:text-red-600">{jdErrorMessage}</p>
         )}
         <textarea
           value={jobDescription}
@@ -174,13 +174,13 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
           onChange={(e) => setJobDescription(e.target.value)}
           rows={8}
           placeholder="Paste the job description here..."
-          className={`mt-3 min-h-[280px] w-full resize-y rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 ${
+          className={`mt-3 min-h-[280px] w-full resize-y rounded-xl border bg-white/[0.03] px-4 py-3 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:ring-1 light:bg-white light:text-stone-900 light:placeholder:text-stone-400 ${
             showJdError || jobDescription.length >= MAX_JD_LENGTH
               ? "border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30"
-              : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30"
+              : "border-white/10 focus:border-violet-400/50 focus:ring-violet-400/30 light:border-black/15 light:focus:border-violet-500 light:focus:ring-violet-500/30"
           }`}
         />
-        <p className="mt-1 text-right text-xs text-white/30">
+        <p className="mt-1 text-right text-xs text-white/30 light:text-stone-500">
           {jobDescription.trim().length}/{MAX_JD_LENGTH} characters · min {MIN_JD_LENGTH}
         </p>
       </div>
@@ -192,7 +192,7 @@ export default function Step1UploadContext({ savedCvs, onContinue }: Step1Upload
         className={`ml-auto rounded-xl px-6 py-2.5 text-sm font-semibold transition-colors ${
           isFormValid && !validating
             ? "cursor-pointer bg-violet-500 text-white hover:bg-violet-400"
-            : "cursor-not-allowed bg-white/10 text-white/30"
+            : "cursor-not-allowed bg-white/10 text-white/30 light:bg-black/10 light:text-black/35"
         }`}
       >
         {validating ? "Checking..." : "Continue"}

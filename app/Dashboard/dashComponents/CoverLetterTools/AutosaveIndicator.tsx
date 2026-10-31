@@ -1,4 +1,4 @@
-import { Cloud, CloudOff, Loader2 } from "lucide-react";
+import { Ban, Cloud, CloudOff, Loader2 } from "lucide-react";
 import type { SaveStatus } from "./useAutosave";
 
 export default function AutosaveIndicator({ status }: { status: SaveStatus }) {
@@ -18,7 +18,12 @@ export default function AutosaveIndicator({ status }: { status: SaveStatus }) {
     error: {
       icon: <CloudOff className="h-3.5 w-3.5" />,
       label: "Not saved, retrying...",
-      className: "text-gray-400",
+      className: "text-amber-300",
+    },
+    limit: {
+      icon: <Ban className="h-3.5 w-3.5" />,
+      label: "Not saved, limit reached",
+      className: "text-red-400",
     },
   }[status];
 

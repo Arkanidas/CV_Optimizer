@@ -4,9 +4,9 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSavedLetterLimit, type SubscriptionTier } from "@/lib/AI/tiers";
 
 const MAX_LETTER_LENGTH = 20000;
-const MAX_SAVED_LETTERS = 100; // per user, make this tier-based later
 const DEFAULT_TITLE = "Cover letter";
 
 const SettingsSchema = z.object({
@@ -56,18 +56,27 @@ export async function POST(request: Request) {
   }
 
   const userId = session.user.id;
+  const tier: SubscriptionTier = session.user.tier ?? "free";
+  const limit = getSavedLetterLimit(tier);
   const { runId, content, templateId, settings, contact } = parsed.data;
-
+  // userId comes from the session, so a request can never touch another
+  // user's letter.
   const where = { userId_runId: { userId, runId } };
 
   try {
     const existing = await prisma.coverLetter.findUnique({ where, select: { id: true } });
 
+
     if (!existing) {
       const count = await prisma.coverLetter.count({ where: { userId } });
-      if (count >= MAX_SAVED_LETTERS) {
+      if (count >= limit) {
         return NextResponse.json(
-          { message: "You've reached the limit of saved cover letters." },
+          {
+            code: "LIMIT_REACHED",
+            message: "You've reached the limit of saved cover letters for your plan.",
+            count,
+            limit,
+          },
           { status: 403 }
         );
       }

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { ContactDetails } from "@/lib/AI/schemas";
 import type { FormatSettings } from "./letterFormat";
 
-export type SaveStatus = "idle" | "saving" | "saved" | "error";
+export type SaveStatus = "idle" | "saving" | "saved" | "error" | "limit";
 
 export interface AutosavePayload {
   runId: string;
@@ -19,11 +19,12 @@ const DEBOUNCE_MS = 1500; // wait this long after the last change
 const RETRY_MS = 5000; // after a failed save
 const BUSY_RECHECK_MS = 500; // a save is already running
 
-
+// Pass null while there's nothing worth saving yet.
 export function useAutosave(payload: AutosavePayload | null) {
   const [status, setStatus] = useState<SaveStatus>("idle");
 
-
+  // Timers read the newest payload when they fire, not the one from when
+  // they were created.
   const payloadRef = useRef<AutosavePayload | null>(payload);
   useEffect(() => {
     payloadRef.current = payload;
@@ -32,16 +33,21 @@ export function useAutosave(payload: AutosavePayload | null) {
   const lastSavedRef = useRef<string | null>(null);
   const inFlightRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Set when the server says the plan's limit is reached. From then on
+  // nothing is sent, instead of retrying a request that will keep failing.
+  const blockedRef = useRef(false);
 
   // An empty letter is never saved, so it can't wipe a saved one.
   const body = payload && payload.content.trim() ? JSON.stringify(payload) : null;
 
   const save: () => Promise<void> = useCallback(async () => {
+    if (blockedRef.current) return;
+
     const current = payloadRef.current;
     if (!current || !current.content.trim()) return;
 
     const currentBody = JSON.stringify(current);
-    if (currentBody === lastSavedRef.current) return; 
+    if (currentBody === lastSavedRef.current) return; // nothing new
 
     if (inFlightRef.current) {
       timerRef.current = setTimeout(save, BUSY_RECHECK_MS);
@@ -56,6 +62,16 @@ export function useAutosave(payload: AutosavePayload | null) {
         headers: { "Content-Type": "application/json" },
         body: currentBody,
       });
+
+      if (res.status === 403) {
+        const data = await res.json().catch(() => null);
+        if (data?.code === "LIMIT_REACHED") {
+          blockedRef.current = true;
+          setStatus("limit");
+          return;
+        }
+      }
+
       if (!res.ok) throw new Error(`Save failed (${res.status})`);
 
       lastSavedRef.current = currentBody;
@@ -71,7 +87,7 @@ export function useAutosave(payload: AutosavePayload | null) {
 
   // Debounce: every change restarts the countdown.
   useEffect(() => {
-    if (!body || body === lastSavedRef.current) return;
+    if (!body || blockedRef.current || body === lastSavedRef.current) return;
 
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(save, DEBOUNCE_MS);
@@ -85,6 +101,8 @@ export function useAutosave(payload: AutosavePayload | null) {
   // finish even while the page is closing.
   useEffect(() => {
     function flush() {
+      if (blockedRef.current) return;
+
       const current = payloadRef.current;
       if (!current || !current.content.trim()) return;
 
