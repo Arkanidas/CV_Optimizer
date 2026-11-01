@@ -30,7 +30,7 @@ export default function MonogramTemplate({ letter, format }: MonogramTemplatePro
         </div>
 
         <div>
-          <p className="text-xl font-semibold" style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.2}pt` }}>
+          <p className="text-xl font-semibold" style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.4}pt` }}>
             {format.contact.name}
           </p>
           <div

@@ -163,13 +163,12 @@ export default function CoverLetterWizard() {
     setCurrentStepIndex(0);
     setExtractError("");
     setLimitToastDismissed(false);
+    setShowReadyToast(false);
   }
 
   const isLastStep = currentStepIndex === steps.length - 1;
 
-  useEffect(() => {
-  setShowReadyToast(isLastStep);
-}, [isLastStep]);
+
 
 useEffect(() => {
   if (saveStatus === "limit") setShowReadyToast(false);
@@ -210,8 +209,10 @@ useEffect(() => {
         matches={wizardData.matches}
         generatedLetter={wizardData.generatedLetter}
         onGenerated={(letter) => {
+            const isFresh = !wizardData.generatedLetter;
           setWizardData((prev) => ({ ...prev, generatedLetter: letter }));
           setCurrentStepIndex((i) => i + 1);
+          if (isFresh) setShowReadyToast(true);
         }}
       />
     )}

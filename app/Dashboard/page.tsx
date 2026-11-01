@@ -14,9 +14,7 @@ export default async function DashboardHomePage() {
 
   const rows = await prisma.coverLetter.findMany({
     where: { userId: session.user.id },
-    // Oldest first, so letter number 1 stays in place and new ones are
-    // added to the right. Change "asc" to "desc" for newest first.
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "desc" },
     take: 100,
     select: {
       id: true,

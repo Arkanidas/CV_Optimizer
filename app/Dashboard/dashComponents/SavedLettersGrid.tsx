@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SavedLetterCard, { LETTER_CARD_WIDTH } from "./SavedLetterCard";
 import {
+  clearWizardSession,
   isUnfinishedRun,
   readActiveWizard,
   writeLetterToWizard,
@@ -20,6 +21,7 @@ interface SavedLettersGridProps {
 export default function SavedLettersGrid({ letters, limit }: SavedLettersGridProps) {
   const router = useRouter();
   const [active, setActive] = useState<ActiveWizard | null>(null);
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
 
   // sessionStorage only exists in the browser, so it's read after mount.
   useEffect(() => {
@@ -27,13 +29,20 @@ export default function SavedLettersGrid({ letters, limit }: SavedLettersGridPro
   }, []);
 
   const activeRunId = active?.runId ?? null;
-  const atLimit = letters.length >= limit;
+
+  // Deleted letters disappear at once, without waiting for the page to
+  // refresh its data.
+  const visibleLetters = useMemo(
+    () => letters.filter((letter) => !deletedIds.includes(letter.id)),
+    [letters, deletedIds]
+  );
+  const atLimit = visibleLetters.length >= limit;
 
   // The letter being edited is drawn from the live session, which is always
   // at least as new as the autosaved database copy.
   const items = useMemo(
     () =>
-      letters.map((letter) => {
+      visibleLetters.map((letter) => {
         if (!active || !activeRunId || letter.runId !== activeRunId || !active.letter) {
           return letter;
         }
@@ -45,7 +54,7 @@ export default function SavedLettersGrid({ letters, limit }: SavedLettersGridPro
           contact: active.contact ?? letter.contact,
         };
       }),
-    [letters, active, activeRunId]
+    [visibleLetters, active, activeRunId]
   );
 
   function handleOpen(letter: SavedLetter) {
@@ -56,7 +65,7 @@ export default function SavedLettersGrid({ letters, limit }: SavedLettersGridPro
     }
 
     if (
-      isUnfinishedRun(active, letters) &&
+      isUnfinishedRun(active, visibleLetters) &&
       !window.confirm(
         "You have a cover letter in progress that hasn't reached the last step yet. Opening this one will discard it. Continue?"
       )
@@ -68,7 +77,28 @@ export default function SavedLettersGrid({ letters, limit }: SavedLettersGridPro
     router.push("/dashboard/cover-letter");
   }
 
-  if (letters.length === 0) {
+  async function handleDelete(letter: SavedLetter) {
+    const res = await fetch(`/api/cover-letter/${encodeURIComponent(letter.id)}`, {
+      method: "DELETE",
+    });
+
+    // 404 means it's already gone (for example deleted in another tab),
+    if (!res.ok && res.status !== 404) {
+      throw new Error(`Delete failed (${res.status})`);
+    }
+
+    // If this was the letter being edited, end that session. Otherwise the
+    // wizard would load it again and autosave would bring it back.
+    if (letter.runId && letter.runId === activeRunId) {
+      clearWizardSession();
+      setActive(null);
+    }
+
+    setDeletedIds((ids) => [...ids, letter.id]);
+    router.refresh(); // re-reads the letters from the database
+  }
+
+  if (visibleLetters.length === 0) {
     return (
       <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-12 text-center light:border-black/20 light:bg-white">
         <p className="text-sm text-white/60 light:text-stone-600">
@@ -97,7 +127,7 @@ export default function SavedLettersGrid({ letters, limit }: SavedLettersGridPro
               : "text-white/45 light:text-stone-500"
           }`}
         >
-          {letters.length} / {limit}
+          {visibleLetters.length} / {limit}
         </span>
       </div>
 
@@ -111,6 +141,7 @@ export default function SavedLettersGrid({ letters, limit }: SavedLettersGridPro
             letter={letter}
             isActive={Boolean(activeRunId) && letter.runId === activeRunId}
             onOpen={() => handleOpen(letter)}
+            onDelete={() => handleDelete(letter)}
           />
         ))}
       </div>

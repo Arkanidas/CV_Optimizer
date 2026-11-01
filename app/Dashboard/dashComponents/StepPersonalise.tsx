@@ -202,7 +202,7 @@ export default function StepPersonalize({
         </p>
       </div>
 
-      <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">q
+      <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
         <h3 className="mb-1 mt-1 text-sm font-medium uppercase tracking-widest text-violet-300">
           Why this specific role? <span className="text-red-400">*</span>
         </h3>

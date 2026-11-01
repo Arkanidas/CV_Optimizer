@@ -20,6 +20,14 @@ import {
   Fira_Sans,
   Cherry_Swash,
   Inter,
+  Amethysta,
+  Martel,
+  Kurale,
+  Platypi,
+  Merriweather,
+  Gabriela,
+  Prompt,
+  Golos_Text,
 } from "next/font/google";
 
 export const poppins = Poppins({
@@ -151,6 +159,64 @@ export const inter = Inter({
   variable: "--font-inter",
 });
 
+
+export const amethysta = Amethysta({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-amethysta",
+});
+
+export const martel = Martel({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-martel",
+});
+
+export const kurale = Kurale({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-kurale",
+});
+
+export const platypi = Platypi({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-platypi",
+});
+
+export const merriweather = Merriweather({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  variable: "--font-merriweather",
+});
+
+export const gabriela = Gabriela({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-gabriela",
+});
+
+export const prompt = Prompt({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  variable: "--font-prompt",
+});
+
+export const golosText = Golos_Text({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  variable: "--font-golos-text",
+});
+
+
 export const fontVariables = [
   poppins.variable,
   ubuntu.variable,
@@ -172,4 +238,12 @@ export const fontVariables = [
   firaSans.variable,
   cherrySwash.variable,
   inter.variable,
+  amethysta.variable,
+  martel.variable,
+  kurale.variable,
+  platypi.variable,
+  merriweather.variable,
+  gabriela.variable,
+  prompt.variable,
+  golosText.variable,
 ].join(" ");

@@ -2,7 +2,7 @@ import type { ContactDetails } from "@/lib/AI/schemas";
 import type { FormatSettings } from "./letterFormat";
 
 export const WIZARD_STORAGE_KEY = "coverLetterWizardState";
-export const LAST_STEP_INDEX = 4; // the Review step
+export const LAST_STEP_INDEX = 4; 
 
 export interface SavedLetter {
   id: string;
@@ -15,7 +15,7 @@ export interface SavedLetter {
   updatedAt: string;
 }
 
-// What the wizard holds in this browser tab right now, if anything.
+
 export interface ActiveWizard {
   runId: string | null;
   stepIndex: number;
@@ -68,4 +68,8 @@ export function writeLetterToWizard(letter: SavedLetter) {
     },
   };
   sessionStorage.setItem(WIZARD_STORAGE_KEY, JSON.stringify(state));
+}
+
+export function clearWizardSession() {
+  sessionStorage.removeItem(WIZARD_STORAGE_KEY);
 }

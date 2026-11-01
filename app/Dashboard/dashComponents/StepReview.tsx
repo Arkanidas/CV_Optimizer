@@ -164,8 +164,7 @@ export default function StepReview({
        
             <WorkspaceTabs active={activePane} onChange={setActivePane} />
           
-       
-
+      
           {activePane === "editor" && (
             <LetterEditor value={localLetter} onChange={handleLetterChange} />
           )}

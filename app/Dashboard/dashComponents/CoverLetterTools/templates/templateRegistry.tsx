@@ -12,6 +12,7 @@ import DottedGridTemplate from "./DottedGrid";
 import PolygonTemplate from "./PolygonTemplate";
 import HoneycombTemplate from "./HoneycombTemplate";
 import MetalTemplate from "./MetalTemplate";
+import FadeTemplate from "./FadeTemplete";
 
 export interface TemplateComponentProps {
   letter: string;
@@ -38,4 +39,5 @@ export const LETTER_TEMPLATES: TemplateDefinition[] = [
   { id: "polygon", name: "Polygon", swatch: "#6aa7a0", Component: PolygonTemplate },
   { id: "honeycomb", name: "Honeycomb", swatch: "#86c99a", Component: HoneycombTemplate },
   { id: "metal", name: "Metal", swatch: "#9aa3ad", Component: MetalTemplate },
+  { id: "fade", name: "Fade", swatch: "#df8eff", Component: FadeTemplate },
 ];
