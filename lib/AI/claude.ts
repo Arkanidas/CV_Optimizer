@@ -1,11 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import type { SubscriptionTier } from "./tiers";
+import { hasToolMarkup, splitOnToolMarkup, stripToolMarkup } from "./cleanModelText";
 
-
-export type { SubscriptionTier } 
-
-const clean = (text: string) => text.replace(/<\/?item>/gi, "").trim();
+export type { SubscriptionTier };
 
 if (!process.env.ANTHROPIC_API_KEY) {
   throw new Error("Missing ANTHROPIC_API_KEY in your environment variables");
@@ -14,8 +12,6 @@ if (!process.env.ANTHROPIC_API_KEY) {
 export const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
-
-
 
 export const MODEL_BY_TIER: Record<SubscriptionTier, string> = {
   free: "claude-haiku-4-5-20251001", // Free plan
@@ -26,7 +22,6 @@ export const MODEL_BY_TIER: Record<SubscriptionTier, string> = {
 export function getModelForTier(tier: SubscriptionTier): string {
   return MODEL_BY_TIER[tier];
 }
-
 
 export async function generateWithClaude(params: {
   tier: SubscriptionTier;
@@ -61,18 +56,12 @@ function unwrapOptional(field: z.ZodTypeAny): z.ZodTypeAny {
   return field instanceof z.ZodOptional ? (field.unwrap() as z.ZodTypeAny) : field;
 }
 
-
-function itemsFromTags(text: string): string[] {
-  return Array.from(text.matchAll(/<item>([\s\S]*?)<\/item>/gi), (match) =>
-    match[1].trim()
-  ).filter(Boolean);
-}
-
 function listFromString(value: string, allowPlainText: boolean): unknown[] | null {
   const text = value.trim();
 
-  if (allowPlainText && /<item>/i.test(text)) {
-    const items = itemsFromTags(text);
+  // A list written in the model's own tag format
+  if (allowPlainText && hasToolMarkup(text)) {
+    const items = splitOnToolMarkup(text);
     if (items.length > 0) return items;
   }
 
@@ -87,20 +76,22 @@ function listFromString(value: string, allowPlainText: boolean): unknown[] | nul
 
   if (!allowPlainText) return null;
 
+
   return text
     .split(/\r?\n|;\s+/)
     .map((item) => item.replace(/^\s*(?:[-•*–]|\d+[.)])\s*/, "").trim())
     .filter(Boolean);
 }
 
-function stripItemTags(value: unknown): unknown {
-  if (typeof value === "string") return value.replace(/<\/?item>/gi, "").trim();
-  if (Array.isArray(value)) return value.map(stripItemTags);
+// Removes the model's tool markup from every string, however deeply nested.
+function cleanStrings(value: unknown): unknown {
+  if (typeof value === "string") return stripToolMarkup(value);
+  if (Array.isArray(value)) return value.map(cleanStrings);
   if (value && typeof value === "object") {
     return Object.fromEntries(
       Object.entries(value as Record<string, unknown>).map(([key, inner]) => [
         key,
-        stripItemTags(inner),
+        cleanStrings(inner),
       ])
     );
   }
@@ -119,22 +110,28 @@ function coerceStructuredInput(schema: z.ZodTypeAny, input: unknown): unknown {
     const field = unwrapOptional(shape[key]);
     if (!(field instanceof z.ZodArray)) continue;
 
-    const value = result[key];
+    let value = result[key];
     const listOfStrings = (field as z.ZodArray<z.ZodTypeAny>).element instanceof z.ZodString;
 
     if (typeof value === "string") {
       const list = listFromString(value, listOfStrings);
-      if (list) result[key] = list;
+      if (list) value = list;
     } else if (value && typeof value === "object" && !Array.isArray(value)) {
-    
-      result[key] = Object.values(value).flat();
+   
+      value = Object.values(value).flat();
     }
+
+    if (listOfStrings && Array.isArray(value)) {
+      value = value.flatMap((item) =>
+        typeof item === "string" && hasToolMarkup(item) ? splitOnToolMarkup(item) : [item]
+      );
+    }
+
+    result[key] = value;
   }
 
-  return stripItemTags(result);
+  return cleanStrings(result);
 }
-
-
 
 export async function generateStructuredWithClaude<T>(params: {
   tier: SubscriptionTier;
@@ -171,19 +168,20 @@ export async function generateStructuredWithClaude<T>(params: {
       throw new Error("Claude did not return structured output");
     }
 
- const coerced = coerceStructuredInput(schema, toolUseBlock.input);
- const parsed = schema.safeParse(coerced);
+    const coerced = coerceStructuredInput(schema, toolUseBlock.input);
+    const parsed = schema.safeParse(coerced);
 
-if (!parsed.success) {
-  // Temporary: shows what the bad value really looks like. Delete once seen.
-  console.error(
-    `Invalid structured output for ${toolName}:`,
-    JSON.stringify(toolUseBlock.input).slice(0, 600)
-  );
-  throw parsed.error;
-}
+    if (!parsed.success) {
+      // Shows what the bad value really looks like. It can contain CV text,
+      // so delete this log before you go live.
+      console.error(
+        `Invalid structured output for ${toolName}:`,
+        JSON.stringify(toolUseBlock.input).slice(0, 600)
+      );
+      throw parsed.error;
+    }
 
-return parsed.data;
+    return parsed.data;
   };
 
   try {

@@ -89,8 +89,7 @@ export default function FontSelect({ label, options, value, onChange }: FontSele
 
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleKey);
-    // capture: true also catches scrolling of any ancestor (the sticky
-    // panel, the dashboard), so the menu follows the button.
+
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);
     return () => {
@@ -164,8 +163,6 @@ export default function FontSelect({ label, options, value, onChange }: FontSele
                 >
                   <button
                     type="button"
-                    // A locked font does nothing when clicked, and the menu
-                    // stays open.
                     disabled={locked}
                     onClick={() => {
                       onChange(option.id);

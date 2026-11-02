@@ -40,4 +40,5 @@ export const LETTER_TEMPLATES: TemplateDefinition[] = [
   { id: "honeycomb", name: "Honeycomb", swatch: "#86c99a", Component: HoneycombTemplate },
   { id: "metal", name: "Metal", swatch: "#9aa3ad", Component: MetalTemplate },
   { id: "fade", name: "Fade", swatch: "#df8eff", Component: FadeTemplate },
+
 ];

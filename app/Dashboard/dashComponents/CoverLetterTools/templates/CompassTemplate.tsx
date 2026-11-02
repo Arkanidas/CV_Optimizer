@@ -16,7 +16,7 @@ export default function CompassTemplate({ letter, format }: CompassTemplateProps
       <header className="flex items-start justify-between gap-6 px-10 pt-10 sm:px-12">
         <p
           className="text-2xl font-semibold tracking-wide"
-         style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.2}pt` }}
+         style={{ fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 2.4}pt` }}
         >
           {format.contact.name}
         </p>

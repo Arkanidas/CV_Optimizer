@@ -31,7 +31,7 @@ export default function FadeTemplate({ letter, format }: FadeTemplateProps) {
           className="text-center font-bold tracking-wide"
           style={{
             fontFamily: detailsFont,
-            fontSize: `${format.detailsFontSize * 2.2}pt`,
+            fontSize: `${format.detailsFontSize * 2.4}pt`,
             color: nameColor,
           }}
         >
@@ -39,9 +39,6 @@ export default function FadeTemplate({ letter, format }: FadeTemplateProps) {
         </p>
       </header>
 
-      {/* Personal details on the right. For the left side, change
-          justify-end to justify-start, items-end to items-start and
-          text-right to text-left. */}
       <div className="flex justify-end px-12 pt-2">
         <div
           className="flex flex-col items-end gap-0.5 text-right text-stone-600"
