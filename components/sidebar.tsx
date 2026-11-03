@@ -48,7 +48,7 @@ export default function Sidebar({ theme, onToggleTheme }: SidebarProps) {
       <aside
         className={`flex h-screen w-65 shrink-0 flex-col px-4 py-5 ${
           isLight
-            ? "border-r border-black/10 bg-[#dedede]"
+            ? "border-r border-stone-300 bg-[#f7f7f5]"
             : "border-r border-white/10 bg-white/[0.02]"
         }`}
       >

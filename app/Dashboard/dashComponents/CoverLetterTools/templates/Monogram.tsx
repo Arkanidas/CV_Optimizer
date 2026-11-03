@@ -14,17 +14,13 @@ export default function MonogramTemplate({ letter, format }: MonogramTemplatePro
 
   return (
     <article className="flex min-h-full flex-col text-[#1c1917]"
-      // TWEAK ZONE — page tint. color-mix() blends a percentage of the
-      // user's accent color into white for a "colored paper" feel with
-      // no second color field needed. Raise/lower "10%" for a
-      // stronger/fainter tint.
       style={{ backgroundColor: `color-mix(in srgb, ${format.accentColor} 10%, white)` }}
     >
       <header className="flex items-center gap-5 px-10 pb-6 pt-10 sm:px-12">
       
         <div
           className="flex h-18 w-20 shrink-0 items-center justify-center text-lg font-semibold text-white"
-          style={{backgroundColor: format.accentColor, clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)", fontFamily: detailsFont,}}
+          style={{backgroundColor: format.accentColor, clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)", fontFamily: detailsFont, fontSize: `${format.detailsFontSize * 1.7}pt`}}
         >
           {getInitials(format.contact.name)}
         </div>
