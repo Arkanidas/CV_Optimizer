@@ -2,24 +2,79 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { FileText, Mail, Settings, LogOut, ChevronUp, User as UserIcon, Sun, Moon } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  FileText,
+  Mail,
+  Settings,
+  LogOut,
+  ChevronUp,
+  User as UserIcon,
+  Sun,
+  Moon,
+  type LucideIcon,
+} from "lucide-react";
 import logo from "@/app/assets/logo1.png";
 import SettingsModal from "@/components/SettingsModal";
 
 interface SidebarProps {
   theme: "dark" | "light";
   onToggleTheme: () => void;
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
 }
 
-export default function Sidebar({ theme, onToggleTheme }: SidebarProps) {
+// ============================================================
+// SIZES AND TIMING (TWEAK ZONE)
+// ============================================================
+const EXPANDED_WIDTH = 260; // px. Same as the old w-65
+// Icons only. Keep this = 44 (the icon buttons) + 2 x 14 (the side padding),
+// otherwise the icons stop being centered in the strip.
+const COLLAPSED_WIDTH = 72;
+// The arrow on the edge, in px. The Uiverse snippet used 50. 36 sits better on
+// the edge of the sidebar.
+const ARROW_SIZE = 36;
+
+// How long the sidebar takes to open and close, and the arrow to turn, in ms.
+const ANIMATION_MS = 400;
+// The speed curve. This one starts gently, speeds up, then settles softly.
+// For an even speed use "linear". For a quick start and a soft landing use "ease-out".
+const EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
+
+// The border around the round arrow button: black and 2px thick, as asked.
+// On the dark theme black is almost invisible against the dark page. To see a
+// border there too, use: "border-2 border-white/25 light:border-black"
+const ARROW_BORDER = "border-2 border-black";
+
+// Distance from the bottom of the sidebar to the bottom of the account menu
+// that opens beside the avatar, in px. 26 lines its bottom edge up with the
+// bottom of the avatar (20px sidebar padding + 6px button padding). Raise it
+// to lift the menu, lower it to push it down.
+const POPOVER_BOTTOM = 26;
+
+const NAV_ITEMS: { href: string; label: string; Icon: LucideIcon }[] = [
+  { href: "/dashboard/cv", label: "Optimize my CV", Icon: FileText },
+  { href: "/dashboard/cover-letter", label: "Optimize my Cover Letter", Icon: Mail },
+];
+
+export default function Sidebar({
+  theme,
+  onToggleTheme,
+  collapsed,
+  onToggleCollapsed,
+}: SidebarProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
+  // The account menu of the wide sidebar (unchanged)
   const [menuOpen, setMenuOpen] = useState(false);
+  // The account menu that opens beside the avatar when the sidebar is collapsed
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const avatarRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   const isLight = theme === "light";
@@ -34,6 +89,36 @@ export default function Sidebar({ theme, onToggleTheme }: SidebarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // The collapsed-sidebar menu closes on any click outside it, and on Escape.
+  // Clicks on the avatar itself are ignored here, because the avatar toggles
+  // the menu. Otherwise a click would close it and then immediately reopen it.
+  useEffect(() => {
+    if (!popoverOpen) return;
+
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as Node;
+      if (popoverRef.current?.contains(target) || avatarRef.current?.contains(target)) return;
+      setPopoverOpen(false);
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setPopoverOpen(false);
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [popoverOpen]);
+
+  // Each account menu belongs to one sidebar state, so switching state
+  // closes the other one.
+  useEffect(() => {
+    if (collapsed) setMenuOpen(false);
+    else setPopoverOpen(false);
+  }, [collapsed]);
+
   const handleLogout = async () => {
     await signOut({ redirect: false });
     router.push("/");
@@ -41,158 +126,310 @@ export default function Sidebar({ theme, onToggleTheme }: SidebarProps) {
 
   const firstName = session?.user?.firstName ?? "";
   const lastName = session?.user?.lastName ?? "";
+  const fullName = `${firstName} ${lastName}`.trim();
   const profilePicture = session?.user?.profilePicture;
+
+  // Text fades out before the sidebar gets narrow, and fades back in once it
+  // has opened up a bit, so it never looks squeezed.
+  // TWEAK: duration-150 = how fast it disappears when closing,
+  // delay-200 = how long it waits before appearing when opening.
+  const fade = collapsed ? "opacity-0 duration-150" : "opacity-100 duration-200 delay-200";
+
+  // Shared look of the rows in the account menu beside the avatar
+  const popoverItem = `flex w-full cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-left text-sm transition ${
+    isLight
+      ? "text-black/70 hover:bg-black/5 hover:text-black"
+      : "text-white/70 hover:bg-white/[0.06] hover:text-white"
+  }`;
+  const popoverIcon = isLight ? "text-black/40" : "text-white/40";
 
   return (
     <>
-      <aside
-        className={`flex h-screen w-65 shrink-0 flex-col px-4 py-5 ${
-          isLight
-            ? "border-r border-stone-300 bg-[#f7f7f5]"
-            : "border-r border-white/10 bg-white/[0.02]"
-        }`}
+      {/* The wrapper animates the width. The aside inside clips its content,
+          so the arrow button and the account menu can sit outside of it. The
+          timing is set inline, so no class or OS setting can switch it off. */}
+      <div
+        className="relative h-screen h-dvh shrink-0"
+        style={{
+          width: collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
+          transition: `width ${ANIMATION_MS}ms ${EASE}`,
+        }}
       >
-        <div
-          className={`flex items-center gap-2 border-b px-1 py-3 ${
-            isLight ? "border-black/10" : "border-white/10"
+        {/* SIDEBAR LIGHT COLORS (tweak here)
+            bg-[#f7f7f5]       snow white, slightly warm. Cooler: #f5f7f8. Brighter: #fafafa. Darker: #f0f0ee
+            border-stone-300   the line between the sidebar and the page. Stronger: stone-400 */}
+        <aside
+          aria-label="Sidebar"
+          className={`flex h-full w-full flex-col overflow-hidden px-3.5 py-5 ${
+            isLight
+              ? "border-r border-stone-300 bg-[#f7f7f5]"
+              : "border-r border-white/10 bg-white/[0.02]"
           }`}
         >
-          <Link href="/dashboard/">
-          <img src={logo.src} alt="Logo" className="h-12 w-13 shrink-0 border border-white/10 cursor-pointer" />
-          </Link>
-          <div className="min-w-0">
-            <p className={`truncate text-sm font-semibold ${isLight ? "text-black" : "text-white"}`}>
-              CV Optimizer
-            </p>
-            <p className={`truncate text-xs ${isLight ? "text-black/40" : "text-white/40"}`}>
-              AI Resume Optimizer
-            </p>
-          </div>
-        </div>
-
-        {/* Workspace section */}
-        <div className="mt-8">
-          <p
-            className={`px-1 text-xs font-medium uppercase tracking-widest ${
-              isLight ? "text-black/40" : "text-white/35"
+          {/* Logo */}
+          <div
+            className={`flex items-center gap-2.5 border-b py-3 ${
+              isLight ? "border-black/10" : "border-white/10"
             }`}
           >
-            Workspace
-          </p>
-
-          <div className="mt-3 flex flex-col gap-2">
-            <Link
-              href="/dashboard/cv"
-              className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-3 text-left text-sm font-medium transition ${
-                pathname === "/dashboard/cv"
-                  ? "border-violet-500/50 bg-violet-500/10 " + (isLight ? "text-black" : "text-white")
-                  : isLight
-                  ? "border-black/10 bg-black/[0.03] text-black/75 hover:border-violet-500/40 hover:bg-black/[0.06] hover:text-black"
-                  : "border-white/10 bg-white/[0.04] text-white/85 hover:border-violet-500/40 hover:bg-white/[0.07] hover:text-white"
-              }`}
-            >
-              <FileText className="h-4 w-4 shrink-0 text-violet-400" />
-              Optimize my CV
+            <Link href="/dashboard/" className="shrink-0">
+              <img
+                src={logo.src}
+                alt="Logo"
+                className="h-11 w-11 cursor-pointer border border-white/10"
+              />
             </Link>
-            <Link
-              href="/dashboard/cover-letter"
-              className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-3 text-left text-sm font-medium transition ${
-                pathname === "/dashboard/cover-letter"
-                  ? "border-violet-500/50 bg-violet-500/10 " + (isLight ? "text-black" : "text-white")
-                  : isLight
-                  ? "border-black/10 bg-black/[0.03] text-black/75 hover:border-violet-500/40 hover:bg-black/[0.06] hover:text-black"
-                  : "border-white/10 bg-white/[0.04] text-white/85 hover:border-violet-500/40 hover:bg-white/[0.07] hover:text-white"
-              }`}
-            >
-              <Mail className="h-4 w-4 shrink-0 text-violet-400" />
-              Optimize my Cover Letter
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex-1" />
-
-        {/* User section */}
-        <div ref={menuRef} className="relative pt-4">
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            className={`flex w-full items-center gap-2.5 rounded-xl px-1.5 py-1.5 text-left transition-transform duration-300 ease-out cursor-pointer ${
-              menuOpen ? "-translate-y-[30px]" : "translate-y-0"
-            }`}
-          >
-            <span
-              className={`flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border ${
-                isLight ? "border-black/15 bg-black/5" : "border-white/15 bg-white/[0.06]"
-              }`}
-            >
-              {profilePicture ? (
-                <img src={profilePicture} alt="Profile" className="h-full w-full object-cover" />
-              ) : (
-                <UserIcon className={`h-4 w-4 ${isLight ? "text-black/40" : "text-white/40"}`} />
-              )}
-            </span>
-
-            <span className="min-w-0 flex-1">
-              <p className={`truncate text-sm font-medium ${isLight ? "text-black" : "text-white"}`}>
-                {status === "loading" ? "…" : `${firstName} ${lastName}`.trim() || "Account"}
+            <div className={`shrink-0 whitespace-nowrap transition-opacity ${fade}`}>
+              <p className={`text-sm font-semibold ${isLight ? "text-black" : "text-white"}`}>
+                CV Optimizer
               </p>
-            </span>
+              <p className={`text-xs ${isLight ? "text-black/40" : "text-white/40"}`}>
+                AI Resume Optimizer
+              </p>
+            </div>
+          </div>
 
-            <ChevronUp
-              className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
-                isLight ? "text-black/40" : "text-white/40"
-              } ${menuOpen ? "rotate-180" : ""}`}
-            />
-          </button>
+          {/* Workspace section */}
+          <div className="mt-8">
+            <p
+              className={`whitespace-nowrap px-1 text-xs font-medium uppercase tracking-widest transition-opacity ${fade} ${
+                isLight ? "text-black/40" : "text-white/35"
+              }`}
+            >
+              Workspace
+            </p>
 
-          {menuOpen && (
-            <div
-              className={`-mt-[22px] flex flex-col gap-0.5 border-t pt-3 ${
-                isLight ? "border-black/10" : "border-white/10"
+            <div className="mt-3 flex flex-col gap-2">
+              {NAV_ITEMS.map(({ href, label, Icon }) => {
+                const active = pathname === href;
+
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-label={label}
+                    // Icon-only mode has no text, so the name shows on hover
+                    title={collapsed ? label : undefined}
+                    // px-3.5 puts the 16px icon exactly in the middle of the
+                    // 44px wide button when the sidebar is collapsed
+                    className={`flex h-11 items-center gap-2.5 overflow-hidden whitespace-nowrap rounded-xl border px-3.5 text-left text-sm font-medium transition ${
+                      active
+                        ? "border-violet-500/50 bg-violet-500/10 " + (isLight ? "text-black" : "text-white")
+                        : isLight
+                        ? "border-black/10 bg-black/[0.03] text-black/75 hover:border-violet-500/40 hover:bg-black/[0.06] hover:text-black"
+                        : "border-white/10 bg-white/[0.04] text-white/85 hover:border-violet-500/40 hover:bg-white/[0.07] hover:text-white"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0 text-violet-400" />
+                    <span className={`transition-opacity ${fade}`}>{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex-1" />
+
+          {/* User section */}
+          <div ref={menuRef} className="relative pt-4">
+            <button
+              ref={avatarRef}
+              type="button"
+              // Wide sidebar: opens the menu below. Collapsed: opens the menu
+              // beside the avatar.
+              onClick={() => {
+                if (collapsed) setPopoverOpen((v) => !v);
+                else setMenuOpen((v) => !v);
+              }}
+              aria-haspopup="menu"
+              aria-expanded={collapsed ? popoverOpen : menuOpen}
+              // The name shows on hover, but not while the menu is open
+              title={collapsed && !popoverOpen ? fullName || "Account" : undefined}
+              className={`flex w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-xl px-1 py-1.5 text-left transition-transform duration-300 ease-out ${
+                menuOpen ? "-translate-y-[30px]" : "translate-y-0"
+              }`}
+            >
+              <span
+                className={`flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border ${
+                  isLight ? "border-black/15 bg-black/5" : "border-white/15 bg-white/[0.06]"
+                }`}
+              >
+                {profilePicture ? (
+                  <img src={profilePicture} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  <UserIcon className={`h-4 w-4 ${isLight ? "text-black/40" : "text-white/40"}`} />
+                )}
+              </span>
+
+              <span className={`min-w-0 flex-1 transition-opacity ${fade}`}>
+                <p className={`truncate text-sm font-medium ${isLight ? "text-black" : "text-white"}`}>
+                  {status === "loading" ? "…" : fullName || "Account"}
+                </p>
+              </span>
+
+              {/* The fade sits on a wrapper, so its delay doesn't also delay
+                  the chevron's own turn when the menu opens */}
+              <span className={`shrink-0 transition-opacity ${fade}`}>
+                <ChevronUp
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    isLight ? "text-black/40" : "text-white/40"
+                  } ${menuOpen ? "rotate-180" : ""}`}
+                />
+              </span>
+            </button>
+
+            {menuOpen && !collapsed && (
+              <div
+                className={`-mt-[22px] flex flex-col gap-0.5 border-t pt-3 ${
+                  isLight ? "border-black/10" : "border-white/10"
+                }`}
+              >
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setSettingsOpen(true);
+                  }}
+                  style={{ animationDelay: "0ms" }}
+                  className={`flex animate-stack-in cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-xl px-1.5 py-2 text-left text-sm opacity-100 transition ${
+                    isLight ? "text-black/70 hover:text-black" : "text-white/70 hover:text-white"
+                  }`}
+                >
+                  <Settings className={`h-4 w-4 ${isLight ? "text-black/40" : "text-white/40"}`} />
+                  Settings
+                </button>
+
+                {/* Theme toggle: deliberately does not close the menu */}
+                <button
+                  onClick={onToggleTheme}
+                  style={{ animationDelay: "100ms" }}
+                  className={`flex animate-stack-in cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-xl px-1.5 py-2 text-left text-sm opacity-100 transition ${
+                    isLight ? "text-black/70 hover:text-black" : "text-white/70 hover:text-white"
+                  }`}
+                >
+                  {isLight ? (
+                    <Moon className="h-4 w-4 text-black/40" />
+                  ) : (
+                    <Sun className="h-4 w-4 text-white/40" />
+                  )}
+                  {isLight ? "Dark mode" : "Light mode"}
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  style={{ animationDelay: "200ms" }}
+                  className="flex animate-stack-in cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-xl px-1.5 py-2 text-left text-sm text-red-400 opacity-100 transition hover:text-red-300"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </aside>
+
+        {/* Account menu beside the avatar, for the collapsed sidebar.
+            It sits next to the aside, not inside it, because the aside clips
+            everything that sticks out. left-full puts it just right of the
+            strip. It slides and fades in from the avatar. */}
+        <AnimatePresence>
+          {collapsed && popoverOpen && (
+            <motion.div
+              ref={popoverRef}
+              role="menu"
+              aria-label="Account menu"
+              initial={{ opacity: 0, x: -8, scale: 0.96 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -8, scale: 0.96 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              style={{ bottom: POPOVER_BOTTOM, transformOrigin: "left bottom" }}
+              // POPUP COLORS (tweak here)
+              // light: white with a gray border. dark: the same surface as the
+              // other dropdown menus in the app.
+              className={`absolute left-full z-30 ml-2 w-52 rounded-2xl border p-1.5 ${
+                isLight
+                  ? "border-stone-300 bg-white shadow-[0_12px_32px_rgba(0,0,0,0.15)]"
+                  : "border-white/10 bg-[#17131f] shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
               }`}
             >
               <button
+                type="button"
+                role="menuitem"
                 onClick={() => {
-                  setMenuOpen(false);
+                  setPopoverOpen(false);
                   setSettingsOpen(true);
                 }}
-                style={{ animationDelay: "0ms" }}
-                className={`flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm opacity-100 transition animate-stack-in cursor-pointer ${
-                  isLight ? "text-black/70 hover:text-black" : "text-white/70 hover:text-white"
-                }`}
+                className={popoverItem}
               >
-                <Settings className={`h-4 w-4 ${isLight ? "text-black/40" : "text-white/40"}`} />
+                <Settings className={`h-4 w-4 ${popoverIcon}`} />
                 Settings
               </button>
 
               {/* Theme toggle: deliberately does not close the menu */}
-              <button
-                onClick={onToggleTheme}
-                style={{ animationDelay: "100ms" }}
-                className={`flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm opacity-100 transition animate-stack-in cursor-pointer ${
-                  isLight ? "text-black/70 hover:text-black" : "text-white/70 hover:text-white"
-                }`}
-              >
+              <button type="button" role="menuitem" onClick={onToggleTheme} className={popoverItem}>
                 {isLight ? (
-                  <Moon className="h-4 w-4 text-black/40" />
+                  <Moon className={`h-4 w-4 ${popoverIcon}`} />
                 ) : (
-                  <Sun className="h-4 w-4 text-white/40" />
+                  <Sun className={`h-4 w-4 ${popoverIcon}`} />
                 )}
                 {isLight ? "Dark mode" : "Light mode"}
               </button>
 
               <button
+                type="button"
+                role="menuitem"
                 onClick={handleLogout}
-                style={{ animationDelay: "200ms" }}
-                className="flex items-center gap-2.5 rounded-xl px-1.5 py-2 text-left text-sm text-red-400 opacity-100 transition hover:text-red-300 animate-stack-in cursor-pointer"
+                className={`flex w-full cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-left text-sm transition ${
+                  isLight
+                    ? "text-red-600 hover:bg-red-50"
+                    : "text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                }`}
               >
                 <LogOut className="h-4 w-4" />
                 Logout
               </button>
-            </div>
+            </motion.div>
           )}
-        </div>
-      </aside>
+        </AnimatePresence>
+
+        {/* The arrow, centered on the sidebar's right edge at vertical middle.
+            It's your Uiverse button (same hover and press behaviour) with a
+            round background in the page color, so the sidebar's border line
+            doesn't run through it, plus the border from ARROW_BORDER above.
+            The turn is set inline on the svg and uses the same ANIMATION_MS
+            and EASE as the sidebar, so the two always move together. */}
+        <button
+          type="button"
+          onClick={onToggleCollapsed}
+          aria-label={collapsed ? "Open sidebar" : "Close sidebar"}
+          aria-expanded={!collapsed}
+          title={collapsed ? "Open menu" : "Close menu"}
+          className={`absolute right-0 top-1/2 z-20 flex -translate-y-1/2 translate-x-1/2 cursor-pointer items-center justify-center rounded-full duration-200 hover:scale-125 active:scale-100 ${ARROW_BORDER} ${
+            isLight ? "bg-[#ededed]" : "bg-[#0d0b14]"
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={ARROW_SIZE}
+            height={ARROW_SIZE}
+            viewBox="0 0 24 24"
+            fill="none"
+            // Arrow color: blue-300 in dark mode (as in your snippet), a
+            // darker blue in light mode so it stays visible
+            className="stroke-blue-300 light:stroke-blue-600"
+            style={{
+              transform: collapsed ? "rotate(180deg)" : "none",
+              transition: `transform ${ANIMATION_MS}ms ${EASE}`,
+            }}
+          >
+            <path
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeWidth="1.5"
+              d="M11 6L5 12M5 12L11 18M5 12H19"
+            />
+          </svg>
+        </button>
+      </div>
 
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
     </>
