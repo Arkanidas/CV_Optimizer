@@ -5,8 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import {
-  FileText,
+import {FileText,
   Mail,
   Settings,
   LogOut,
@@ -14,10 +13,14 @@ import {
   User as UserIcon,
   Sun,
   Moon,
+  ArrowUpCircle,
   type LucideIcon,
 } from "lucide-react";
 import logo from "@/app/assets/logo1.png";
 import SettingsModal from "@/components/SettingsModal";
+import ShinyText from "@/components/ShinyText";
+import { lexend } from "@/app/fonts";
+import type { SubscriptionTier } from "@/lib/AI/tiers";
 
 interface SidebarProps {
   theme: "dark" | "light";
@@ -25,6 +28,12 @@ interface SidebarProps {
   collapsed: boolean;
   onToggleCollapsed: () => void;
 }
+
+const TIER_LABEL: Record<SubscriptionTier, string> = {
+  free: "Free",
+  standard: "Standard",
+  pro: "Pro",
+};
 
 // ============================================================
 // SIZES AND TIMING (TWEAK ZONE)
@@ -54,6 +63,21 @@ const ARROW_BORDER = "border-2 border-black";
 // to lift the menu, lower it to push it down.
 const POPOVER_BOTTOM = 26;
 
+// ============================================================
+// UPGRADE BUTTON (TWEAK ZONE)
+// ============================================================
+// Where the button leads. Change this to the path of your pricing page.
+const UPGRADE_HREF = "/pricing";
+// The purple fade. 135deg runs from the top left to the bottom right. Swap
+// the three colors for any others: first = darkest, last = lightest.
+const UPGRADE_GRADIENT = "linear-gradient(135deg, #6d28d9 0%, #8b5cf6 55%, #c084fc 100%)";
+// The text color at rest, and the color of the shine that sweeps over it.
+// Keep the resting color a bit darker than the shine, or the shine won't show.
+const UPGRADE_TEXT_COLOR = "#e4d9ff";
+const UPGRADE_SHINE_COLOR = "#ffffff";
+// Seconds for one sweep of the shine. Lower = faster.
+const UPGRADE_SHINE_SPEED = 2;
+
 const NAV_ITEMS: { href: string; label: string; Icon: LucideIcon }[] = [
   { href: "/dashboard/cv", label: "Optimize my CV", Icon: FileText },
   { href: "/dashboard/cover-letter", label: "Optimize my Cover Letter", Icon: Mail },
@@ -72,12 +96,15 @@ export default function Sidebar({
   // The account menu that opens beside the avatar when the sidebar is collapsed
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // The shine on the upgrade button only runs while it's hovered or focused
+  const [upgradeHover, setUpgradeHover] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   const isLight = theme === "light";
+  const tier: SubscriptionTier = session?.user?.tier ?? "free";
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -229,6 +256,44 @@ export default function Sidebar({
           </div>
 
           <div className="flex-1" />
+
+          {/* Upgrade button, just above the account row.
+              - Wide sidebar: "Upgrade tier" with the arrow icon on the right.
+              - Collapsed: the label fades and is clipped, leaving only the icon
+                in a rounded square (the icon is absolutely placed 12px from
+                the right edge, which is the exact middle of the 44px square).
+              - mb-5 leaves room for the avatar, which slides up 30px when the
+                account menu opens, so it never touches the button.
+              The gradient is the same in dark and light mode. */}
+              <p aria-hidden={collapsed} className={`mb-1.5 h-4 whitespace-nowrap text-center text-[11px] leading-4 tracking-wide transition-opacity ${fade} ${lexend.className} ${
+                 isLight ? "text-black/40" : "text-white/35"}`}
+>
+  {status === "loading" ? "" : `Current Tier: ${TIER_LABEL[tier]}`}
+</p>
+          <Link
+            href={UPGRADE_HREF}
+            aria-label="Upgrade tier"
+            title={collapsed ? "Upgrade tier" : undefined}
+            onMouseEnter={() => setUpgradeHover(true)}
+            onMouseLeave={() => setUpgradeHover(false)}
+            onFocus={() => setUpgradeHover(true)}
+            onBlur={() => setUpgradeHover(false)}
+            style={{ backgroundImage: UPGRADE_GRADIENT }}
+            className="relative mb-5 flex h-11 w-full shrink-0 items-center overflow-hidden whitespace-nowrap rounded-xl text-white shadow-[0_6px_18px_-6px_rgba(124,58,237,0.7)] transition-[filter,box-shadow] duration-200 hover:shadow-[0_8px_22px_-6px_rgba(124,58,237,0.9)] hover:brightness-110"
+          >
+            <span className={`pl-4 transition-opacity ${fade}`}>
+              <ShinyText
+                text="Upgrade tier"
+                // The shine only runs while the mouse is over the button
+                disabled={!upgradeHover || collapsed}
+                speed={UPGRADE_SHINE_SPEED}
+                color={UPGRADE_TEXT_COLOR}
+                shineColor={UPGRADE_SHINE_COLOR}
+                className="text-sm font-semibold"
+              />
+            </span>
+            <ArrowUpCircle className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2" />
+          </Link>
 
           {/* User section */}
           <div ref={menuRef} className="relative pt-4">
