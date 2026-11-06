@@ -10,10 +10,9 @@ interface BubbleHeaderTemplateProps {
 // TWEAK ZONE
 // ============================================================
 
-// Height of the bubble area at the top of the page, in px. The bubble
-// positions below are measured on this canvas: 794 px wide (the page width)
-// and this tall. If you change it, the bubbles keep their distance from the
-// top.
+// Height of the header area, in px. The letter text starts just below it
+// (about 8px lower). The bubble positions below are measured on a canvas
+// 794 px wide (the page width) from the top of the page.
 const HEADER_HEIGHT = 200;
 
 // false: every bubble uses the color swatch (accent color), as before.
@@ -23,15 +22,17 @@ const USE_MULTICOLOR = false;
 const MULTICOLOR_PALETTE = ["#ef9a9a", "#c4b49a", "#9bbccc", "#f5b5b5"];
 
 // One line per bubble.
-//   x, y     the CENTER of the bubble, in px from the top left of the canvas
+//   x, y     the CENTER of the bubble, in px from the top left of the page
 //   size     the diameter, in px
 //   opacity  0 to 1
-// Depth is what makes them look like balloons in the air. A bubble that is
-// close is big and strong. A bubble far away is small and faint. Bubbles
-// that stick out past the edge are cut off by the page, which also looks
-// natural.
-// The order matters: later bubbles are painted on top of earlier ones, so the
-// big ones come first and the small ones last.
+// Depth is what makes them look like balloons in the air: a bubble that is
+// close is big and strong, one far away is small and faint. Later bubbles are
+// painted on top of earlier ones, so the big ones come first.
+//
+// KEEP CLEAR OF THE TEXT: a bubble's lowest point is y + size / 2. Keep that
+// below about 196, which is just above the letter text. Bubbles are cut off
+// only by the left, right and top edges of the page, never by the header, so
+// one that goes lower simply continues over the page, behind the text.
 interface Bubble {
   x: number;
   y: number;
@@ -41,21 +42,21 @@ interface Bubble {
 
 const BUBBLES: Bubble[] = [
   // CLOSE: big and strong
-  { x: 760, y: 100, size: 260, opacity: 0.3 }, // huge, cut off at the right edge
-  { x: 700, y: 6, size: 150, opacity: 0.22 }, // top right, cut off at the top
-  { x: 10, y: 170, size: 100, opacity: 0.38 }, // left edge, below the text
-  { x: 650, y: 70, size: 130, opacity: 0.5 }, // the strongest, in front of the huge one
+  { x: 770, y: 60, size: 250, opacity: 0.28 }, // huge, cut by the right and top edge
+  { x: 705, y: -5, size: 150, opacity: 0.2 }, // top right, cut by the top edge
+  { x: 655, y: 60, size: 120, opacity: 0.5 }, // the strongest, in front of the huge one
+  { x: 4, y: 152, size: 84, opacity: 0.38 }, // left edge, cut by the left edge
 
   // MIDDLE
-  { x: 160, y: 4, size: 60, opacity: 0.3 }, // top, cut off
-  { x: 648, y: 190, size: 38, opacity: 0.42 },
+  { x: 160, y: 4, size: 60, opacity: 0.3 }, // top, above the name
+  { x: 625, y: 165, size: 36, opacity: 0.42 },
+  { x: 540, y: 40, size: 34, opacity: 0.34 },
 
   // FAR AWAY: small and faint
-  { x: 540, y: 52, size: 30, opacity: 0.34 },
-  { x: 330, y: 30, size: 16, opacity: 0.22 },
-  { x: 440, y: 165, size: 22, opacity: 0.26 },
-  { x: 250, y: 180, size: 26, opacity: 0.2 },
-  { x: 612, y: 150, size: 14, opacity: 0.4 },
+  { x: 330, y: 20, size: 18, opacity: 0.22 },
+  { x: 452, y: 160, size: 22, opacity: 0.26 },
+  { x: 250, y: 178, size: 26, opacity: 0.2 },
+  { x: 610, y: 100, size: 14, opacity: 0.4 },
   { x: 520, y: 186, size: 12, opacity: 0.3 },
 ];
 
@@ -66,35 +67,42 @@ export default function BubbleHeaderTemplate({ letter, format }: BubbleHeaderTem
   const detailLines = [format.contact.email, format.contact.phone, format.contact.address].filter(Boolean);
 
   return (
-    <article className="flex min-h-full flex-col bg-white text-[#1c1917]">
-      {/* minHeight (not height), so the text is never clipped if it gets taller
-          than the area, for example with the largest details font size */}
+    <article className="relative flex min-h-full flex-col bg-white text-[#1c1917]">
+      {/* The bubble layer. It belongs to the page, not to the header, so the
+          header no longer cuts the bubbles off. overflow-x-clip trims them at
+          the left and right edge of the page only. The layer comes first, and
+          the text blocks below are positioned (relative), so they are painted
+          on top of the bubbles. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 overflow-x-clip"
+        style={{ height: HEADER_HEIGHT }}
+      >
+        {BUBBLES.map((bubble, index) => (
+          <span
+            key={index}
+            className="absolute rounded-full"
+            style={{
+              left: bubble.x - bubble.size / 2,
+              top: bubble.y - bubble.size / 2,
+              width: bubble.size,
+              height: bubble.size,
+              backgroundColor: USE_MULTICOLOR
+                ? MULTICOLOR_PALETTE[index % MULTICOLOR_PALETTE.length]
+                : format.accentColor,
+              // the reference colors are pastel, so they need to be stronger
+              opacity: USE_MULTICOLOR ? Math.min(1, bubble.opacity * 2) : bubble.opacity,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* minHeight (not height), so the text is never clipped if it gets
+          taller than the area, for example with the largest details font size */}
       <header
-        className="relative shrink-0 overflow-hidden px-10 pt-10 sm:px-12"
+        className="relative shrink-0 px-10 pt-10 sm:px-12"
         style={{ minHeight: HEADER_HEIGHT }}
       >
-        {/* The bubbles sit behind the text: they come first in the DOM, and
-            the text block after them is positioned on top */}
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          {BUBBLES.map((bubble, index) => (
-            <span
-              key={index}
-              className="absolute rounded-full"
-              style={{
-                left: bubble.x - bubble.size / 2,
-                top: bubble.y - bubble.size / 2,
-                width: bubble.size,
-                height: bubble.size,
-                backgroundColor: USE_MULTICOLOR
-                  ? MULTICOLOR_PALETTE[index % MULTICOLOR_PALETTE.length]
-                  : format.accentColor,
-                // the reference colors are pastel, so they need to be stronger
-                opacity: USE_MULTICOLOR ? Math.min(1, bubble.opacity * 2) : bubble.opacity,
-              }}
-            />
-          ))}
-        </div>
-
         <div className="relative">
           <p
             className="font-semibold tracking-wide"
@@ -120,7 +128,7 @@ export default function BubbleHeaderTemplate({ letter, format }: BubbleHeaderTem
         </div>
       </header>
 
-      <div className="flex-1 px-10 py-2 sm:px-12">
+      <div className="relative flex-1 px-10 py-2 sm:px-12">
         {paragraphs.length === 0 ? (
           <p
             className="leading-relaxed text-stone-400"

@@ -279,7 +279,7 @@ export default function Sidebar({
             onFocus={() => setUpgradeHover(true)}
             onBlur={() => setUpgradeHover(false)}
             style={{ backgroundImage: UPGRADE_GRADIENT }}
-            className="relative mb-5 flex h-11 w-full shrink-0 items-center overflow-hidden whitespace-nowrap rounded-xl text-white shadow-[0_6px_18px_-6px_rgba(124,58,237,0.7)] transition-[filter,box-shadow] duration-200 hover:shadow-[0_8px_22px_-6px_rgba(124,58,237,0.9)] hover:brightness-110"
+            className="relative mb-2 flex h-11 w-full shrink-0 items-center overflow-hidden whitespace-nowrap rounded-xl text-white shadow-[0_6px_18px_-6px_rgba(124,58,237,0.7)] transition-[filter,box-shadow] duration-200 hover:shadow-[0_8px_22px_-6px_rgba(124,58,237,0.9)] hover:brightness-110"
           >
             <span className={`pl-4 transition-opacity ${fade}`}>
               <ShinyText
@@ -300,8 +300,6 @@ export default function Sidebar({
             <button
               ref={avatarRef}
               type="button"
-              // Wide sidebar: opens the menu below. Collapsed: opens the menu
-              // beside the avatar.
               onClick={() => {
                 if (collapsed) setPopoverOpen((v) => !v);
                 else setMenuOpen((v) => !v);
