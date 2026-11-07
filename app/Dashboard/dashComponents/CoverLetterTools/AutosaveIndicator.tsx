@@ -8,22 +8,22 @@ export default function AutosaveIndicator({ status }: { status: SaveStatus }) {
     saving: {
       icon: <Loader2 className="h-3.5 w-3.5 animate-spin" />,
       label: "Saving...",
-      className: "text-white/50",
+      className: "text-white/50 light:text-stone-500",
     },
     saved: {
       icon: <Cloud className="h-3.5 w-3.5" />,
       label: "Saved",
-      className: "text-emerald-400/80",
+      className: "text-emerald-400/80 light:text-emerald-700",
     },
     error: {
       icon: <CloudOff className="h-3.5 w-3.5" />,
       label: "Not saved, retrying...",
-      className: "text-amber-300",
+      className: "text-amber-300 light:text-amber-700",
     },
     limit: {
       icon: <Ban className="h-3.5 w-3.5" />,
       label: "Not saved, limit reached",
-      className: "text-red-400",
+      className: "text-red-400 light:text-red-600",
     },
   }[status];
 
@@ -31,10 +31,7 @@ export default function AutosaveIndicator({ status }: { status: SaveStatus }) {
     <div
       role="status"
       aria-live="polite"
-      // Positioned like the Start over button next to it: fixed, with no
-      // top/left, so it keeps its place in the top row. ml-[60px] puts it
-      // just right of that button. TWEAK: change 60 to move it sideways.
-      className={`fixed ml-[60px] flex items-center gap-1.5 text-xs ${config.className}`}
+      className={`flex items-center gap-1.5 text-xs ${config.className}`}
     >
       {config.icon}
       <span>{config.label}</span>

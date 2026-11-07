@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, Sparkles, Loader2, FileCheck, RotateCcw, SquareKanban } from "lucide-react";
+import { Upload, Sparkles, Loader2, FileCheck, SquareKanban } from "lucide-react";
 import StepperBubbles, { type StepDefinition } from "./StepBubbles";
 import Step1UploadContext from "./step1coverletter";
 import StepPersonalizeMatch from "./StepOverview";
@@ -15,6 +15,7 @@ import type { FormatSettings } from "./CoverLetterTools/letterFormat";
 import AutosaveIndicator from "./CoverLetterTools/AutosaveIndicator";
 import type { SaveStatus } from "./CoverLetterTools/useAutosave";
 import { WIZARD_STORAGE_KEY as STORAGE_KEY } from "./CoverLetterTools/wizardSession";
+import StartOverButton from "./startoverbtn";
 
 interface SavedCv {
   id: string;
@@ -80,6 +81,8 @@ export default function CoverLetterWizard() {
   const [showReadyToast, setShowReadyToast] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [limitToastDismissed, setLimitToastDismissed] = useState(false);
+
+  const START_OVER_OFFSET = 150;
   
   useEffect(() => {
     try {
@@ -168,7 +171,8 @@ export default function CoverLetterWizard() {
 
   const isLastStep = currentStepIndex === steps.length - 1;
 
-
+  const isAnalyzing = steps[currentStepIndex]?.id === "Analyze";
+  const showStartOver = currentStepIndex > 0 && !isAnalyzing;
 
 useEffect(() => {
   if (saveStatus === "limit") setShowReadyToast(false);
@@ -181,20 +185,30 @@ useEffect(() => {
     
 <div className="flex items-center justify-between">
   {!isLastStep ? (
-    <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
+    // The padding glides when it appears, so the bubbles don't jump
+    <div
+      className="w-full"
+      style={{
+        paddingLeft: currentStepIndex > 0 ? START_OVER_OFFSET : 0,
+        transition: "padding-left 300ms ease-in-out",
+      }}
+    >
+      <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
+    </div>
   ) : (
     <span />
   )}
 
-  {currentStepIndex > 0 && (
-    <button
-      onClick={handleStartOver}
-      className="ml-4 flex shrink-0 items-center gap-1.5 rounded-full fixed px-3 py-1.5 text-xs text-white/50 transition hover:bg-white/[0.08] hover:text-white/80"
-    >
-      <RotateCcw className="h-3 w-3" />
-    </button>
-  )}
+  {/* Fixed in the top left corner. self-start puts it at the top of the row
+      and mt-3 lines it up with the middle of the stepper bubbles. It stays
+      in place when the page scrolls. The save status on the Review step sits
+      next to it. */}
+  <div className="fixed z-30 mt-3 flex items-center gap-4 self-start">
+    {showStartOver && <StartOverButton onClick={handleStartOver} />}
+    {isLastStep && <AutosaveIndicator status={saveStatus} />}
+  </div>
 </div>
+
 {isLastStep && <AutosaveIndicator status={saveStatus} />}
 
     {currentStepIndex === 3 && (
