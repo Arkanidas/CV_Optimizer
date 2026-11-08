@@ -1,7 +1,14 @@
 import { Ban, Cloud, CloudOff, Loader2 } from "lucide-react";
-import type { SaveStatus } from "./useAutosave";
+import type { SaveStatus } from "../CoverLetterTools/useAutosave";
 
-export default function AutosaveIndicator({ status }: { status: SaveStatus }) {
+interface AutosaveIndicatorProps {
+  status: SaveStatus;
+  // Extra classes for the text part, for example "hidden xl:inline" to show
+  // only the icon on narrow screens.
+  labelClassName?: string;
+}
+
+export default function AutosaveIndicator({ status, labelClassName = "" }: AutosaveIndicatorProps) {
   if (status === "idle") return null;
 
   const config = {
@@ -31,10 +38,11 @@ export default function AutosaveIndicator({ status }: { status: SaveStatus }) {
     <div
       role="status"
       aria-live="polite"
-      className={`flex items-center gap-1.5 text-xs ${config.className}`}
+      title={config.label}
+      className={`flex items-center gap-1.5 whitespace-nowrap text-xs ${config.className}`}
     >
       {config.icon}
-      <span>{config.label}</span>
+      <span className={labelClassName}>{config.label}</span>
     </div>
   );
 }

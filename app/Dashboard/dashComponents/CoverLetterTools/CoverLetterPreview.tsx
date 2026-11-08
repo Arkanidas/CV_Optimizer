@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 import { Maximize2, X } from "lucide-react";
 import { LETTER_TEMPLATES } from "./templates/templateRegistry";
@@ -16,12 +23,23 @@ interface CoverLetterPreviewProps {
   templateId: string;
 }
 
+// ============================================================
+// SIZES (TWEAK ZONE)
+// ============================================================
+// The widest the paper gets, in px. On a big screen it stays at this size,
+// exactly as before. On smaller screens it shrinks to fit its column.
 const PREVIEW_WIDTH = 720;
-
+// It never gets narrower than this, even in a very small window.
+const PREVIEW_MIN_WIDTH = 280;
+// Empty space between the paper and the edges of its column, on each side.
+// This keeps the paper off the divider line and off the edge of the screen.
+const PREVIEW_GUTTER = 18;
+// The widest the expanded paper gets, in px. On narrower screens it shrinks
+// to fit with 24px of space on each side.
 const EXPANDED_MAX_WIDTH = 960;
 
 function ExpandedOverlay({ onClose, children }: { onClose: () => void; children: ReactNode }) {
-
+  // This component only mounts after a click, so window always exists here.
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
 
   useEffect(() => {
@@ -39,12 +57,16 @@ function ExpandedOverlay({ onClose, children }: { onClose: () => void; children:
 
   const paperWidth = Math.min(EXPANDED_MAX_WIDTH, viewportWidth - 48);
 
-
+  // Rendered in a portal so it covers the whole screen, sidebar included,
+  // and no parent's overflow or z-index can clip it.
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Cover letter preview"
+      // overscroll-contain stops wheel scrolling from carrying on into the
+      // dashboard behind. The scrollbar classes are needed because the
+      // global scrollbar style hides thumbs on inner scroll areas.
       className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-[#0d0b14] [scrollbar-color:rgba(255,255,255,0.25)_transparent] [scrollbar-width:thin]"
     >
       <button
@@ -75,33 +97,63 @@ export default function CoverLetterPreview({ letter, format, contact, templateId
   const [expanded, setExpanded] = useState(false);
   const close = useCallback(() => setExpanded(false), []);
 
+  // The space the column offers. The box below is exactly as wide as the
+  // column (w-full), no matter how wide the paper inside it is, so measuring
+  // it can never create a feedback loop. useLayoutEffect measures before the
+  // first paint, so the paper never flashes at the wrong size. The observer
+  // follows window resizes and the sidebar animation frame by frame.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [available, setAvailable] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+
+    const update = () => setAvailable(el.clientWidth);
+    update();
+
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const previewWidth =
+    available === null
+      ? PREVIEW_WIDTH
+      : Math.max(
+          PREVIEW_MIN_WIDTH,
+          Math.min(PREVIEW_WIDTH, Math.floor(available - PREVIEW_GUTTER * 2))
+        );
+
   const template = LETTER_TEMPLATES.find((t) => t.id === templateId) ?? LETTER_TEMPLATES[0];
   const TemplateComponent = template.Component;
   const templateFormat: LetterFormat = { ...format, contact: toDisplayContact(contact) };
 
-
+  // Built once and shown twice: in the normal preview and in the overlay.
   const paper = <TemplateComponent letter={letter} format={templateFormat} />;
 
   return (
     <>
-  
-      <div className="group relative">
-        <PageStage
-          width={PREVIEW_WIDTH}
-          fitContent
-          className="rounded-sm border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
-        >
-          {paper}
-        </PageStage>
+      <div ref={boxRef} className="flex w-full min-w-0 justify-center">
+        {/* "group" makes the whole paper the hover area for the button */}
+        <div className="group relative">
+          <PageStage
+            width={previewWidth}
+            fitContent
+            className="rounded-sm border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+          >
+            {paper}
+          </PageStage>
 
-        <button
-          type="button"
-          onClick={() => setExpanded(true)}
-          aria-label="Expand preview"
-          className="absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-white/25 bg-black/40 text-white opacity-0 backdrop-blur-sm transition hover:bg-black/60 focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
-        >
-          <Maximize2 className="h-4 w-4" />
-        </button>
+          <button
+            type="button"
+            onClick={() => setExpanded(true)}
+            aria-label="Expand preview"
+            className="absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-white/25 bg-black/40 text-white opacity-0 backdrop-blur-sm transition hover:bg-black/60 focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+          >
+            <Maximize2 className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {expanded && <ExpandedOverlay onClose={close}>{paper}</ExpandedOverlay>}

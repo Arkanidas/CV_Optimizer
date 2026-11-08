@@ -10,6 +10,7 @@ import OverflowCard from "./OverflowCard";
 import { selectDisplayMatches, buildCardTooltip } from "@/lib/matchCardSelection";
 import AnalysisConclusion from "./AnalysisConclusion";
 import { ArrowRight } from "lucide-react";
+import StartOverButton from "./startoverbtn";
 
 interface StepPersonalizeMatchProps {
   jobDescription: string;
@@ -24,6 +25,7 @@ interface StepPersonalizeMatchProps {
   ) => void;
   onContinue?: () => void;
   analysisRunId?: string;
+  onStartOver?: () => void;
 }
 
 interface AnalysisResponse {
@@ -60,7 +62,17 @@ async function requestAnalysis(
   throw new Error("The analysis is taking longer than expected. Please try again.");
 }
 
-export default function StepPersonalizeMatch({jobDescription,cvText,matchPercentage,matches,conclusion,onAnalysisComplete,onContinue,analysisRunId,}: StepPersonalizeMatchProps) {
+export default function StepPersonalizeMatch({
+  jobDescription,
+  cvText,
+  matchPercentage,
+  matches,
+  conclusion,
+  onAnalysisComplete,
+  onContinue,
+  analysisRunId,
+  onStartOver,
+}: StepPersonalizeMatchProps) {
   const { data: session } = useSession();
   const tier = session?.user?.tier ?? "free";
 
@@ -277,20 +289,25 @@ export default function StepPersonalizeMatch({jobDescription,cvText,matchPercent
           </button>
         </div>
       )}
+{/* Bottom row: Start over on the far left, Continue on the far right.
+    Start over is always there, so there's a way out even while the
+    analysis runs or has failed. Continue shows as soon as the results
+    exist, even if the summary failed, so the user can never get stuck. */}
+{(onStartOver || (matchPercent !== null && onContinue)) && (
+  <div className="flex items-center justify-between gap-4">
+    {onStartOver && <StartOverButton size="md" onClick={onStartOver} />}
 
-      {/* Shown as soon as the results exist, even if the summary failed,
-          so the user can never get stuck on this step. */}
-      {matchPercent !== null && onContinue && (
-        <div className="flex justify-end">
-          <button
-            onClick={onContinue}
-            className="flex flex-row cursor-pointer items-center rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
-          >
-            Continue
-            <ArrowRight className="ml-1 mt-0.5 h-4.5 w-4.5" />
-          </button>
-        </div>
-      )}
+    {matchPercent !== null && onContinue && (
+      <button
+        onClick={onContinue}
+        className="ml-auto flex flex-row cursor-pointer items-center rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+      >
+        Continue
+        <ArrowRight className="ml-1 mt-0.5 h-4.5 w-4.5" />
+      </button>
+    )}
+  </div>
+)}
     </div>
   );
 }

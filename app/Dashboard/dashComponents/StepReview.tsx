@@ -12,6 +12,8 @@ import { EMPTY_CONTACT_DETAILS } from "./CoverLetterTools/contactDetails";
 import { LETTER_TEMPLATES } from "./CoverLetterTools/templates/templateRegistry";
 import { DEFAULT_LETTER_FORMAT,type FormatSettings,type ReviewPane,} from "./CoverLetterTools/letterFormat";
 import type { ContactDetails } from "@/lib/AI/schemas";
+import AutosaveIndicator from "./CoverLetterTools/AutosaveIndicator";
+
 
 interface StepReviewProps {
   generatedLetter?: string;
@@ -162,7 +164,14 @@ export default function StepReview({
       >
         <div className="flex w-full max-w-[650px] flex-col gap-4">
        
-            <WorkspaceTabs active={activePane} onChange={setActivePane} />
+            {/* The status is positioned absolutely, so it takes up no space at all.
+    The tabs and the editor below can never move when it appears. */}
+<div className="relative">
+  <WorkspaceTabs active={activePane} onChange={setActivePane} />
+  <div className="absolute right-0 top-1/2 -translate-y-1/2">
+    <AutosaveIndicator status={autosave.status} labelClassName="hidden xl:inline" />
+  </div>
+</div>
           
       
           {activePane === "editor" && (

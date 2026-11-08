@@ -11,11 +11,9 @@ import type { ToneOption } from "@/lib/AI/tiers";
 import StepGenerating from "./StepGenerating";
 import StepReview from "./StepReview";
 import ToastBanner from "./ToastBanner";
-import type { FormatSettings } from "./CoverLetterTools/letterFormat";
-import AutosaveIndicator from "./CoverLetterTools/AutosaveIndicator";
-import type { SaveStatus } from "./CoverLetterTools/useAutosave";
 import { WIZARD_STORAGE_KEY as STORAGE_KEY } from "./CoverLetterTools/wizardSession";
-import StartOverButton from "./startoverbtn";
+import type { FormatSettings } from "./CoverLetterTools/letterFormat";
+import type { SaveStatus } from "./CoverLetterTools/useAutosave";
 
 interface SavedCv {
   id: string;
@@ -43,7 +41,6 @@ interface WizardData {
   templateId?: string;
 }
 
-
 const steps: StepDefinition[] = [
   { id: "upload", label: "Upload", icon: Upload },
   { id: "Overview", label: "Overview", icon: SquareKanban },
@@ -52,17 +49,11 @@ const steps: StepDefinition[] = [
   { id: "Review", label: "Review", icon: FileCheck },
 ];
 
-
-
 function getPersistableData(data: WizardData) {
   const { uploadedFile, ...rest } = data;
   return rest;
 }
 
-// One id per analysis. The server uses it to make sure a run is only paid
-// for once, even if the page is refreshed. The fallback covers pages opened
-// over plain http (for example from a phone on your network), where
-// crypto.randomUUID doesn't exist.
 function newRunId(): string {
   return (
     globalThis.crypto?.randomUUID?.() ??
@@ -82,8 +73,8 @@ export default function CoverLetterWizard() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [limitToastDismissed, setLimitToastDismissed] = useState(false);
 
-  const START_OVER_OFFSET = 150;
-  
+
+
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -93,11 +84,10 @@ export default function CoverLetterWizard() {
         setWizardData(parsed.wizardData ?? {});
       }
     } catch {
-      console.error("Error parsing storage key"); 
+      console.error("Error parsing storage key");
     }
     setHydrated(true);
   }, []);
-
 
   useEffect(() => {
     if (!hydrated) return;
@@ -114,6 +104,11 @@ export default function CoverLetterWizard() {
       .catch(() => setSavedCvs([]))
       .finally(() => setLoadingCvs(false));
   }, []);
+
+  // The limit toast takes over from the "ready" toast, so the two never stack.
+  useEffect(() => {
+    if (saveStatus === "limit") setShowReadyToast(false);
+  }, [saveStatus]);
 
   async function handleStep1Continue(data: {
     cvId?: string;
@@ -165,147 +160,142 @@ export default function CoverLetterWizard() {
     setWizardData({});
     setCurrentStepIndex(0);
     setExtractError("");
+    setSaveStatus("idle");
     setLimitToastDismissed(false);
     setShowReadyToast(false);
   }
 
   const isLastStep = currentStepIndex === steps.length - 1;
 
-  const isAnalyzing = steps[currentStepIndex]?.id === "Analyze";
-  const showStartOver = currentStepIndex > 0 && !isAnalyzing;
-
-useEffect(() => {
-  if (saveStatus === "limit") setShowReadyToast(false);
-}, [saveStatus]);
+  // The floating Start over button (drawn in the top strip) is only for the
+  // Review step. Overview has its own button at the bottom of the step, and
+  // Personalize has "Back to Overview".
+  const showStartOver = isLastStep;
 
   return (
-  <div className="flex flex-col gap-8">
-   <ToastBanner open={showReadyToast} title="Your cover letter is ready" message="Review and customize it before downloading or copying." onClose={() => setShowReadyToast(false)}/>
-   <ToastBanner variant="danger" open={isLastStep && saveStatus === "limit" && !limitToastDismissed} title="Your cover letter has reached its limit" message="Delete or upgrade to save more" onClose={() => setLimitToastDismissed(true)}/>
-    
-<div className="flex items-center justify-between">
-  {!isLastStep ? (
-    // The padding glides when it appears, so the bubbles don't jump
-    <div
-      className="w-full"
-      style={{
-        paddingLeft: currentStepIndex > 0 ? START_OVER_OFFSET : 0,
-        transition: "padding-left 300ms ease-in-out",
-      }}
-    >
-      <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />
-    </div>
-  ) : (
-    <span />
-  )}
-
-  {/* Fixed in the top left corner. self-start puts it at the top of the row
-      and mt-3 lines it up with the middle of the stepper bubbles. It stays
-      in place when the page scrolls. The save status on the Review step sits
-      next to it. */}
-  <div className="fixed z-30 mt-3 flex items-center gap-4 self-start">
-    {showStartOver && <StartOverButton onClick={handleStartOver} />}
-    {isLastStep && <AutosaveIndicator status={saveStatus} />}
-  </div>
-</div>
-
-{isLastStep && <AutosaveIndicator status={saveStatus} />}
-
-    {currentStepIndex === 3 && (
-      <StepGenerating
-        cvText={wizardData.cvText ?? ""}
-        jobDescription={wizardData.jobDescription ?? ""}
-        whyCompany={wizardData.whyCompany ?? ""}
-        whyRole={wizardData.whyRole ?? ""}
-        additionalInfo={wizardData.additionalInfo}
-        tone={wizardData.tone ?? "professional"}
-        highlightedQualifications={wizardData.highlightedQualifications ?? []}
-        matches={wizardData.matches}
-        generatedLetter={wizardData.generatedLetter}
-        onGenerated={(letter) => {
-            const isFresh = !wizardData.generatedLetter;
-          setWizardData((prev) => ({ ...prev, generatedLetter: letter }));
-          setCurrentStepIndex((i) => i + 1);
-          if (isFresh) setShowReadyToast(true);
-        }}
+    <div className="flex flex-col gap-8">
+      <ToastBanner
+        open={showReadyToast}
+        title="Your cover letter is ready"
+        message="Review and customize it before downloading or copying."
+        onClose={() => setShowReadyToast(false)}
       />
-    )}
 
-{currentStepIndex === 4 && (
-  <StepReview
-    generatedLetter={wizardData.generatedLetter}
-    onGeneratedLetterChange={(value) =>
-      setWizardData((prev) => ({ ...prev, generatedLetter: value }))
-    }
-    cvText={wizardData.cvText}
-    contactDetails={wizardData.contactDetails}
-    onContactDetailsChange={(value) =>
-      setWizardData((prev) => ({ ...prev, contactDetails: value }))
-    }
-    analysisRunId={wizardData.analysisRunId}
-    initialFormat={wizardData.letterFormat}
-    onFormatChange={(value) => setWizardData((prev) => ({ ...prev, letterFormat: value }))}
-    initialTemplateId={wizardData.templateId}
-    onTemplateChange={(value) => setWizardData((prev) => ({ ...prev, templateId: value }))}
-    onSaveStatusChange={setSaveStatus}
-  />
-)}
+      <ToastBanner
+        variant="danger"
+        open={isLastStep && saveStatus === "limit" && !limitToastDismissed}
+        title="Your cover letter has reached its limit"
+        message="Delete or upgrade to save more"
+        onClose={() => setLimitToastDismissed(true)}
+      />
 
-    {currentStepIndex !== 3 && currentStepIndex !== 4 && (
-      <div className="rounded-2xl border-2 border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
-        {currentStepIndex === 0 &&
-          (loadingCvs ? (
-            <p className="text-sm text-white/40">Loading your saved CVs...</p>
-          ) : (
-            <>
-              {extractError && (
-                <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                  {extractError}
-                </div>
-              )}
-              <Step1UploadContext
-                savedCvs={savedCvs}
-                onContinue={handleStep1Continue}/>
-                
-            </>
-          ))}
-
-        {currentStepIndex === 1 && (
-          <StepPersonalizeMatch
-            jobDescription={wizardData.jobDescription ?? ""}
-            cvText={wizardData.cvText ?? ""}
-            matchPercentage={wizardData.matchPercentage}
-            matches={wizardData.matches}
-            conclusion={wizardData.conclusion}
-            analysisRunId={wizardData.analysisRunId}
-            onAnalysisComplete={(matchPercentage, matches, conclusion) =>
-              setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
-            }
-            onContinue={() => setCurrentStepIndex(2)}
-          />
-        )}
-
-        {currentStepIndex === 2 && (
-          <StepPersonalize
-            whyCompany={wizardData.whyCompany}
-            onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
-            whyRole={wizardData.whyRole}
-            onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
-            additionalInfo={wizardData.additionalInfo}
-            onAdditionalInfoChange={(value) => setWizardData((prev) => ({ ...prev, additionalInfo: value }))}
-            tone={wizardData.tone}
-            onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
-            matches={wizardData.matches}
-            highlightedQualifications={wizardData.highlightedQualifications}
-            onHighlightedQualificationsChange={(ids) =>
-              setWizardData((prev) => ({ ...prev, highlightedQualifications: ids }))
-            }
-            onBack={() => setCurrentStepIndex((i) => i - 1)}
-            onContinue={() => setCurrentStepIndex((i) => i + 1)}
-          />
-        )}
+      {/* h-0 on the Review step keeps the layout there exactly as it was */}
+      <div className={isLastStep ? "h-0" : ""}>
+        {!isLastStep && <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />}
       </div>
-    )}
-  </div>
-);
+
+
+      {currentStepIndex === 3 && (
+        <StepGenerating
+          cvText={wizardData.cvText ?? ""}
+          jobDescription={wizardData.jobDescription ?? ""}
+          whyCompany={wizardData.whyCompany ?? ""}
+          whyRole={wizardData.whyRole ?? ""}
+          additionalInfo={wizardData.additionalInfo}
+          tone={wizardData.tone ?? "professional"}
+          highlightedQualifications={wizardData.highlightedQualifications ?? []}
+          matches={wizardData.matches}
+          generatedLetter={wizardData.generatedLetter}
+          onGenerated={(letter) => {
+
+          const isFresh = !wizardData.generatedLetter;
+
+            setWizardData((prev) => ({ ...prev, generatedLetter: letter }));
+            setCurrentStepIndex(steps.length - 1);
+            if (isFresh) setShowReadyToast(true);
+          }}
+        />
+      )}
+
+      {currentStepIndex === 4 && (
+        <StepReview
+          generatedLetter={wizardData.generatedLetter}
+          onGeneratedLetterChange={(value) =>
+            setWizardData((prev) => ({ ...prev, generatedLetter: value }))
+          }
+          cvText={wizardData.cvText}
+          contactDetails={wizardData.contactDetails}
+          onContactDetailsChange={(value) =>
+            setWizardData((prev) => ({ ...prev, contactDetails: value }))
+          }
+          analysisRunId={wizardData.analysisRunId}
+          initialFormat={wizardData.letterFormat}
+          onFormatChange={(value) => setWizardData((prev) => ({ ...prev, letterFormat: value }))}
+          initialTemplateId={wizardData.templateId}
+          onTemplateChange={(value) => setWizardData((prev) => ({ ...prev, templateId: value }))}
+          onSaveStatusChange={setSaveStatus}
+        />
+      )}
+
+      {currentStepIndex !== 3 && currentStepIndex !== 4 && (
+        // FRAME LIGHT COLORS (tweak here)
+        // light:border-stone-400  the frame. It's border-2, so 2px thick. Softer: stone-300
+        // light:bg-stone-50       the fill, a touch lighter than the #ededed page.
+        //                         Alternatives: white, stone-100
+        <div className="rounded-2xl border-2 border-white/10 bg-white/[0.02] p-4 backdrop-blur-md light:border-stone-400 light:bg-stone-50">
+          {currentStepIndex === 0 &&
+            (loadingCvs ? (
+              <p className="text-sm text-white/40 light:text-stone-500">Loading your saved CVs...</p>
+            ) : (
+              <>
+                {extractError && (
+                  <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300 light:border-red-300 light:bg-red-50 light:text-red-700">
+                    {extractError}
+                  </div>
+                )}
+                <Step1UploadContext savedCvs={savedCvs} onContinue={handleStep1Continue} />
+              </>
+            ))}
+
+          {currentStepIndex === 1 && (
+            <StepPersonalizeMatch
+              jobDescription={wizardData.jobDescription ?? ""}
+              cvText={wizardData.cvText ?? ""}
+              matchPercentage={wizardData.matchPercentage}
+              matches={wizardData.matches}
+              conclusion={wizardData.conclusion}
+              analysisRunId={wizardData.analysisRunId}
+              onAnalysisComplete={(matchPercentage, matches, conclusion) =>
+                setWizardData((prev) => ({ ...prev, matchPercentage, matches, conclusion }))
+              }
+              onContinue={() => setCurrentStepIndex(2)}
+              onStartOver={handleStartOver}
+            />
+          )}
+
+          {currentStepIndex === 2 && (
+            <StepPersonalize
+              whyCompany={wizardData.whyCompany}
+              onWhyCompanyChange={(value) => setWizardData((prev) => ({ ...prev, whyCompany: value }))}
+              whyRole={wizardData.whyRole}
+              onWhyRoleChange={(value) => setWizardData((prev) => ({ ...prev, whyRole: value }))}
+              additionalInfo={wizardData.additionalInfo}
+              onAdditionalInfoChange={(value) =>
+                setWizardData((prev) => ({ ...prev, additionalInfo: value }))
+              }
+              tone={wizardData.tone}
+              onToneChange={(value) => setWizardData((prev) => ({ ...prev, tone: value }))}
+              matches={wizardData.matches}
+              highlightedQualifications={wizardData.highlightedQualifications}
+              onHighlightedQualificationsChange={(ids) =>
+                setWizardData((prev) => ({ ...prev, highlightedQualifications: ids }))
+              }
+              onBack={() => setCurrentStepIndex((i) => i - 1)}
+              onContinue={() => setCurrentStepIndex((i) => i + 1)}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
