@@ -1,11 +1,6 @@
 import type { Paragraph as DocxParagraph } from "docx";
 import { toDisplayContact } from "./contactDetails";
-import {
-  BODY_FONT_OPTIONS,
-  DETAILS_FONT_OPTIONS,
-  type FontOption,
-  type FormatSettings,
-} from "./letterFormat";
+import {BODY_FONT_OPTIONS,DETAILS_FONT_OPTIONS,type FontOption,type FormatSettings,} from "./letterFormat";
 import { splitCoverLetterParagraphs } from "./splitLetter";
 import type { ContactDetails } from "@/lib/AI/schemas";
 

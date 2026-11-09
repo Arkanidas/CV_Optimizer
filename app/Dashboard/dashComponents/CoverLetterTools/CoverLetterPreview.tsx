@@ -96,12 +96,6 @@ function ExpandedOverlay({ onClose, children }: { onClose: () => void; children:
 export default function CoverLetterPreview({ letter, format, contact, templateId }: CoverLetterPreviewProps) {
   const [expanded, setExpanded] = useState(false);
   const close = useCallback(() => setExpanded(false), []);
-
-  // The space the column offers. The box below is exactly as wide as the
-  // column (w-full), no matter how wide the paper inside it is, so measuring
-  // it can never create a feedback loop. useLayoutEffect measures before the
-  // first paint, so the paper never flashes at the wrong size. The observer
-  // follows window resizes and the sidebar animation frame by frame.
   const boxRef = useRef<HTMLDivElement>(null);
   const [available, setAvailable] = useState<number | null>(null);
 

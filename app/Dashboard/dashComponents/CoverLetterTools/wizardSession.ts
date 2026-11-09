@@ -47,8 +47,7 @@ export function readActiveWizard(): ActiveWizard | null {
   }
 }
 
-// A letter that is still being set up (steps 2 to 4) and has not been saved
-// yet. Replacing the session now would throw that work away.
+
 export function isUnfinishedRun(active: ActiveWizard | null, letters: SavedLetter[]): boolean {
   if (!active?.runId) return false;
   if (active.stepIndex < 1 || active.stepIndex >= LAST_STEP_INDEX) return false;

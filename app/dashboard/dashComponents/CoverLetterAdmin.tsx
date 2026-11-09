@@ -14,6 +14,7 @@ import ToastBanner from "./ToastBanner";
 import { WIZARD_STORAGE_KEY as STORAGE_KEY } from "./CoverLetterTools/wizardSession";
 import type { FormatSettings } from "./CoverLetterTools/letterFormat";
 import type { SaveStatus } from "./CoverLetterTools/useAutosave";
+import StartOverButton from "./startoverbtn";
 
 interface SavedCv {
   id: string;
@@ -167,13 +168,8 @@ export default function CoverLetterWizard() {
 
   const isLastStep = currentStepIndex === steps.length - 1;
 
-  // The floating Start over button (drawn in the top strip) is only for the
-  // Review step. Overview has its own button at the bottom of the step, and
-  // Personalize has "Back to Overview".
-  const showStartOver = isLastStep;
-
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 relative">
       <ToastBanner
         open={showReadyToast}
         title="Your cover letter is ready"
@@ -193,7 +189,14 @@ export default function CoverLetterWizard() {
       <div className={isLastStep ? "h-0" : ""}>
         {!isLastStep && <StepperBubbles steps={steps} currentStepIndex={currentStepIndex} />}
       </div>
-
+{/* Start over, on the Review step only. It's absolute, so it belongs to the
+    page and scrolls away with it. z-30 keeps it above the thin strip at the
+    top of the page area. */}
+{isLastStep && (
+  <div className="absolute z-30" >
+    <StartOverButton onClick={handleStartOver} />
+  </div>
+)}
 
       {currentStepIndex === 3 && (
         <StepGenerating

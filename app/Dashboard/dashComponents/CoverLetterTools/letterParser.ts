@@ -15,9 +15,7 @@ const SIGNOFF_PATTERNS = [
   /^med vänlig hälsning,?$/i, /^vänliga hälsningar,?$/i, /^mvh,?$/i,
 ];
 
-// Splits the raw letter text into semantic parts so templates can style
-// the greeting, body, and sign-off differently without the user ever
-// having to edit anything other than one plain textarea.
+
 export function parseLetterText(raw: string): ParsedLetter {
   const blocks = raw
     .split(/\n\s*\n/)

@@ -14,7 +14,7 @@ interface StartOverButtonProps {
 const SPIN_MS = 600;
 
 const SIZE_CLASSES = {
-  sm: { button: "gap-1.5 rounded-lg px-3 py-1 text-xs", icon: "h-3.5 w-3.5" },
+  sm: { button: "gap-1.5 rounded-lg px-3 py-2 text-xs", icon: "h-3.5 w-3.5" },
   md: { button: "gap-2 rounded-xl px-4 py-2.5 text-sm", icon: "h-4 w-4" },
 };
 

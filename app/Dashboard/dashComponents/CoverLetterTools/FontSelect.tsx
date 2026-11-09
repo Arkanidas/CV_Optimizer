@@ -21,14 +21,14 @@ interface MenuPosition {
   maxHeight: number;
 }
 
-// The small gray text on the right of a row. Free fonts show nothing.
+
 const TIER_LABEL: Record<SubscriptionTier, string> = {
   free: "",
   standard: "Standard",
   pro: "Pro",
 };
 
-// TWEAK: the tallest the menu gets, in px. Longer lists scroll inside it.
+
 const MENU_MAX_HEIGHT = 288;
 const MENU_MIN_HEIGHT = 120;
 const VIEWPORT_MARGIN = 12;
@@ -70,7 +70,7 @@ export default function FontSelect({ label, options, value, onChange }: FontSele
     );
   }, []);
 
-  // Measure before paint so the menu never flashes in the wrong place.
+
   useLayoutEffect(() => {
     if (open) updatePosition();
   }, [open, updatePosition]);
@@ -143,8 +143,7 @@ export default function FontSelect({ label, options, value, onChange }: FontSele
               width: position.width,
               maxHeight: position.maxHeight,
             }}
-            // The scrollbar is hidden on purpose: even invisible, it reserved
-            // a column on the right, so the highlighted row stopped short.
+
             className="z-[60] overflow-y-auto overscroll-contain rounded-xl border border-white/10 bg-[#17131f] p-1 shadow-[0_16px_48px_rgba(0,0,0,0.5)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden light:border-black/10 light:bg-white light:shadow-[0_16px_48px_rgba(0,0,0,0.18)]"
           >
             {options.map((option) => {

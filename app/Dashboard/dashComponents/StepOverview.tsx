@@ -87,21 +87,16 @@ export default function StepPersonalizeMatch({
   const [conclusionRetrying, setConclusionRetrying] = useState(false);
   const [conclusionError, setConclusionError] = useState("");
 
-  // A session saved before the run gate existed has no id, so there is
-  // nothing to start an analysis with. Shown as a notice instead of an
-  // endless spinner.
-  const needsFreshStart = !analysisRunId && matchPercentage === undefined && matches === undefined;
 
-  // Always call the latest callback without listing it as an effect
-  // dependency. A new function on every parent render is what used to
-  // restart the analysis.
+  const needsFreshStart = !analysisRunId && matchPercentage === undefined && matches === undefined;
+  const aiBusy = (matchPercent === null && !error && !needsFreshStart) || conclusionRetrying;
+  const showStartOver = Boolean(onStartOver) && !aiBusy;
   const onCompleteRef = useRef(onAnalysisComplete);
   useEffect(() => {
     onCompleteRef.current = onAnalysisComplete;
   });
 
-  // False once the component is really gone (for example after Start over),
-  // so a late response can't write old results into a new run.
+
   const mountedRef = useRef(false);
   useEffect(() => {
     mountedRef.current = true;
@@ -131,7 +126,7 @@ export default function StepPersonalizeMatch({
         onCompleteRef.current?.(data.matchPercentage, data.matches, data.conclusion ?? null);
       } catch (err) {
         console.error("Analysis error:", err);
-        startedForRef.current = null; // lets "Try again" start a new run
+        startedForRef.current = null; 
         if (!mountedRef.current) return;
         setError(
           err instanceof Error && !(err instanceof SyntaxError)
@@ -289,13 +284,10 @@ export default function StepPersonalizeMatch({
           </button>
         </div>
       )}
-{/* Bottom row: Start over on the far left, Continue on the far right.
-    Start over is always there, so there's a way out even while the
-    analysis runs or has failed. Continue shows as soon as the results
-    exist, even if the summary failed, so the user can never get stuck. */}
-{(onStartOver || (matchPercent !== null && onContinue)) && (
+
+{(showStartOver || (matchPercent !== null && onContinue)) && (
   <div className="flex items-center justify-between gap-4">
-    {onStartOver && <StartOverButton size="md" onClick={onStartOver} />}
+    {showStartOver && onStartOver && <StartOverButton size="md" onClick={onStartOver} />}
 
     {matchPercent !== null && onContinue && (
       <button

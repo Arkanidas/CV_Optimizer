@@ -68,7 +68,8 @@ export const DETAILS_FONT_OPTIONS: FontOption[] = [
 
 
 export const ACCENT_COLOR_OPTIONS: string[] = [
-  "#1e1b4b", // indigo-950 (default, keep first)
+  "#000005",
+  "#2a215c", // indigo-950 (default, keep first)
   "#1245d3", // blue-700
   "#0f766e", // teal-700
   "#166534", // green-800
