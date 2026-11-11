@@ -228,7 +228,7 @@ export default function Sidebar({
 
             <div className="mt-3 flex flex-col gap-2">
               {NAV_ITEMS.map(({ href, label, Icon }) => {
-                const active = pathname === href;
+                const active = pathname === href || pathname.startsWith(`${href}/`);
 
                 return (
                   <Link
