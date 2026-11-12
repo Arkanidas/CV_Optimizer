@@ -62,20 +62,13 @@ function DocIcon({ kind }: { kind: "create" | "optimize" }) {
   );
 }
 
-export default function CvOptionCard({
-  title,
-  description,
-  icon,
-  selected,
-  onSelect,
-  badge,
-}: CvOptionCardProps) {
+export default function CvOptionCard({title,description,icon,selected,onSelect,badge,}: CvOptionCardProps) {
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`group relative flex min-h-[170px] w-full cursor-pointer items-center gap-5 rounded-3xl border p-6 text-left transition duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 sm:gap-6 sm:p-7 ${
+      className={`group relative flex min-h-[170px] w-full cursor-pointer items-center gap-5 rounded-3xl border p-6 text-left transition duration-300 hover:-translate-y-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 sm:gap-6 sm:p-7 ${
         selected ? SELECTED : UNSELECTED
       }`}
     >
