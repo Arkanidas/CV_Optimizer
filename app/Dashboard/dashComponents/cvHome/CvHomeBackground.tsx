@@ -4,8 +4,7 @@ export default function CvHomeBackground() {
   return (
     // BASE COLORS (tweak here)
     // Dark:  #0d0b14, the dashboard's dark page color.
-    // Light: #ededed, the dashboard's light page color. For the lavender white
-    //        of the reference image, try light:bg-[#f5f2ff]. If you change it,
+    // Light: #ededed, the dashboard's light page color. If you change it,
     //        change the light vignette below and the top strip in
     //        DashboardChrome (light:bg-[#ededed]) to the same color, or a
     //        band shows at the top and the edges.
@@ -47,9 +46,14 @@ export default function CvHomeBackground() {
         />
       </svg>
 
-      {/* LIGHT: two big soft bands, like the pale swooshes in the reference.
-          Colors: violet-300 (#c4b5fd) and violet-200 (#ddd6fe), fading out.
-          Raise a stopOpacity for a stronger band. */}
+      {/* LIGHT: two big soft bands, one on each side.
+          Colors: violet-300 (#c4b5fd) for the right band, violet-200
+          (#ddd6fe) for the left one, both fading out. Raise a stopOpacity for
+          a stronger band.
+          To reshape the left band, change the numbers in its path. It starts
+          at the top left corner, runs down the left edge to y=640, and sweeps
+          back up to the top at x=470. Keep that last x below about 540, or it
+          starts to overlap the right band. */}
       <svg
         className="absolute inset-0 hidden h-full w-full light:block"
         viewBox="0 0 1600 900"
@@ -58,19 +62,24 @@ export default function CvHomeBackground() {
       >
         <defs>
           <linearGradient id="cv-band-a" x1="1" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#c4b5fd" stopOpacity="0.55" />
+            <stop offset="0" stopColor="#e3dcff" stopOpacity="0.55" />
             <stop offset="1" stopColor="#c4b5fd" stopOpacity="0" />
           </linearGradient>
-          <linearGradient id="cv-band-b" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#ddd6fe" stopOpacity="0.7" />
+          <linearGradient id="cv-band-b" x1="0" y1="0" x2="1" y2="1.9">
+            <stop offset="0" stopColor="#ddd6fe" stopOpacity="0.8" />
             <stop offset="1" stopColor="#ddd6fe" stopOpacity="0" />
           </linearGradient>
         </defs>
+        {/* Right band */}
         <path
           d="M 1600 0 L 1600 560 C 1470 400, 1260 270, 1010 205 C 800 150, 610 80, 540 0 Z"
           fill="url(#cv-band-a)"
         />
-        <path d="M 0 0 L 560 0 C 470 130, 290 270, 0 340 Z" fill="url(#cv-band-b)" />
+        {/* Left band */}
+        <path
+          d="M 0 0 L 0 640 C 120 480, 300 350, 520 270 C 600 240, 520 90, 470 0 Z"
+          fill="url(#cv-band-b)"
+        />
       </svg>
 
       {/* Fades the edges into the base color, so the text and cards stay readable */}
