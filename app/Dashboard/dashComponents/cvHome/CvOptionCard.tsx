@@ -21,7 +21,7 @@ interface CvOptionCardProps {
 // with box-shadow (the first value in each shadow). A real 2px border would
 // move the text by a pixel when you select the card. Purple drop shadow
 // = the 36px and 90px values: raise the 0.55 and 0.35 to make them stronger.
-const SELECTED = [
+export const SELECTED = [
   // dark
   "border-violet-400 bg-[linear-gradient(135deg,rgba(124,58,237,0.3),rgba(76,29,149,0.1)_55%,rgba(13,11,20,0.2))]",
   "shadow-[0_0_0_1px_rgba(167,139,250,0.9),0_0_36px_4px_rgba(139,92,246,0.55),0_0_90px_10px_rgba(124,58,237,0.35),inset_0_0_30px_rgba(139,92,246,0.15)]",
@@ -30,7 +30,7 @@ const SELECTED = [
   "light:shadow-[0_0_0_1px_rgba(109,40,217,0.9),0_16px_48px_-8px_rgba(109,40,217,0.5)]",
 ].join(" ");
 
-const UNSELECTED = [
+export const UNSELECTED = [
   "border-white/10 bg-white/[0.03] hover:border-violet-400/40 hover:bg-white/[0.05]",
   "light:border-stone-300 light:bg-white light:shadow-[0_2px_14px_rgba(0,0,0,0.06)] light:hover:border-violet-400 light:hover:bg-violet-50",
 ].join(" ");

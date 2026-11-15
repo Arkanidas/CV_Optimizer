@@ -1,149 +1,226 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import GradientText from "@/components/GradientText";
-import CvHomeBackground from "@/app/dashboard/dashComponents/cvHome/CvHomeBackground";
-import CvOptionCard from "@/app/dashboard/dashComponents/cvHome/CvOptionCard";
+import CvHomeBackground from "@/app/dashboard/dashComponents/CvHome/CvHomeBackground";
+import CvOptionCard from "@/app/dashboard/dashComponents/CvHome/CvOptionCard";
+import CvGoButton from "@/app/dashboard/dashComponents/CvHome/CvGoButton";
+import CvCreateTypeStep, {type CreateType,} from "@/app/dashboard/dashComponents/CvHome/CvCreateTypeStep";
+import CvCareerStep from "@/app/dashboard/dashComponents/CvHome/CvCareerStep";
+import {
+  EMPTY_CAREER,
+  EXPERIENCE_LEVELS,
+  INDUSTRIES,
+  type CareerSelection,
+} from "@/app/dashboard/dashComponents/CvHome/cvCareerData";
+import { saveCvSetup } from "@/app/dashboard/dashComponents/CvHome/cvSetup";
+import {
+  GRADIENT_DARK,
+  GRADIENT_LIGHT,
+  LINE_LEFT,
+  LINE_RIGHT,
+} from "@/app/dashboard/dashComponents/CvHome/cvHomeTheme";
 
+// The page has three steps and stays on /dashboard/cv the whole time:
+//   "start"       create or optimize
+//   "create-type" general or targeted (reached with "Create a new CV")
+//   "career"      industry, occupation and experience level
+// The last step leads on to the create page.
+type Step = "start" | "create-type" | "career";
 type CvOption = "create" | "optimize";
 
-// Where "Let's Go" leads for each option. Change the paths here when the real
+// Where the pages after this one live. Change the paths here when the real
 // pages get other names.
-const ROUTES: Record<CvOption, string> = {
-  create: "/dashboard/cv/create",
-  optimize: "/dashboard/cv/optimize",
+const OPTIMIZE_ROUTE = "/dashboard/cv/optimize";
+const CREATE_ROUTE = "/dashboard/cv/create";
+
+// Read out by screen readers after "Let's Go", so it's clear where it leads
+const GO_HINT: Record<CvOption, string> = {
+  create: "to create a new CV",
+  optimize: "to optimize my current CV",
 };
 
-// What a screen reader announces on the button, so it's clear where it leads
-const GO_LABEL: Record<CvOption, string> = {
-  create: "Let's Go to create a new CV",
-  optimize: "Let's Go to optimize my current CV",
+// Each step fades in and out. Only opacity is animated, never position or
+// size: the Specular Button inside measures where it sits on the page, and
+// a moving parent could throw that off.
+const STEP_FADE = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.25 },
 };
-
-// COLORS (tweak here)
-// The animated purple word. Light mode uses deeper violets so it stays
-// readable: violet-700, violet-400, violet-700.
-const GRADIENT_DARK = ["#8b5cf6", "#c084fc", "#8b5cf6"];
-const GRADIENT_LIGHT = ["#6d28d9", "#a78bfa", "#6d28d9"];
-
-// Thin lines beside the subtitle and the footer line. They fade out toward
-// the outer end. Light: stone-500 at 35%.
-const LINE_LEFT =
-  "bg-[linear-gradient(to_right,transparent,rgba(255,255,255,0.2))] light:bg-[linear-gradient(to_right,transparent,rgba(120,113,108,0.35))]";
-const LINE_RIGHT =
-  "bg-[linear-gradient(to_left,transparent,rgba(255,255,255,0.2))] light:bg-[linear-gradient(to_left,transparent,rgba(120,113,108,0.35))]";
 
 export default function CvOptimizationPage() {
-  // Nothing is selected when the page opens
-  const [selected, setSelected] = useState<CvOption | null>(null);
+  const router = useRouter();
+  const [step, setStep] = useState<Step>("start");
+  // Nothing is selected the first time the page opens. All the selections are
+  // kept while you move between the steps, so Back returns to what you chose.
+  const [startChoice, setStartChoice] = useState<CvOption | null>(null);
+  const [createType, setCreateType] = useState<CreateType | null>(null);
+  const [career, setCareer] = useState<CareerSelection>(EMPTY_CAREER);
+
+  // A Link used to prefetch the next page by itself. A button doesn't, so do
+  // it here, to keep the navigation instant.
+  useEffect(() => {
+    if (startChoice === "optimize") router.prefetch(OPTIMIZE_ROUTE);
+  }, [startChoice, router]);
+
+  useEffect(() => {
+    if (step === "career") router.prefetch(CREATE_ROUTE);
+  }, [step, router]);
+
+  function handleStartGo() {
+    if (startChoice === "create") setStep("create-type");
+    if (startChoice === "optimize") router.push(OPTIMIZE_ROUTE);
+  }
+
+  function handleCreateTypeGo() {
+    setStep("career");
+  }
+
+  function handleCareerContinue() {
+    const industry = INDUSTRIES.find((i) => i.id === career.industryId);
+    const level = EXPERIENCE_LEVELS.find((l) => l.id === career.experienceId);
+    if (!industry || !level) return;
+
+    // Saved with readable labels as well as ids, so the create page and the
+    // AI prompt can use them directly
+    saveCvSetup({
+      cvType: createType,
+      industryId: industry.id,
+      industry: industry.label,
+      occupation: career.occupation.trim(),
+      experienceId: level.id,
+      experienceLevel: level.label,
+      experienceYears: level.years,
+    });
+    router.push(CREATE_ROUTE);
+  }
 
   return (
-    // -mx-8 -my-8 cancels the page area's padding (px-8 py-8 in
-    // DashboardChrome), so the background reaches all four edges. min-h-dvh
-    // then makes it exactly as tall as the screen.
-    <div className="relative -mx-8 -my-8 flex min-h-screen min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-16">
-      <CvHomeBackground />
+ 
+    <div className="relative -mx-8 -my-8 flex min-h-screen min-h-dvh items-center justify-center overflow-hidden px-6 py-16">
 
-      <div className="relative z-10 flex w-full max-w-6xl flex-col items-center">
-        {/* HEADING. The font size steps up with the window: 48px, 60px, 72px.
-            Light: stone-900 for "Start" and "your CV". */}
-        <h1 className="flex flex-wrap items-center justify-center gap-x-[0.3em] text-center text-5xl font-bold tracking-tight text-white light:text-stone-900 md:text-6xl xl:text-7xl">
-          <span>Start</span>
+      <CvHomeBackground showDarkLines={step === "start"} />
+      <AnimatePresence mode="wait">
+        {step === "start" && (
+          <motion.div
+            key="start"
+            {...STEP_FADE}
+            className="z-10 flex w-full max-w-6xl flex-col items-center"
+          >
+            {/* HEADING. The font size steps up with the window: 48px, 60px,
+                72px. Light: stone-900 for "Start" and "your CV". */}
+            <h1 className="flex flex-wrap items-center justify-center gap-x-[0.3em] text-center text-5xl font-bold tracking-tight text-white light:text-stone-900 md:text-6xl xl:text-7xl">
+              <span>Start</span>
 
-          <span className="light:hidden">
-            <GradientText
-              colors={GRADIENT_DARK}
-              animationSpeed={6}
-              className="cursor-default! font-bold! drop-shadow-[0_0_28px_rgba(139,92,246,0.5)]"
-            >
-              building
-            </GradientText>
-          </span>
-          <span className="hidden light:inline">
-            <GradientText
-              colors={GRADIENT_LIGHT}
-              animationSpeed={6}
-              className="cursor-default! font-bold!"
-            >
-              building
-            </GradientText>
-          </span>
-
-          <span>your CV</span>
-        </h1>
-
-        {/* SUBTITLE. Light: stone-500 */}
-        <div className="mt-6 flex w-full max-w-3xl items-center gap-6">
-          <span className={`h-px flex-1 ${LINE_LEFT}`} />
-          <p className="text-center text-xl font-medium text-white/60 light:text-stone-500 sm:text-2xl md:text-3xl">
-            What do you want to create?
-          </p>
-          <span className={`h-px flex-1 ${LINE_RIGHT}`} />
-        </div>
-
-        {/* THE TWO OPTIONS. One column below 1024px, two above. Clicking the
-            selected card again keeps it selected. */}
-        <div
-          role="group"
-          aria-label="CV options"
-          className="mt-14 grid w-full grid-cols-1 gap-6 lg:grid-cols-2"
-        >
-          <CvOptionCard
-            icon="create"
-            title="Create a new CV"
-            description="Build a professional CV from scratch with AI assistance."
-            badge="Recommended"
-            selected={selected === "create"}
-            onSelect={() => setSelected("create")}
-          />
-          <CvOptionCard
-            icon="optimize"
-            title="Optimize my current CV"
-            description="Upload and improve your existing CV with AI."
-            selected={selected === "optimize"}
-            onSelect={() => setSelected("optimize")}
-          />
-        </div>
-
-        {/* FOOTER LINE. Light: stone-500 text, violet-600 star */}
-        <div className="mt-12 flex w-full max-w-2xl items-center gap-5">
-          <span className={`h-px flex-1 ${LINE_LEFT}`} />
-          <p className="flex items-center gap-2 text-center text-sm text-white/55 light:text-stone-500">
-            <Sparkles className="h-4 w-4 shrink-0 text-violet-400 light:text-violet-600" />
-            AI-powered · ATS-friendly · Tailored to your goals
-          </p>
-          <span className={`h-px flex-1 ${LINE_RIGHT}`} />
-        </div>
-
-        {/* LET'S GO. The space is always reserved (h-14), so the content above
-            doesn't jump when the button appears. The button is a normal link
-            to the page of the selected card. Light: violet-700, violet-800 on
-            hover. */}
-        <div className="mt-8 flex h-14 w-full items-center justify-center">
-          <AnimatePresence>
-            {selected && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 6 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Link
-                  href={ROUTES[selected]}
-                  aria-label={GO_LABEL[selected]}
-                  className="group inline-flex items-center gap-2 rounded-2xl bg-violet-600 px-9 py-3.5 text-base font-semibold text-white shadow-[0_0_30px_rgba(124,58,237,0.55)] transition hover:bg-violet-500 hover:shadow-[0_0_40px_rgba(139,92,246,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 light:bg-violet-700 light:shadow-[0_8px_24px_-6px_rgba(109,40,217,0.55)] light:hover:bg-violet-800 light:hover:shadow-[0_10px_28px_-6px_rgba(109,40,217,0.65)]"
+              <span className="light:hidden">
+                <GradientText
+                  colors={GRADIENT_DARK}
+                  animationSpeed={6}
+                  className="cursor-default! font-bold! drop-shadow-[0_0_28px_rgba(139,92,246,0.5)]"
                 >
-                  Let&apos;s Go
-                  <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </Link>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+                  building
+                </GradientText>
+              </span>
+              <span className="hidden light:inline">
+                <GradientText
+                  colors={GRADIENT_LIGHT}
+                  animationSpeed={6}
+                  className="cursor-default! font-bold!"
+                >
+                  building
+                </GradientText>
+              </span>
+
+              <span>your CV</span>
+            </h1>
+
+            {/* SUBTITLE. Light: stone-500 */}
+            <div className="mt-6 flex w-full max-w-3xl items-center gap-6">
+              <span className={`h-px flex-1 ${LINE_LEFT}`} />
+              <p className="text-center text-xl font-medium text-white/60 light:text-stone-500 sm:text-2xl md:text-3xl">
+                What do you want to create?
+              </p>
+              <span className={`h-px flex-1 ${LINE_RIGHT}`} />
+            </div>
+
+            {/* THE TWO OPTIONS. One column below 1024px, two above. Clicking
+                the selected card again keeps it selected. */}
+            <div
+              role="group"
+              aria-label="CV options"
+              className="mt-14 grid w-full grid-cols-1 gap-6 lg:grid-cols-2"
+            >
+              <CvOptionCard
+                icon="create"
+                title="Create a new CV"
+                description="Build a professional CV from scratch with AI assistance."
+                badge="Recommended"
+                selected={startChoice === "create"}
+                onSelect={() => setStartChoice("create")}
+              />
+              <CvOptionCard
+                icon="optimize"
+                title="Optimize my current CV"
+                description="Upload and improve your existing CV with AI."
+                selected={startChoice === "optimize"}
+                onSelect={() => setStartChoice("optimize")}
+              />
+            </div>
+
+            {/* FOOTER LINE. Light: stone-500 text, violet-600 star */}
+            <div className="mt-12 flex w-full max-w-2xl items-center gap-5">
+              <span className={`h-px flex-1 ${LINE_LEFT}`} />
+              <p className="flex items-center gap-2 text-center text-sm text-white/55 light:text-stone-500">
+                <Sparkles className="h-4 w-4 shrink-0 text-violet-400 light:text-violet-600" />
+                AI-powered · ATS-friendly · Tailored to your goals
+              </p>
+              <span className={`h-px flex-1 ${LINE_RIGHT}`} />
+            </div>
+
+            <CvGoButton
+              visible={startChoice !== null}
+              onClick={handleStartGo}
+              hint={startChoice ? GO_HINT[startChoice] : ""}
+            />
+          </motion.div>
+        )}
+
+        {step === "create-type" && (
+          <motion.div
+            key="create-type"
+            {...STEP_FADE}
+            className="z-10 flex w-full max-w-6xl flex-col items-center"
+          >
+            <CvCreateTypeStep
+              selected={createType}
+              onSelect={setCreateType}
+              onBack={() => setStep("start")}
+              onContinue={handleCreateTypeGo}
+            />
+          </motion.div>
+        )}
+
+        {step === "career" && (
+          <motion.div
+            key="career"
+            {...STEP_FADE}
+            // mt-10 on small screens keeps the heading clear of the Back button
+            className="z-10 mt-10 flex w-full max-w-6xl flex-col items-center sm:mt-0"
+          >
+            <CvCareerStep
+              value={career}
+              onChange={setCareer}
+              onBack={() => setStep("create-type")}
+              onContinue={handleCareerContinue}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

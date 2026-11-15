@@ -1,6 +1,10 @@
 import CvHomeStars from "./CvHomeStars";
 
-export default function CvHomeBackground() {
+interface CvHomeBackgroundProps {
+  showDarkLines?: boolean;
+}
+
+export default function CvHomeBackground({ showDarkLines = true }: CvHomeBackgroundProps) {
   return (
     // BASE COLORS (tweak here)
     // Dark:  #0d0b14, the dashboard's dark page color.
@@ -20,7 +24,7 @@ export default function CvHomeBackground() {
       {/* DARK: the two thin curves. non-scaling-stroke keeps them the same
           thickness at every window size. */}
       <svg
-        className="absolute inset-0 h-full w-full light:hidden"
+        className={`absolute inset-0 h-full w-full transition-opacity duration-500 light:hidden ${showDarkLines ? "opacity-100" : "opacity-0"}`}
         viewBox="0 0 1600 900"
         preserveAspectRatio="none"
         fill="none"
