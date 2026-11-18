@@ -18,3 +18,20 @@ export const INPUT_ERROR =
 
 // Field labels. Light: stone-900.
 export const LABEL = "text-sm font-semibold text-white light:text-stone-900";
+
+// Small square icon buttons: move up, move down and the trash icon. The hover
+// effects only apply to enabled buttons, so a dimmed arrow stays still.
+const ICON_BUTTON_BASE =
+  "flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 disabled:cursor-not-allowed disabled:opacity-30";
+const ICON_BUTTON_LOOK =
+  "border-white/10 bg-white/[0.04] text-white/70 light:border-stone-300 light:bg-white light:text-stone-600";
+
+export const ICON_BUTTON = `${ICON_BUTTON_BASE} ${ICON_BUTTON_LOOK} enabled:hover:bg-white/10 enabled:hover:text-white light:enabled:hover:bg-stone-100 light:enabled:hover:text-stone-900`;
+
+// The trash icon turns red on hover
+export const ICON_BUTTON_DANGER = `${ICON_BUTTON_BASE} ${ICON_BUTTON_LOOK} enabled:hover:border-red-400/50 enabled:hover:bg-red-500/10 enabled:hover:text-red-300 light:enabled:hover:border-red-300 light:enabled:hover:bg-red-50 light:enabled:hover:text-red-600`;
+
+// A thin scrollbar that is actually visible. The app's global style hides
+// the scrollbar thumb, which would hide the fact that a list scrolls.
+export const SCROLLBAR =
+  "[scrollbar-color:rgba(255,255,255,0.25)_transparent] [scrollbar-width:thin] light:[scrollbar-color:rgba(0,0,0,0.3)_transparent]";

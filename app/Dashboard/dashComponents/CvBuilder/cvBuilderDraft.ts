@@ -73,7 +73,114 @@ export function buildHeadlineSuggestion(setup: CvSetup | null): string {
   return `${prefix}${setup.occupation}`;
 }
 
+// ---- step 2: work experience ----
 
+export interface WorkExperience {
+  id: string;
+  jobTitle: string;
+  company: string;
+  // "YYYY-MM", or "" when not chosen
+  fromMonth: string;
+  toMonth: string;
+  current: boolean;
+  location: string;
+  description: string;
+}
+
+// How many experiences can be added
+export const MAX_EXPERIENCES = 10;
+export const DESCRIPTION_MAX = 500;
+
+function newId(): string {
+  return (
+    globalThis.crypto?.randomUUID?.() ??
+    `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+  );
+}
+
+export function createExperience(): WorkExperience {
+  return {
+    id: newId(),
+    jobTitle: "",
+    company: "",
+    fromMonth: "",
+    toMonth: "",
+    current: false,
+    location: "",
+    description: "",
+  };
+}
+
+// An entry nobody has touched. It's ignored when moving on, so a person with
+// no work experience can skip the step.
+export function isExperienceEmpty(e: WorkExperience): boolean {
+  return (
+    !e.jobTitle.trim() &&
+    !e.company.trim() &&
+    !e.fromMonth &&
+    !e.toMonth &&
+    !e.current &&
+    !e.location.trim() &&
+    !e.description.trim()
+  );
+}
+
+// The entries that count, in the order the user arranged them. Use this when
+// the CV is generated.
+export function filledExperiences(list: WorkExperience[]): WorkExperience[] {
+  return list.filter((e) => !isExperienceEmpty(e));
+}
+
+export type ExperienceField = "jobTitle" | "company" | "from" | "to";
+export type ExperienceErrors = Partial<Record<ExperienceField, string>>;
+export const EXPERIENCE_FIELD_ORDER: ExperienceField[] = ["jobTitle", "company", "from", "to"];
+
+// The id of an input, so the page can focus the first one with an error
+export const experienceFieldId = (entryId: string, field: ExperienceField) =>
+  `exp-${entryId}-${field}`;
+
+// The ids of the move buttons, so focus can stay on them after a move
+export const experienceControlId = (entryId: string, control: "up" | "down") =>
+  `exp-${entryId}-${control}`;
+
+export function validateExperience(e: WorkExperience): ExperienceErrors {
+  const errors: ExperienceErrors = {};
+  if (e.jobTitle.trim().length < 2) errors.jobTitle = "Enter a job title.";
+  if (e.company.trim().length < 2) errors.company = "Enter a company.";
+  if (!e.fromMonth) errors.from = "Choose a start date.";
+
+  if (!e.current) {
+    if (!e.toMonth) errors.to = 'Choose an end date, or tick "Currently working here".';
+    else if (e.fromMonth && e.toMonth < e.fromMonth) {
+      errors.to = "The end date can't be before the start date.";
+    }
+  }
+  return errors;
+}
+
+// Reads one entry from storage without trusting its shape
+const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+const text = (value: unknown, max: number) => (typeof value === "string" ? value.slice(0, max) : "");
+
+function normalizeExperience(raw: unknown): WorkExperience | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  const month = (value: unknown) =>
+    typeof value === "string" && MONTH_PATTERN.test(value) ? value : "";
+
+  return {
+    id: typeof r.id === "string" && r.id ? r.id.slice(0, 100) : newId(),
+    jobTitle: text(r.jobTitle, 80),
+    company: text(r.company, 80),
+    fromMonth: month(r.fromMonth),
+    toMonth: month(r.toMonth),
+    current: r.current === true,
+    location: text(r.location, 80),
+    description: text(r.description, DESCRIPTION_MAX),
+  };
+}
+
+// ---- the draft, saved in the browser session ----
 
 export const CV_DRAFT_KEY = "cvBuilderDraft";
 export const LAST_STEP_INDEX = 5;
@@ -81,6 +188,7 @@ export const LAST_STEP_INDEX = 5;
 export interface CvDraft {
   stepIndex: number;
   personal: PersonalInfo;
+  experiences: WorkExperience[];
 }
 
 // Browser only: call from effects and click handlers, never during render.
@@ -92,8 +200,20 @@ export function readCvDraft(): CvDraft | null {
     const stepIndex = Number.isInteger(parsed?.stepIndex)
       ? Math.min(Math.max(parsed.stepIndex, 0), LAST_STEP_INDEX)
       : 0;
+
+    const experiences = Array.isArray(parsed?.experiences)
+      ? parsed.experiences
+          .map(normalizeExperience)
+          .filter((e: WorkExperience | null): e is WorkExperience => e !== null)
+          .slice(0, MAX_EXPERIENCES)
+      : [];
+
     // The spread fills in any field an older draft doesn't have yet
-    return { stepIndex, personal: { ...EMPTY_PERSONAL, ...(parsed?.personal ?? {}) } };
+    return {
+      stepIndex,
+      personal: { ...EMPTY_PERSONAL, ...(parsed?.personal ?? {}) },
+      experiences,
+    };
   } catch {
     return null;
   }

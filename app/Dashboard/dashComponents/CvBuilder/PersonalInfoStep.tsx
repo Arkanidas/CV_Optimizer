@@ -119,7 +119,8 @@ export default function PersonalInfoStep({
             error={errors.phone}
             placeholder="+46 70 123 45 67"
             autoComplete="tel"
-            maxLength={30}
+            maxLength={14}
+          
           />
 
           <CvField

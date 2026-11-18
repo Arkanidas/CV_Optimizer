@@ -3,22 +3,27 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Briefcase, Check } from "lucide-react";
 import CvHomeBackground from "@/app/dashboard/dashComponents/CvHome/CvHomeBackground";
 import { readCvSetup, type CvSetup } from "@/app/dashboard/dashComponents/CvHome/cvSetup";
+import { INDUSTRIES } from "@/app/dashboard/dashComponents/CvHome/cvCareerData";
 import CvStepper, { CV_STEPS } from "@/app/dashboard/dashComponents/CvBuilder/CvStepper";
 import PersonalInfoStep from "@/app/dashboard/dashComponents/CvBuilder/PersonalInfoStep";
+import WorkExperienceStep from "@/app/dashboard/dashComponents/CvBuilder/WorkExperienceStep";
 import RoleInsightsPanel from "@/app/dashboard/dashComponents/CvBuilder/RoleInsightsPanel";
+import AiAssistantPanel from "@/app/dashboard/dashComponents/CvBuilder/AiAssistantPanel";
 import { CARD } from "@/app/dashboard/dashComponents/CvBuilder/cvBuilderTheme";
 import {
   EMPTY_PERSONAL,
   PERSONAL_FIELD_IDS,
   PERSONAL_FIELD_ORDER,
   buildHeadlineSuggestion,
+  createExperience,
   readCvDraft,
   useCvDraftSaver,
   validatePersonal,
   type PersonalInfo,
+  type WorkExperience,
 } from "@/app/dashboard/dashComponents/CvBuilder/cvBuilderDraft";
 
 export default function CreateCvPage() {
@@ -31,6 +36,10 @@ export default function CreateCvPage() {
   const [hydrated, setHydrated] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [personal, setPersonal] = useState<PersonalInfo>(EMPTY_PERSONAL);
+  // There is always at least one entry, so there is always one to fill in.
+  // The first one is made once; the ids of later ones are made when they're added.
+  const [firstExperience] = useState(createExperience);
+  const [experiences, setExperiences] = useState<WorkExperience[]>([firstExperience]);
   // Errors only show after the first press on Continue
   const [attempted, setAttempted] = useState(false);
   // Names and email are filled in from the account once, and only if there is
@@ -43,6 +52,7 @@ export default function CreateCvPage() {
     if (draft) {
       setStepIndex(draft.stepIndex);
       setPersonal(draft.personal);
+      if (draft.experiences.length > 0) setExperiences(draft.experiences);
       prefilled.current = true;
     }
     setHydrated(true);
@@ -59,7 +69,10 @@ export default function CreateCvPage() {
     }));
   }, [hydrated, session]);
 
-  const draft = useMemo(() => ({ stepIndex, personal }), [stepIndex, personal]);
+  const draft = useMemo(
+    () => ({ stepIndex, personal, experiences }),
+    [stepIndex, personal, experiences]
+  );
   const saveStatus = useCvDraftSaver(draft, hydrated);
 
   const errors = attempted ? validatePersonal(personal) : {};
@@ -68,7 +81,12 @@ export default function CreateCvPage() {
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function handleContinue() {
+  function goToStep(index: number) {
+    setStepIndex(index);
+    scrollToTop();
+  }
+
+  function handlePersonalContinue() {
     const found = validatePersonal(personal);
     const firstWithError = PERSONAL_FIELD_ORDER.find((field) => found[field]);
 
@@ -79,12 +97,17 @@ export default function CreateCvPage() {
     }
 
     setAttempted(false);
-    setStepIndex(1);
-    scrollToTop();
+    goToStep(1);
   }
 
   const role = setup?.occupation ?? "";
   const industry = setup?.industry ?? "";
+  const IndustryIcon = INDUSTRIES.find((i) => i.id === setup?.industryId)?.icon ?? Briefcase;
+
+  // The Back control at the top: on the first step it leaves the builder, on
+  // the later ones it goes to the step before
+  const backClass =
+    "inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-white/75 transition hover:text-white light:text-stone-700 light:hover:text-stone-900";
 
   return (
     // -mx-8 -my-8 cancels the page area's padding (px-8 py-8 in
@@ -100,13 +123,17 @@ export default function CreateCvPage() {
       <div className="relative z-10 mx-auto w-full max-w-[1400px]">
         {/* TOP ROW */}
         <div className="flex items-center justify-between gap-4">
-          <Link
-            href="/dashboard/cv"
-            className="inline-flex items-center gap-2 text-sm font-medium text-white/75 transition hover:text-white light:text-stone-700 light:hover:text-stone-900"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Link>
+          {stepIndex === 0 ? (
+            <Link href="/dashboard/cv" className={backClass}>
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Link>
+          ) : (
+            <button type="button" onClick={() => goToStep(stepIndex - 1)} className={backClass}>
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </button>
+          )}
 
           <span aria-live="polite" className="text-sm">
             {saveStatus === "saved" && (
@@ -144,8 +171,8 @@ export default function CreateCvPage() {
           <CvStepper currentIndex={stepIndex} />
         </div>
 
-        {/* The form on the left and the role panel on the right. Under 1280px
-            the panel moves below the form. */}
+        {/* The form on the left and the panel on the right. Under 1280px the
+            panel moves below the form. */}
         <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
           {stepIndex === 0 ? (
             <PersonalInfoStep
@@ -153,11 +180,17 @@ export default function CreateCvPage() {
               onChange={setPersonal}
               errors={errors}
               headlineSuggestion={buildHeadlineSuggestion(setup)}
-              onContinue={handleContinue}
+              onContinue={handlePersonalContinue}
+            />
+          ) : stepIndex === 1 ? (
+            <WorkExperienceStep
+              value={experiences}
+              onChange={setExperiences}
+              onNext={() => goToStep(2)}
             />
           ) : (
-            // The other steps come later. This keeps Continue and the tracker
-            // working in the meantime.
+            // The other steps come later. This keeps the tracker and the Back
+            // button working in the meantime.
             <section className={`rounded-3xl border p-6 sm:p-8 ${CARD}`}>
               <span className="inline-flex rounded-full bg-violet-500/20 px-3.5 py-1 text-sm font-semibold text-violet-200 light:bg-violet-100 light:text-violet-800">
                 Step {stepIndex + 1} of {CV_STEPS.length}
@@ -170,10 +203,7 @@ export default function CreateCvPage() {
               </p>
               <button
                 type="button"
-                onClick={() => {
-                  setStepIndex((i) => i - 1);
-                  scrollToTop();
-                }}
+                onClick={() => goToStep(stepIndex - 1)}
                 className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white light:border-stone-300 light:bg-white light:text-stone-700 light:hover:bg-stone-100 light:hover:text-stone-900"
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -184,7 +214,16 @@ export default function CreateCvPage() {
 
           {/* top-12 keeps the sticky panel below the strip at the top */}
           <div className="xl:sticky xl:top-12">
-            <RoleInsightsPanel occupation={role} industry={industry} />
+            {stepIndex === 1 ? (
+              <AiAssistantPanel
+                occupation={role}
+                industry={industry}
+                level={setup?.experienceLevel ?? ""}
+                Icon={IndustryIcon}
+              />
+            ) : (
+              <RoleInsightsPanel occupation={role} industry={industry} />
+            )}
           </div>
         </div>
       </div>
