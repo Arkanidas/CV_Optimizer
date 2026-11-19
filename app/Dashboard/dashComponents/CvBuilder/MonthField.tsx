@@ -22,7 +22,7 @@ export function currentMonthValue(): string {
 }
 
 // "2022-03" becomes "Mar 2022"
-function formatMonth(value: string): string {
+export function formatMonth(value: string): string {
   if (!/^\d{4}-\d{2}$/.test(value)) return "";
   return `${MONTHS[Number(value.slice(5, 7)) - 1] ?? ""} ${value.slice(0, 4)}`.trim();
 }

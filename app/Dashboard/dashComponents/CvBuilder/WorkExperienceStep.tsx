@@ -2,10 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Plus } from "lucide-react";
-import GradientText from "@/components/GradientText";
-import { GRADIENT_DARK, GRADIENT_LIGHT } from "@/app/dashboard/dashComponents/CvHome/cvHomeTheme";
 import ExperienceEntry from "./ExperienceEntry";
-import { CV_STEPS } from "./CvStepper";
 import { SCROLLBAR } from "./cvBuilderTheme";
 import {
   EXPERIENCE_FIELD_ORDER,
@@ -152,40 +149,19 @@ export default function WorkExperienceStep({ value, onChange, onNext }: WorkExpe
     // @container makes the layout inside follow the width of THIS section, not
     // the window, so it also works with the sidebar open or closed.
     <section className="@container">
-      <span className="inline-flex rounded-full bg-violet-500/20 px-3.5 py-1 text-sm font-semibold text-violet-200 light:bg-violet-100 light:text-violet-800">
-        Step 2 of {CV_STEPS.length}
-      </span>
-
-      <h2 className="mt-4 flex flex-wrap items-center gap-x-[0.3em] text-3xl font-bold tracking-tight text-white light:text-stone-900 md:text-4xl">
-        <span>Work</span>
-        <span className="light:hidden">
-          <GradientText
-            colors={GRADIENT_DARK}
-            animationSpeed={6}
-            className="cursor-default! font-bold! drop-shadow-[0_0_24px_rgba(139,92,246,0.5)]"
-          >
-            Experience
-          </GradientText>
-        </span>
-        <span className="hidden light:inline">
-          <GradientText colors={GRADIENT_LIGHT} animationSpeed={6} className="cursor-default! font-bold!">
-            Experience
-          </GradientText>
-        </span>
-      </h2>
-      <p className="mt-2 max-w-2xl text-base text-white/60 light:text-stone-600">
-        Showcase your professional journey. Add your previous roles, responsibilities and
-        achievements.
-      </p>
-
-      <p className="sr-only" aria-live="polite">
+      {/* THE PILL. ml-5 lines its left edge up with the number badge inside
+          the card below (the card's header has 20px of padding). To make it
+          overlap the card's top border instead, add -mb-3 and relative z-10. */}
+     <p className="sr-only" aria-live="polite">
         {announcement}
       </p>
 
+
       {/* THE LIST. It scrolls when it gets too tall: the height limit is 75% of
-          the window. The padding gives the glow of the open card room, which
-          the scrolling area would otherwise clip; -mx-3 cancels it sideways. */}
-      <div className={`-mx-3 mt-6 flex max-h-[75vh] flex-col gap-4 overflow-y-auto px-3 py-3 ${SCROLLBAR}`}>
+          the window. The little padding leaves room for the open card's border,
+          which the scrolling area would otherwise clip; -mx-1 cancels it
+          sideways. */}
+      <div className={`-mx-1 flex max-h-[75vh] flex-col gap-4 overflow-y-auto px-1 py-1 ${SCROLLBAR}`}>
         {value.map((entry, index) => (
           <ExperienceEntry
             key={entry.id}

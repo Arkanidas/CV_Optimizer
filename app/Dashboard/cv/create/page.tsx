@@ -4,7 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ArrowLeft, Briefcase, Check } from "lucide-react";
+import GradientText from "@/components/GradientText";
 import CvHomeBackground from "@/app/dashboard/dashComponents/CvHome/CvHomeBackground";
+import { GRADIENT_DARK, GRADIENT_LIGHT } from "@/app/dashboard/dashComponents/CvHome/cvHomeTheme";
 import { readCvSetup, type CvSetup } from "@/app/dashboard/dashComponents/CvHome/cvSetup";
 import { INDUSTRIES } from "@/app/dashboard/dashComponents/CvHome/cvCareerData";
 import CvStepper, { CV_STEPS } from "@/app/dashboard/dashComponents/CvBuilder/CvStepper";
@@ -25,6 +27,7 @@ import {
   type PersonalInfo,
   type WorkExperience,
 } from "@/app/dashboard/dashComponents/CvBuilder/cvBuilderDraft";
+import StepPill from "@/app/dashboard/dashComponents/CvBuilder/StepPill";
 
 export default function CreateCvPage() {
   const { data: session } = useSession();
@@ -34,6 +37,9 @@ export default function CreateCvPage() {
   // the browser session after the page has loaded
   const [setup, setSetup] = useState<CvSetup | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  // The stepper animation is off until a moment after a saved draft has been
+  // restored, so reloading the page doesn't play the whole journey
+  const [stepperReady, setStepperReady] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [personal, setPersonal] = useState<PersonalInfo>(EMPTY_PERSONAL);
   // There is always at least one entry, so there is always one to fill in.
@@ -57,6 +63,12 @@ export default function CreateCvPage() {
     }
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const timer = setTimeout(() => setStepperReady(true), 150);
+    return () => clearTimeout(timer);
+  }, [hydrated]);
 
   useEffect(() => {
     if (!hydrated || prefilled.current || !session?.user) return;
@@ -148,27 +160,63 @@ export default function CreateCvPage() {
           </span>
         </div>
 
-        <h1 className="mt-6 text-4xl font-bold tracking-tight text-white light:text-stone-900 md:text-5xl">
-          Create your CV
-        </h1>
-        {/* The role is filled in once the choices have been read, so the
-            sentence doesn't change after the page has loaded */}
-        <p className="mt-3 min-h-7 text-base text-white/70 light:text-stone-600 md:text-lg">
-          {hydrated &&
-            (role ? (
-              <>
-                Let&apos;s build a professional CV tailored for a{" "}
-                <strong className="font-semibold text-white light:text-stone-900">{role}</strong>{" "}
-                role in{" "}
-                <strong className="font-semibold text-white light:text-stone-900">{industry}</strong>.
-              </>
-            ) : (
-              "Let's build a professional CV."
-            ))}
-        </p>
+    
+        {stepIndex === 1 ? (
+          <>
+             <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <h1 className="flex flex-wrap items-center gap-x-[0.3em] text-4xl font-bold tracking-tight text-white light:text-stone-900 md:text-5xl">
+                <span>Work</span>
+                <span className="light:hidden">
+                  <GradientText
+                    colors={GRADIENT_DARK}
+                    animationSpeed={6}
+                    className="cursor-default! font-bold! drop-shadow-[0_0_24px_rgba(139,92,246,0.5)]"
+                  >
+                    Experience
+                  </GradientText>
+                </span>
+                <span className="hidden light:inline">
+                  <GradientText
+                    colors={GRADIENT_LIGHT}
+                    animationSpeed={6}
+                    className="cursor-default! font-bold!"
+                  >
+                    Experience
+                  </GradientText>
+                </span>
+              </h1>
+              <StepPill step={stepIndex + 1} />
+            </div>
+            <p className="mt-3 max-w-2xl text-base text-white/70 light:text-stone-600 md:text-lg">
+              Showcase your professional journey. Add your previous roles, responsibilities and
+              achievements.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 className="mt-6 text-4xl font-bold tracking-tight text-white light:text-stone-900 md:text-5xl">
+              Create your CV
+            </h1>
+            {/* The role is filled in once the choices have been read, so the
+                sentence doesn't change after the page has loaded */}
+            <p className="mt-3 min-h-7 text-base text-white/70 light:text-stone-600 md:text-lg">
+              {hydrated &&
+                (role ? (
+                  <>
+                    Let&apos;s build a professional CV tailored for a{" "}
+                    <strong className="font-semibold text-white light:text-stone-900">{role}</strong>{" "}
+                    role in{" "}
+                    <strong className="font-semibold text-white light:text-stone-900">{industry}</strong>.
+                  </>
+                ) : (
+                  "Let's build a professional CV."
+                ))}
+            </p>
+          </>
+        )}
 
         <div className="mt-8">
-          <CvStepper currentIndex={stepIndex} />
+          <CvStepper currentIndex={stepIndex} animate={stepperReady} />
         </div>
 
         {/* The form on the left and the panel on the right. Under 1280px the

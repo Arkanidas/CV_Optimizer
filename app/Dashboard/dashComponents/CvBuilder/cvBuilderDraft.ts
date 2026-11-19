@@ -158,6 +158,12 @@ export function validateExperience(e: WorkExperience): ExperienceErrors {
   return errors;
 }
 
+// True when every required field is filled in and the dates make sense. The
+// number badge on an entry lights up when this is true and the entry is closed.
+export function isExperienceComplete(e: WorkExperience): boolean {
+  return Object.keys(validateExperience(e)).length === 0;
+}
+
 // Reads one entry from storage without trusting its shape
 const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 const text = (value: unknown, max: number) => (typeof value === "string" ? value.slice(0, max) : "");

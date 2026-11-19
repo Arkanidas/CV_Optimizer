@@ -4,17 +4,13 @@ import { ArrowRight, Lightbulb, Link2, MapPin, Sparkles } from "lucide-react";
 import CvField from "./CvField";
 import PhotoUpload from "./PhotoUpload";
 import { CARD } from "./cvBuilderTheme";
-import {
-  PERSONAL_FIELD_IDS,
-  type PersonalErrors,
-  type PersonalInfo,
-} from "./cvBuilderDraft";
+import {PERSONAL_FIELD_IDS,type PersonalErrors,type PersonalInfo,} from "./cvBuilderDraft";
+import StepPill from "./StepPill";
 
 interface PersonalInfoStepProps {
   value: PersonalInfo;
   onChange: (next: PersonalInfo) => void;
   errors: PersonalErrors;
-  // What the Suggest button puts in the headline. Empty = nothing to suggest.
   headlineSuggestion: string;
   onContinue: () => void;
 }
@@ -32,12 +28,12 @@ export default function PersonalInfoStep({
     // @container makes the layout inside follow the width of THIS card, not
     // the window. That way it also works when the sidebar is open or closed.
     <section className={`@container rounded-3xl border p-6 sm:p-8 ${CARD}`}>
-      <span className="inline-flex rounded-full bg-violet-500/20 px-3.5 py-1 text-sm font-semibold text-violet-200 light:bg-violet-100 light:text-violet-800">
-        Step 1 of 6
-      </span>
-      <h2 className="mt-4 text-3xl font-bold tracking-tight text-white light:text-stone-900">
-        Personal information
-      </h2>
+     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <h2 className="text-3xl font-bold tracking-tight text-white light:text-stone-900">
+          Personal information
+        </h2>
+        <StepPill step={1} />
+      </div>
       <p className="mt-2 max-w-xl text-base text-white/60 light:text-stone-600">
         Tell us about yourself. This information will be used to personalize your CV and make it
         stand out.

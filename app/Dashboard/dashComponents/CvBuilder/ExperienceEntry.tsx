@@ -12,12 +12,13 @@ import {
 } from "lucide-react";
 import CvField from "./CvField";
 import CvTextArea from "./CvTextArea";
-import MonthField, { currentMonthValue } from "./MonthField";
+import MonthField, { currentMonthValue, formatMonth } from "./MonthField";
 import { CARD, ICON_BUTTON, ICON_BUTTON_DANGER } from "./cvBuilderTheme";
 import {
   DESCRIPTION_MAX,
   experienceControlId,
   experienceFieldId,
+  isExperienceComplete,
   type ExperienceErrors,
   type WorkExperience,
 } from "./cvBuilderDraft";
@@ -25,11 +26,33 @@ import {
 // ============================================================
 // CARD COLORS (TWEAK ZONE)
 // ============================================================
-// The open card has a lit purple border and a glow. Light: violet-600 border
-// with a violet shadow. A collapsed banner is a plain glass card.
+// The open card has a lit purple border, and no glow: a glow gets cut off by
+// the scrolling list and looks like a box. Light: violet-600 border. A
+// collapsed banner is a plain glass card.
 const OPEN_CARD =
-  "border-violet-400/70 bg-white/[0.04] backdrop-blur-md shadow-[0_0_0_1px_rgba(167,139,250,0.55),0_0_34px_-4px_rgba(139,92,246,0.55)] light:border-violet-600 light:bg-white light:shadow-[0_0_0_1px_rgba(109,40,217,0.6),0_14px_40px_-10px_rgba(109,40,217,0.4)]";
+  "border-violet-400/70 bg-white/[0.04] backdrop-blur-md shadow-[0_0_0_1px_rgba(167,139,250,0.55)] light:border-violet-600 light:bg-white light:shadow-[0_0_0_1px_rgba(109,40,217,0.6)]";
 const COLLAPSED_CARD = `${CARD} hover:border-violet-400/40 light:hover:border-violet-400`;
+
+// ============================================================
+// NUMBER BADGE (TWEAK ZONE)
+// ============================================================
+// FAINT: the entry is open or still missing something. A barely visible violet.
+const BADGE_FAINT =
+  "bg-violet-500/10 text-violet-300/70 light:bg-violet-100/70 light:text-violet-500";
+// LIT: complete and collapsed. The dark purple, with a small glow. Remove the
+// shadow part to get the color change without the glow.
+const BADGE_LIT =
+  "bg-violet-600 text-white shadow-[0_0_16px_rgba(124,58,237,0.5)] light:bg-violet-700 light:shadow-[0_4px_12px_-2px_rgba(109,40,217,0.5)]";
+// How long it takes to light up, and to go back to faint, in ms
+const LIGHT_UP_MS = 1400;
+const FADE_OUT_MS = 250;
+
+// "Mar 2022 – Present", or "Mar 2022 – Nov 2024"
+function formatDates(entry: WorkExperience): string {
+  const from = formatMonth(entry.fromMonth);
+  const to = entry.current ? "Present" : formatMonth(entry.toMonth);
+  return [from, to].filter(Boolean).join(" – ");
+}
 
 interface ExperienceEntryProps {
   entry: WorkExperience;
@@ -66,10 +89,21 @@ export default function ExperienceEntry({
 }: ExperienceEntryProps) {
   const bodyId = `exp-${entry.id}-body`;
   const needsAttention = Object.keys(errors).length > 0;
-  const summary =
-    [entry.jobTitle.trim(), entry.company.trim()].filter(Boolean).join(" · ") || "Not filled in yet";
   const update = (patch: Partial<WorkExperience>) => onChange({ ...entry, ...patch });
   const today = currentMonthValue();
+
+  // A finished, closed entry shows its job title. Otherwise the header shows
+  // the placeholder text.
+  const complete = isExperienceComplete(entry);
+  const showSummary = !open && complete;
+  // The number lights up on the same condition: complete and closed. To light
+  // it up the moment the last field is filled in, while the entry is still
+  // open, change this to: const lit = complete;
+  const lit = !open && complete;
+
+  // What a collapsed, unfinished entry shows under the placeholder
+  const partialSummary =
+    [entry.jobTitle.trim(), entry.company.trim()].filter(Boolean).join(" · ") || "Not filled in yet";
 
   return (
     <article
@@ -91,23 +125,48 @@ export default function ExperienceEntry({
             open ? "cursor-default" : "cursor-pointer"
           }`}
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-600 text-base font-semibold text-white light:bg-violet-700">
+          {/* The transition is set inline, so it can last longer when lighting
+              up than when fading out, and no class can switch it off. */}
+          <span
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-base font-semibold ${
+              lit ? BADGE_LIT : BADGE_FAINT
+            }`}
+            style={{
+              transitionProperty: "background-color, color, box-shadow",
+              transitionDuration: `${lit ? LIGHT_UP_MS : FADE_OUT_MS}ms`,
+              transitionTimingFunction: "ease-in-out",
+            }}
+          >
             {index + 1}
           </span>
+
           <span className="min-w-0">
-            <span className="block text-lg font-semibold text-white light:text-stone-900">
-              Your Work Experience
-            </span>
-            {!open && (
-              <span
-                className={`block truncate text-sm ${
-                  needsAttention
-                    ? "text-red-400 light:text-red-600"
-                    : "text-white/55 light:text-stone-500"
-                }`}
-              >
-                {needsAttention ? "Missing information" : summary}
-              </span>
+            {showSummary ? (
+              <>
+                <span className="block truncate text-xl font-semibold text-white light:text-stone-900">
+                  {entry.jobTitle.trim()}
+                </span>
+                <span className="block truncate text-sm text-white/55 light:text-stone-500">
+                  {[entry.company.trim(), formatDates(entry)].filter(Boolean).join(" · ")}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="block text-lg font-semibold text-white light:text-stone-900">
+                  Your Work Experience
+                </span>
+                {!open && (
+                  <span
+                    className={`block truncate text-sm ${
+                      needsAttention
+                        ? "text-red-400 light:text-red-600"
+                        : "text-white/55 light:text-stone-500"
+                    }`}
+                  >
+                    {needsAttention ? "Missing information" : partialSummary}
+                  </span>
+                )}
+              </>
             )}
           </span>
         </button>
