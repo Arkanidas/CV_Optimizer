@@ -1,10 +1,19 @@
 import CvHomeStars from "./CvHomeStars";
 
 interface CvHomeBackgroundProps {
+  // The two thin curves in dark mode. They fade in and out, so switching
+  // steps doesn't make them pop.
   showDarkLines?: boolean;
+  // For pages that scroll or change height. The background is then exactly as
+  // tall as the screen and stays in place, so nothing in it moves when the
+  // content grows or shrinks. It must be the FIRST child of the page wrapper,
+  // and that wrapper needs no padding of its own.
+  // false (the default): the background fills the page wrapper and is as tall
+  // as the content.
+  pinned?: boolean;
 }
 
-export default function CvHomeBackground({ showDarkLines = true }: CvHomeBackgroundProps) {
+export default function CvHomeBackground({ showDarkLines = true, pinned = false }: CvHomeBackgroundProps) {
   return (
     // BASE COLORS (tweak here)
     // Dark:  #0d0b14, the dashboard's dark page color.
@@ -12,9 +21,14 @@ export default function CvHomeBackground({ showDarkLines = true }: CvHomeBackgro
     //        change the light vignette below and the top strip in
     //        DashboardChrome (light:bg-[#ededed]) to the same color, or a
     //        band shows at the top and the edges.
+    // Pinned: sticky + top-0 keeps it at the top of the scrolling area, h-dvh
+    // gives it the height of the screen, and -mb-[100dvh] cancels that height
+    // again, so it takes no space and the content starts at the top.
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden bg-[#0d0b14] light:bg-[#ededed]"
+      className={`pointer-events-none overflow-hidden bg-[#0d0b14] light:bg-[#ededed] ${
+        pinned ? "sticky -mb-[100dvh] h-dvh w-full" : "absolute inset-0"
+      }`}
     >
       {/* Soft glow behind the heading. Light: violet-300 (#c4b5fd) at 40% */}
       <div className="absolute left-1/2 top-[-15%] h-[75%] w-[85%] -translate-x-1/2 rounded-full bg-violet-600/20 blur-[130px] light:bg-violet-300/40" />
@@ -24,7 +38,9 @@ export default function CvHomeBackground({ showDarkLines = true }: CvHomeBackgro
       {/* DARK: the two thin curves. non-scaling-stroke keeps them the same
           thickness at every window size. */}
       <svg
-        className={`absolute inset-0 h-full w-full transition-opacity duration-500 light:hidden ${showDarkLines ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 h-full w-full transition-opacity duration-500 light:hidden ${
+          showDarkLines ? "opacity-100" : "opacity-0"
+        }`}
         viewBox="0 0 1600 900"
         preserveAspectRatio="none"
         fill="none"
@@ -66,10 +82,10 @@ export default function CvHomeBackground({ showDarkLines = true }: CvHomeBackgro
       >
         <defs>
           <linearGradient id="cv-band-a" x1="1" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#e3dcff" stopOpacity="0.55" />
+            <stop offset="0" stopColor="#c4b5fd" stopOpacity="0.55" />
             <stop offset="1" stopColor="#c4b5fd" stopOpacity="0" />
           </linearGradient>
-          <linearGradient id="cv-band-b" x1="0" y1="0" x2="1" y2="1.9">
+          <linearGradient id="cv-band-b" x1="0" y1="0" x2="1" y2="0.9">
             <stop offset="0" stopColor="#ddd6fe" stopOpacity="0.8" />
             <stop offset="1" stopColor="#ddd6fe" stopOpacity="0" />
           </linearGradient>

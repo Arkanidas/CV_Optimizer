@@ -5,9 +5,7 @@ import { CV_STEPS } from "./CvStepper";
 // Light: violet-100 with violet-800 text.
 export default function StepPill({ step, className = "" }: { step: number; className?: string }) {
   return (
-    <span
-      className={`inline-flex shrink-0 rounded-full bg-violet-500/20 px-3.5 py-1 text-sm font-semibold text-violet-200 light:bg-violet-100 light:text-violet-800 ${className}`}
-    >
+    <span className={`inline-flex shrink-0 rounded-full bg-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-200 light:bg-violet-100 light:text-violet-800 mt-3${className}`}>
       Step {step} of {CV_STEPS.length}
     </span>
   );

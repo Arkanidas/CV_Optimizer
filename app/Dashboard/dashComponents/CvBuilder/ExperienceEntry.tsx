@@ -63,7 +63,8 @@ interface ExperienceEntryProps {
   // Only the errors that should be shown right now
   errors: ExperienceErrors;
   confirmingDelete: boolean;
-  onOpen: () => void;
+  // Clicking the header opens a collapsed entry and collapses an open one
+  onToggle: () => void;
   onChange: (next: WorkExperience) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -79,7 +80,7 @@ export default function ExperienceEntry({
   open,
   errors,
   confirmingDelete,
-  onOpen,
+  onToggle,
   onChange,
   onMoveUp,
   onMoveDown,
@@ -92,18 +93,23 @@ export default function ExperienceEntry({
   const update = (patch: Partial<WorkExperience>) => onChange({ ...entry, ...patch });
   const today = currentMonthValue();
 
-  // A finished, closed entry shows its job title. Otherwise the header shows
-  // the placeholder text.
-  const complete = isExperienceComplete(entry);
-  const showSummary = !open && complete;
-  // The number lights up on the same condition: complete and closed. To light
-  // it up the moment the last field is filled in, while the entry is still
-  // open, change this to: const lit = complete;
-  const lit = !open && complete;
+  // THE TITLE. It mirrors the job title as it's typed, in every state. The
+  // placeholder only shows while the field is empty.
+  const title = entry.jobTitle.trim();
 
-  // What a collapsed, unfinished entry shows under the placeholder
-  const partialSummary =
-    [entry.jobTitle.trim(), entry.company.trim()].filter(Boolean).join(" · ") || "Not filled in yet";
+  // The grey line under the title. It's only shown when the entry is collapsed.
+  // A finished entry shows its company and dates, an unfinished one whatever
+  // has been filled in so far.
+  const complete = isExperienceComplete(entry);
+  const details = [entry.company.trim(), formatDates(entry)].filter(Boolean).join(" · ");
+  const subtitle = needsAttention
+    ? "Missing information"
+    : details || (title ? "Not finished yet" : "Not filled in yet");
+
+  // The number lights up when the entry is complete and collapsed. To light it
+  // up the moment the last field is filled in, while the entry is still open,
+  // change this to: const lit = complete;
+  const lit = !open && complete;
 
   return (
     <article
@@ -112,18 +118,17 @@ export default function ExperienceEntry({
         open ? OPEN_CARD : COLLAPSED_CARD
       }`}
     >
-      {/* HEADER: the number, the title and the buttons. It's the whole banner
-          when the entry is collapsed. The move and delete buttons are beside
-          the main button, not inside it: a button can't contain buttons. */}
+      {/* HEADER: the number, the title and the buttons. Clicking it opens or
+          collapses the entry. The move and delete buttons are beside the main
+          button, not inside it: a button can't contain buttons. */}
       <div className="flex items-center gap-3 p-4 sm:px-5">
         <button
           type="button"
-          onClick={onOpen}
+          onClick={onToggle}
           aria-expanded={open}
           aria-controls={bodyId}
-          className={`flex min-w-0 flex-1 items-center gap-4 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
-            open ? "cursor-default" : "cursor-pointer"
-          }`}
+          title={open ? "Collapse" : "Expand"}
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-4 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
         >
           {/* The transition is set inline, so it can last longer when lighting
               up than when fading out, and no class can switch it off. */}
@@ -141,32 +146,19 @@ export default function ExperienceEntry({
           </span>
 
           <span className="min-w-0">
-            {showSummary ? (
-              <>
-                <span className="block truncate text-xl font-semibold text-white light:text-stone-900">
-                  {entry.jobTitle.trim()}
-                </span>
-                <span className="block truncate text-sm text-white/55 light:text-stone-500">
-                  {[entry.company.trim(), formatDates(entry)].filter(Boolean).join(" · ")}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="block text-lg font-semibold text-white light:text-stone-900">
-                  Your Work Experience
-                </span>
-                {!open && (
-                  <span
-                    className={`block truncate text-sm ${
-                      needsAttention
-                        ? "text-red-400 light:text-red-600"
-                        : "text-white/55 light:text-stone-500"
-                    }`}
-                  >
-                    {needsAttention ? "Missing information" : partialSummary}
-                  </span>
-                )}
-              </>
+            <span className="block truncate text-xl font-semibold text-white light:text-stone-900">
+              {title || "Your Work Experience"}
+            </span>
+            {!open && (
+              <span
+                className={`block truncate text-sm ${
+                  needsAttention
+                    ? "text-red-400 light:text-red-600"
+                    : "text-white/55 light:text-stone-500"
+                }`}
+              >
+                {subtitle}
+              </span>
             )}
           </span>
         </button>

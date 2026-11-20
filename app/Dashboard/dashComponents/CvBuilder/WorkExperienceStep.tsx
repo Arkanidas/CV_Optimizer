@@ -21,6 +21,7 @@ const hasErrors = (entry: WorkExperience) => Object.keys(validateExperience(entr
 function focusLater(elementId: string) {
   setTimeout(() => document.getElementById(elementId)?.focus(), 80);
 }
+const LIST_SCROLLS_INSIDE = false;
 
 interface WorkExperienceStepProps {
   value: WorkExperience[];
@@ -29,8 +30,9 @@ interface WorkExperienceStepProps {
 }
 
 export default function WorkExperienceStep({ value, onChange, onNext }: WorkExperienceStepProps) {
-  // Which entry is open. Exactly one is open at any time.
-  const [openId, setOpenId] = useState(() => value[value.length - 1]?.id ?? "");
+  // Which entry is open: at most one. null means every entry is collapsed.
+  // The last entry starts open.
+  const [openId, setOpenId] = useState<string | null>(() => value[value.length - 1]?.id ?? null);
   // Entries whose errors are showing. Errors only show after a failed Next or
   // Add, so a fresh entry doesn't start out covered in red.
   const [attempted, setAttempted] = useState<string[]>([]);
@@ -39,16 +41,18 @@ export default function WorkExperienceStep({ value, onChange, onNext }: WorkExpe
   const [announcement, setAnnouncement] = useState("");
 
   // Protects against an id that no longer exists, for example after a delete
-  const activeId = value.some((e) => e.id === openId) ? openId : (value[value.length - 1]?.id ?? "");
+  const activeId = openId && value.some((e) => e.id === openId) ? openId : null;
   const atLimit = value.length >= MAX_EXPERIENCES;
 
-  // Bring the newly opened entry into view (not on the first render)
+  // Bring the newly opened entry into view (not on the first render, and not
+  // when everything has been collapsed)
   const firstRender = useRef(true);
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
       return;
     }
+    if (!activeId) return;
     const timer = setTimeout(() => {
       document
         .getElementById(`exp-${activeId}`)
@@ -56,6 +60,11 @@ export default function WorkExperienceStep({ value, onChange, onNext }: WorkExpe
     }, 120);
     return () => clearTimeout(timer);
   }, [activeId]);
+
+  function toggleEntry(id: string) {
+    setConfirmingId(null);
+    setOpenId((current) => (current === id ? null : id));
+  }
 
   function revealErrors(invalid: WorkExperience[]) {
     setAttempted((prev) => Array.from(new Set([...prev, ...invalid.map((e) => e.id)])));
@@ -79,17 +88,20 @@ export default function WorkExperienceStep({ value, onChange, onNext }: WorkExpe
   function handleAdd() {
     if (atLimit) return;
 
+    // The open entry is half filled in: show what is missing first
     const open = value.find((e) => e.id === activeId);
-    if (open) {
-      // An empty entry is already waiting to be filled in
-      if (isExperienceEmpty(open)) {
-        focusLater(experienceFieldId(open.id, "jobTitle"));
-        return;
-      }
-      if (hasErrors(open)) {
-        revealErrors([open]);
-        return;
-      }
+    if (open && !isExperienceEmpty(open) && hasErrors(open)) {
+      revealErrors([open]);
+      return;
+    }
+
+    // An empty entry is already waiting, open or collapsed: use that one
+    // instead of adding another
+    const blank = value.find((e) => isExperienceEmpty(e));
+    if (blank) {
+      setOpenId(blank.id);
+      focusLater(experienceFieldId(blank.id, "jobTitle"));
+      return;
     }
 
     const entry = createExperience();
@@ -136,6 +148,8 @@ export default function WorkExperienceStep({ value, onChange, onNext }: WorkExpe
 
     const next = value.filter((e) => e.id !== id);
     onChange(next);
+    // If the open entry was deleted, open its neighbor. If everything was
+    // collapsed, it stays that way.
     if (activeId === id) setOpenId(next[Math.max(0, index - 1)].id);
   }
 
@@ -149,18 +163,21 @@ export default function WorkExperienceStep({ value, onChange, onNext }: WorkExpe
     // @container makes the layout inside follow the width of THIS section, not
     // the window, so it also works with the sidebar open or closed.
     <section className="@container">
-      {/* THE PILL. ml-5 lines its left edge up with the number badge inside
-          the card below (the card's header has 20px of padding). To make it
-          overlap the card's top border instead, add -mb-3 and relative z-10. */}
-     <p className="sr-only" aria-live="polite">
+      <p className="sr-only" aria-live="polite">
         {announcement}
       </p>
-
 
       {/* THE LIST. It scrolls when it gets too tall: the height limit is 75% of
           the window. The little padding leaves room for the open card's border,
           which the scrolling area would otherwise clip; -mx-1 cancels it
           sideways. */}
+           <div
+        className={
+          LIST_SCROLLS_INSIDE
+            ? `-mx-1 flex max-h-[75vh] flex-col gap-4 overflow-y-auto px-1 py-1 [scrollbar-gutter:stable] ${SCROLLBAR}`
+            : "flex flex-col gap-4"
+        }
+      ></div>
       <div className={`-mx-1 flex max-h-[75vh] flex-col gap-4 overflow-y-auto px-1 py-1 ${SCROLLBAR}`}>
         {value.map((entry, index) => (
           <ExperienceEntry
@@ -171,10 +188,7 @@ export default function WorkExperienceStep({ value, onChange, onNext }: WorkExpe
             open={entry.id === activeId}
             errors={attempted.includes(entry.id) ? validateExperience(entry) : {}}
             confirmingDelete={confirmingId === entry.id}
-            onOpen={() => {
-              setConfirmingId(null);
-              setOpenId(entry.id);
-            }}
+            onToggle={() => toggleEntry(entry.id)}
             onChange={(next) => onChange(value.map((e) => (e.id === entry.id ? next : e)))}
             onMoveUp={() => moveEntry(entry.id, -1)}
             onMoveDown={() => moveEntry(entry.id, 1)}
