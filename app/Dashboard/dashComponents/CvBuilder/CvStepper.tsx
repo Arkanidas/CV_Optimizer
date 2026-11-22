@@ -4,8 +4,8 @@ import { Check } from "lucide-react";
 export const CV_STEPS = [
   { id: "personal", label: "Personal Information" },
   { id: "work", label: "Work Experience" },
-  { id: "skills", label: "Skills & Expertise" },
   { id: "education", label: "Education" },
+  { id: "skills", label: "Skills & Expertise" },
   { id: "additional", label: "Additional Information" },
   { id: "review", label: "Review & Generate" },
 ];

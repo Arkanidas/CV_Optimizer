@@ -8,7 +8,9 @@ import GradientText from "@/components/GradientText";
 import CvHomeBackground from "@/app/dashboard/dashComponents/CvHome/CvHomeBackground";
 import CvOptionCard from "@/app/dashboard/dashComponents/CvHome/CvOptionCard";
 import CvGoButton from "@/app/dashboard/dashComponents/CvHome/CvGoButton";
-import CvCreateTypeStep, {type CreateType,} from "@/app/dashboard/dashComponents/CvHome/CvCreateTypeStep";
+import CvCreateTypeStep, {
+  type CreateType,
+} from "@/app/dashboard/dashComponents/CvHome/CvCreateTypeStep";
 import CvCareerStep from "@/app/dashboard/dashComponents/CvHome/CvCareerStep";
 import {
   EMPTY_CAREER,
@@ -24,16 +26,10 @@ import {
   LINE_RIGHT,
 } from "@/app/dashboard/dashComponents/CvHome/cvHomeTheme";
 
-// The page has three steps and stays on /dashboard/cv the whole time:
-//   "start"       create or optimize
-//   "create-type" general or targeted (reached with "Create a new CV")
-//   "career"      industry, occupation and experience level
-// The last step leads on to the create page.
 type Step = "start" | "create-type" | "career";
 type CvOption = "create" | "optimize";
 
-// Where the pages after this one live. Change the paths here when the real
-// pages get other names.
+
 const OPTIMIZE_ROUTE = "/dashboard/cv/optimize";
 const CREATE_ROUTE = "/dashboard/cv/create";
 
@@ -53,7 +49,7 @@ const STEP_FADE = {
   transition: { duration: 0.25 },
 };
 
-export default function CvOptimizationPage() {
+export default function CvHomePage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("start");
   // Nothing is selected the first time the page opens. All the selections are
@@ -86,8 +82,8 @@ export default function CvOptimizationPage() {
     const level = EXPERIENCE_LEVELS.find((l) => l.id === career.experienceId);
     if (!industry || !level) return;
 
-    // Saved with readable labels as well as ids, so the create page and the
-    // AI prompt can use them directly
+    // Saved with readable labels as well as ids, so the builder and the AI
+    // prompt can use them directly
     saveCvSetup({
       cvType: createType,
       industryId: industry.id,
@@ -101,10 +97,15 @@ export default function CvOptimizationPage() {
   }
 
   return (
- 
+    // -mx-8 -my-8 cancels the page area's padding (px-8 py-8 in
+    // DashboardChrome), so the background reaches all four edges. min-h-dvh
+    // then makes it exactly as tall as the screen. On the career step the
+    // content can be taller than the screen, and the page then scrolls.
     <div className="relative -mx-8 -my-8 flex min-h-screen min-h-dvh items-center justify-center overflow-hidden px-6 py-16">
-
+      {/* The same background on all steps. The dark-mode curves belong to the
+          first step only, and fade out on the others. */}
       <CvHomeBackground showDarkLines={step === "start"} />
+
       <AnimatePresence mode="wait">
         {step === "start" && (
           <motion.div

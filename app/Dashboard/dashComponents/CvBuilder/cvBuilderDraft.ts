@@ -13,7 +13,6 @@ export interface PersonalInfo {
   phone: string;
   location: string;
   linkedin: string;
-  // A small JPEG as a data URL, or "" for no photo
   photo: string;
 }
 
@@ -79,7 +78,6 @@ export interface WorkExperience {
   id: string;
   jobTitle: string;
   company: string;
-  // "YYYY-MM", or "" when not chosen
   fromMonth: string;
   toMonth: string;
   current: boolean;
@@ -145,8 +143,8 @@ export const experienceControlId = (entryId: string, control: "up" | "down") =>
 
 export function validateExperience(e: WorkExperience): ExperienceErrors {
   const errors: ExperienceErrors = {};
-  if (e.jobTitle.trim().length < 2) errors.jobTitle = "Enter a job title.";
-  if (e.company.trim().length < 2) errors.company = "Enter a company.";
+  if (e.jobTitle.trim().length < 3) errors.jobTitle = "Enter a job title.";
+  if (e.company.trim().length < 3) errors.company = "Enter a company.";
   if (!e.fromMonth) errors.from = "Choose a start date.";
 
   if (!e.current) {
@@ -186,6 +184,50 @@ function normalizeExperience(raw: unknown): WorkExperience | null {
   };
 }
 
+// ---- step 3: skills and expertise ----
+
+// How many of each can be added. These are only here to keep the draft a
+// sensible size. The limits that depend on the subscription tier come later,
+// with the AI recommendations.
+export const MAX_TECHNICAL_SKILLS = 30;
+export const MAX_COMPETENCES = 15;
+export const MAX_SOFT_SKILLS = 15;
+export const SKILL_NAME_MAX = 40;
+
+export interface SkillsData {
+  technical: string[];
+  competences: string[];
+  soft: string[];
+}
+
+export const EMPTY_SKILLS: SkillsData = { technical: [], competences: [], soft: [] };
+
+export const sameSkill = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+export const hasSkill = (list: string[], name: string) => list.some((s) => sameSkill(s, name));
+
+// Adds names to a list. Empty names and duplicates (ignoring capital letters)
+// are skipped, and it stops when the list is full.
+export function addSkills(list: string[], names: string[], max: number): string[] {
+  const next = [...list];
+  for (const raw of names) {
+    const name = raw.trim().slice(0, SKILL_NAME_MAX);
+    if (!name || hasSkill(next, name)) continue;
+    if (next.length >= max) break;
+    next.push(name);
+  }
+  return next;
+}
+
+export function countSkills(skills: SkillsData): number {
+  return skills.technical.length + skills.competences.length + skills.soft.length;
+}
+
+// Reads one list from storage without trusting its shape
+function normalizeSkillList(raw: unknown, max: number): string[] {
+  if (!Array.isArray(raw)) return [];
+  return addSkills([], raw.filter((item): item is string => typeof item === "string"), max);
+}
+
 // ---- the draft, saved in the browser session ----
 
 export const CV_DRAFT_KEY = "cvBuilderDraft";
@@ -195,6 +237,7 @@ export interface CvDraft {
   stepIndex: number;
   personal: PersonalInfo;
   experiences: WorkExperience[];
+  skills: SkillsData;
 }
 
 // Browser only: call from effects and click handlers, never during render.
@@ -214,11 +257,19 @@ export function readCvDraft(): CvDraft | null {
           .slice(0, MAX_EXPERIENCES)
       : [];
 
+    // An older draft has no skills yet, which gives three empty lists
+    const skills: SkillsData = {
+      technical: normalizeSkillList(parsed?.skills?.technical, MAX_TECHNICAL_SKILLS),
+      competences: normalizeSkillList(parsed?.skills?.competences, MAX_COMPETENCES),
+      soft: normalizeSkillList(parsed?.skills?.soft, MAX_SOFT_SKILLS),
+    };
+
     // The spread fills in any field an older draft doesn't have yet
     return {
       stepIndex,
       personal: { ...EMPTY_PERSONAL, ...(parsed?.personal ?? {}) },
       experiences,
+      skills,
     };
   } catch {
     return null;

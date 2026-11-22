@@ -35,3 +35,7 @@ export const ICON_BUTTON_DANGER = `${ICON_BUTTON_BASE} ${ICON_BUTTON_LOOK} enabl
 // the scrollbar thumb, which would hide the fact that a list scrolls.
 export const SCROLLBAR =
   "[scrollbar-color:rgba(255,255,255,0.25)_transparent] [scrollbar-width:thin] light:[scrollbar-color:rgba(0,0,0,0.3)_transparent]";
+
+// The rounded search and "add skill" fields on the skills step. The padding is
+// set where it's used, because the small version needs less of it.
+export const INPUT_PILL = "w-full rounded-full border text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 light:text-stone-900 light:placeholder:text-stone-400";

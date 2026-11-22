@@ -14,12 +14,7 @@ import type { ReactNode } from "react";
 import GradientText from "@/components/GradientText";
 import CvGoButton from "./CvGoButton";
 import { GRADIENT_DARK, GRADIENT_LIGHT } from "./cvHomeTheme";
-import {
-  EXPERIENCE_LEVELS,
-  INDUSTRIES,
-  type CareerSelection,
-  type Industry,
-} from "./cvCareerData";
+import {EXPERIENCE_LEVELS,INDUSTRIES,type CareerSelection,type Industry} from "./cvCareerData";
 
 // ============================================================
 // COLORS AND SIZES (TWEAK ZONE)
@@ -77,11 +72,7 @@ function SectionHeader({
 // One industry. Selected: a lit border, a soft glow and a check badge on the
 // corner. The glow is small on purpose, because the scrolling list around it
 // clips anything that sticks out.
-function IndustryTile({
-  industry,
-  selected,
-  onSelect,
-}: {
+function IndustryTile({industry,selected,onSelect,}: {
   industry: Industry;
   selected: boolean;
   onSelect: () => void;
