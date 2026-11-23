@@ -4,9 +4,7 @@ import { GRADIENT_DARK, GRADIENT_LIGHT } from "@/app/dashboard/dashComponents/Cv
 import StepPill from "./StepPill";
 
 interface StepHeadingProps {
-  // The white part of the title, for example "Work"
-  before: string;
-  // The purple animated word, for example "Experience"
+  before?: string;
   highlight: string;
   step: number;
   description: ReactNode;
@@ -17,7 +15,7 @@ export default function StepHeading({ before, highlight, step, description }: St
     <>
       <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
         <h1 className="flex flex-wrap items-center gap-x-[0.3em] text-4xl font-bold tracking-tight text-white light:text-stone-900 md:text-5xl">
-          <span>{before}</span>
+          {before && <span>{before}</span>}
           <span className="light:hidden">
             <GradientText
               colors={GRADIENT_DARK}

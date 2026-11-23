@@ -23,12 +23,7 @@ import {
   type WorkExperience,
 } from "./cvBuilderDraft";
 
-// ============================================================
-// CARD COLORS (TWEAK ZONE)
-// ============================================================
-// The open card has a lit purple border, and no glow: a glow gets cut off by
-// the scrolling list and looks like a box. Light: violet-600 border. A
-// collapsed banner is a plain glass card.
+
 const OPEN_CARD =
   "border-violet-400/70 bg-white/[0.04] backdrop-blur-md shadow-[0_0_0_1px_rgba(167,139,250,0.55)] light:border-violet-600 light:bg-white light:shadow-[0_0_0_1px_rgba(109,40,217,0.6)]";
 const COLLAPSED_CARD = `${CARD} hover:border-violet-400/40 light:hover:border-violet-400`;

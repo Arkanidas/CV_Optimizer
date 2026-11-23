@@ -15,18 +15,10 @@ export const CV_STEPS = [
 // ============================================================
 // How long the line takes to fill between two circles, in ms
 const LINE_MS = 450;
-// How long to wait before the animation starts. The page scrolls up to the
-// stepper when you change step, and this gives it time to get there.
 const START_DELAY_MS = 200;
-// When the new circle lights up. About when the line reaches it.
 const ACTIVE_DELAY_MS = 500;
 
-// ============================================================
-// COLORS (TWEAK ZONE). Light: violet-700 for the current and finished steps,
-// white with a stone-300 outline for the ones still to come.
-// ============================================================
-// animate-step-pulse and animate-wave-pulse are the same classes as in the
-// cover letter stepper.
+
 const CIRCLE_ACTIVE =
   "border-violet-500 bg-violet-600 text-white shadow-[0_0_20px_rgba(124,58,237,0.6)] animate-step-pulse light:border-violet-700 light:bg-violet-700 light:shadow-[0_6px_16px_-4px_rgba(109,40,217,0.5)]";
 const CIRCLE_DONE =

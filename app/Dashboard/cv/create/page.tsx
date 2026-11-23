@@ -1,3 +1,4 @@
+// app/dashboard/cv/create/page.tsx  (the builder, NOT app/dashboard/cv/page.tsx)
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -15,20 +16,22 @@ import EducationStep from "@/app/dashboard/dashComponents/CvBuilder/EducationSte
 import SkillsStep from "@/app/dashboard/dashComponents/CvBuilder/SkillStep";
 import RoleInsightsPanel from "@/app/dashboard/dashComponents/CvBuilder/RoleInsightsPanel";
 import AiAssistantPanel from "@/app/dashboard/dashComponents/CvBuilder/AiAssistantPanel";
+import EducationAssistantPanel from "@/app/dashboard/dashComponents/CvBuilder/EducationAssistantPanel";
 import SkillsInsightsPanel from "@/app/dashboard/dashComponents/CvBuilder/SkillsInsightsPanel";
 import StepPill from "@/app/dashboard/dashComponents/CvBuilder/StepPill";
 import { CARD } from "@/app/dashboard/dashComponents/CvBuilder/cvBuilderTheme";
 import { getStaticRecommendations } from "@/app/dashboard/dashComponents/CvBuilder/cvStaticSkills";
-import {
-  EMPTY_PERSONAL,
+import {EMPTY_PERSONAL,
   EMPTY_SKILLS,
   PERSONAL_FIELD_IDS,
   PERSONAL_FIELD_ORDER,
   buildHeadlineSuggestion,
+  createEducation,
   createExperience,
   readCvDraft,
   useCvDraftSaver,
   validatePersonal,
+  type EducationEntry,
   type PersonalInfo,
   type SkillsData,
   type WorkExperience,
@@ -54,10 +57,13 @@ export default function CreateCvPage() {
   const [stepperReady, setStepperReady] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [personal, setPersonal] = useState<PersonalInfo>(EMPTY_PERSONAL);
-  // There is always at least one entry, so there is always one to fill in.
-  // The first one is made once; the ids of later ones are made when they're added.
+  // Work experience and education always have at least one entry, so there is
+  // always one to fill in. The first of each is made once; the ids of later
+  // ones are made when they're added.
   const [firstExperience] = useState(createExperience);
   const [experiences, setExperiences] = useState<WorkExperience[]>([firstExperience]);
+  const [firstEducation] = useState(createEducation);
+  const [education, setEducation] = useState<EducationEntry[]>([firstEducation]);
   const [skills, setSkills] = useState<SkillsData>(EMPTY_SKILLS);
   // Errors only show after the first press on Continue
   const [attempted, setAttempted] = useState(false);
@@ -72,6 +78,7 @@ export default function CreateCvPage() {
       setStepIndex(draft.stepIndex);
       setPersonal(draft.personal);
       if (draft.experiences.length > 0) setExperiences(draft.experiences);
+      if (draft.education.length > 0) setEducation(draft.education);
       setSkills(draft.skills);
       prefilled.current = true;
     }
@@ -96,8 +103,8 @@ export default function CreateCvPage() {
   }, [hydrated, session]);
 
   const draft = useMemo(
-    () => ({ stepIndex, personal, experiences, skills }),
-    [stepIndex, personal, experiences, skills]
+    () => ({ stepIndex, personal, experiences, education, skills }),
+    [stepIndex, personal, experiences, education, skills]
   );
   const saveStatus = useCvDraftSaver(draft, hydrated);
 
@@ -192,16 +199,22 @@ export default function CreateCvPage() {
             </span>
           </div>
 
-          {/* THE TITLE. Work Experience and Skills & Expertise have their own
-              title in this place, so "Create your CV" is only shown on the
-              other steps. All are the same size: 36px, 48px from 768px. The
-              step pill sits to the right of the title. */}
+          {/* THE TITLE. Work Experience, Education and Skills & Expertise have
+              their own title in this place, so "Create your CV" is only shown
+              on the other steps. All are the same size: 36px, 48px from 768px.
+              The step pill sits to the right of the title. */}
           {stepIndex === STEP_WORK ? (
             <StepHeading
               before="Work"
               highlight="Experience"
               step={STEP_WORK + 1}
               description="Showcase your professional journey. Add your previous roles, responsibilities and achievements."
+            />
+          ) : stepIndex === STEP_EDUCATION ? (
+            <StepHeading
+              highlight="Education"
+              step={STEP_EDUCATION + 1}
+              description="Add your educational background, including degrees, diplomas or relevant courses."
             />
           ) : stepIndex === STEP_SKILLS ? (
             <StepHeading
@@ -268,7 +281,11 @@ export default function CreateCvPage() {
                 onNext={() => goToStep(STEP_EDUCATION)}
               />
             ) : stepIndex === STEP_EDUCATION ? (
-              <EducationStep onNext={() => goToStep(STEP_SKILLS)} />
+              <EducationStep
+                value={education}
+                onChange={setEducation}
+                onNext={() => goToStep(STEP_SKILLS)}
+              />
             ) : stepIndex === STEP_SKILLS ? (
               <SkillsStep
                 value={skills}
@@ -310,6 +327,8 @@ export default function CreateCvPage() {
                   level={setup?.experienceLevel ?? ""}
                   Icon={IndustryIcon}
                 />
+              ) : stepIndex === STEP_EDUCATION ? (
+                <EducationAssistantPanel />
               ) : stepIndex === STEP_SKILLS ? (
                 <SkillsInsightsPanel
                   occupation={role}

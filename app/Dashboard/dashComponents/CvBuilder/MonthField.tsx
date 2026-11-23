@@ -30,14 +30,12 @@ export function formatMonth(value: string): string {
 interface MonthFieldProps {
   id: string;
   label: string;
-  // "YYYY-MM", or "" when nothing is chosen
   value: string;
   onChange: (value: string) => void;
   required?: boolean;
   disabled?: boolean;
   placeholder?: string;
-  // The earliest and latest month that can be chosen, as "YYYY-MM". The
-  // latest defaults to the current month, so the future can't be chosen.
+  defaultYear?: number;
   min?: string;
   max?: string;
   error?: string;
@@ -55,6 +53,7 @@ export default function MonthField({
   min,
   max,
   error,
+  defaultYear,
   className = "",
 }: MonthFieldProps) {
   const [open, setOpen] = useState(false);
@@ -124,7 +123,7 @@ export default function MonthField({
     if (disabled) return;
     if (!open) {
       // Open at the chosen year, otherwise at the earliest allowed one, otherwise now
-      const start = value ? yearOf(value) : min ? yearOf(min) : maxYear;
+       const start = value ? yearOf(value) : (defaultYear ?? (min ? yearOf(min) : maxYear));
       setYear(Math.min(Math.max(start, minYear), maxYear));
       setView("months");
     }
