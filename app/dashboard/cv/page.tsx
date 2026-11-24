@@ -87,7 +87,7 @@ export default function CvHomePage() {
     saveCvSetup({
       cvType: createType,
       industryId: industry.id,
-      industry: industry.label,
+      industry: industry.custom ? "" : industry.label,
       occupation: career.occupation.trim(),
       experienceId: level.id,
       experienceLevel: level.label,

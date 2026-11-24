@@ -244,9 +244,14 @@ export default function CreateCvPage() {
                   (role ? (
                     <>
                       Let&apos;s build a professional CV tailored for a{" "}
-                      <strong className="font-semibold text-white light:text-stone-900">{role}</strong>{" "}
-                      role in{" "}
-                      <strong className="font-semibold text-white light:text-stone-900">{industry}</strong>.
+                      <strong className="font-semibold text-white light:text-stone-900">{role}</strong> role
+                      {industry && (
+                        <>
+                          {" "}in{" "}
+                          <strong className="font-semibold text-white light:text-stone-900">{industry}</strong>
+                        </>
+                      )}
+                      .
                     </>
                   ) : (
                     "Let's build a professional CV."
