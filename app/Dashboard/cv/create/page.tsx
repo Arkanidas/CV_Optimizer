@@ -14,14 +14,18 @@ import PersonalInfoStep from "@/app/dashboard/dashComponents/CvBuilder/PersonalI
 import WorkExperienceStep from "@/app/dashboard/dashComponents/CvBuilder/WorkExperienceStep";
 import EducationStep from "@/app/dashboard/dashComponents/CvBuilder/EducationStep";
 import SkillsStep from "@/app/dashboard/dashComponents/CvBuilder/SkillStep";
+import AdditionalInfoStep from "@/app/dashboard/dashComponents/CvBuilder/AdditionalInfoStep";
 import RoleInsightsPanel from "@/app/dashboard/dashComponents/CvBuilder/RoleInsightsPanel";
 import AiAssistantPanel from "@/app/dashboard/dashComponents/CvBuilder/AiAssistantPanel";
 import EducationAssistantPanel from "@/app/dashboard/dashComponents/CvBuilder/EducationAssistantPanel";
 import SkillsInsightsPanel from "@/app/dashboard/dashComponents/CvBuilder/SkillsInsightsPanel";
+import AdditionalInfoPanel from "@/app/dashboard/dashComponents/CvBuilder/AdditionalInfoPanel";
 import StepPill from "@/app/dashboard/dashComponents/CvBuilder/StepPill";
 import { CARD } from "@/app/dashboard/dashComponents/CvBuilder/cvBuilderTheme";
 import { getStaticRecommendations } from "@/app/dashboard/dashComponents/CvBuilder/cvStaticSkills";
-import {EMPTY_PERSONAL,
+import {
+  EMPTY_ADDITIONAL,
+  EMPTY_PERSONAL,
   EMPTY_SKILLS,
   PERSONAL_FIELD_IDS,
   PERSONAL_FIELD_ORDER,
@@ -31,6 +35,7 @@ import {EMPTY_PERSONAL,
   readCvDraft,
   useCvDraftSaver,
   validatePersonal,
+  type AdditionalData,
   type EducationEntry,
   type PersonalInfo,
   type SkillsData,
@@ -43,6 +48,7 @@ import {EMPTY_PERSONAL,
 const STEP_WORK = 1;
 const STEP_EDUCATION = 2;
 const STEP_SKILLS = 3;
+const STEP_ADDITIONAL = 4;
 
 export default function CreateCvPage() {
   const { data: session } = useSession();
@@ -65,6 +71,7 @@ export default function CreateCvPage() {
   const [firstEducation] = useState(createEducation);
   const [education, setEducation] = useState<EducationEntry[]>([firstEducation]);
   const [skills, setSkills] = useState<SkillsData>(EMPTY_SKILLS);
+  const [additional, setAdditional] = useState<AdditionalData>(EMPTY_ADDITIONAL);
   // Errors only show after the first press on Continue
   const [attempted, setAttempted] = useState(false);
   // Names and email are filled in from the account once, and only if there is
@@ -80,6 +87,7 @@ export default function CreateCvPage() {
       if (draft.experiences.length > 0) setExperiences(draft.experiences);
       if (draft.education.length > 0) setEducation(draft.education);
       setSkills(draft.skills);
+      setAdditional(draft.additional);
       prefilled.current = true;
     }
     setHydrated(true);
@@ -103,8 +111,8 @@ export default function CreateCvPage() {
   }, [hydrated, session]);
 
   const draft = useMemo(
-    () => ({ stepIndex, personal, experiences, education, skills }),
-    [stepIndex, personal, experiences, education, skills]
+    () => ({ stepIndex, personal, experiences, education, skills, additional }),
+    [stepIndex, personal, experiences, education, skills, additional]
   );
   const saveStatus = useCvDraftSaver(draft, hydrated);
 
@@ -199,10 +207,11 @@ export default function CreateCvPage() {
             </span>
           </div>
 
-          {/* THE TITLE. Work Experience, Education and Skills & Expertise have
-              their own title in this place, so "Create your CV" is only shown
-              on the other steps. All are the same size: 36px, 48px from 768px.
-              The step pill sits to the right of the title. */}
+          {/* THE TITLE. Work Experience, Education, Skills & Expertise and
+              Additional Information have their own title in this place, so
+              "Create your CV" is only shown on the other steps. All are the
+              same size: 36px, 48px from 768px. The step pill sits to the right
+              of the title. */}
           {stepIndex === STEP_WORK ? (
             <StepHeading
               before="Work"
@@ -232,13 +241,21 @@ export default function CreateCvPage() {
                 )
               }
             />
+          ) : stepIndex === STEP_ADDITIONAL ? (
+            <StepHeading
+              before="Additional"
+              highlight="Information"
+              step={STEP_ADDITIONAL + 1}
+              description="Add extra qualifications and details that help recruiters understand your professional profile."
+            />
           ) : (
             <>
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-white light:text-stone-900 md:text-5xl">
                 Create your CV
               </h1>
               {/* The role is filled in once the choices have been read, so the
-                  sentence doesn't change after the page has loaded */}
+                  sentence doesn't change after the page has loaded. A custom
+                  role has no industry, so then that part is left out. */}
               <p className="mt-3 min-h-7 text-base text-white/70 light:text-stone-600 md:text-lg">
                 {hydrated &&
                   (role ? (
@@ -297,10 +314,16 @@ export default function CreateCvPage() {
                 onChange={setSkills}
                 recommendations={recommendations}
                 occupation={role}
-                onNext={() => goToStep(STEP_SKILLS + 1)}
+                onNext={() => goToStep(STEP_ADDITIONAL)}
+              />
+            ) : stepIndex === STEP_ADDITIONAL ? (
+              <AdditionalInfoStep
+                value={additional}
+                onChange={setAdditional}
+                onNext={() => goToStep(STEP_ADDITIONAL + 1)}
               />
             ) : (
-              // The other steps come later. This keeps the tracker and the Back
+              // The last step comes later. This keeps the tracker and the Back
               // button working in the meantime.
               <section className={`rounded-3xl border p-6 sm:p-8 ${CARD}`}>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -340,6 +363,8 @@ export default function CreateCvPage() {
                   Icon={IndustryIcon}
                   inDemand={recommendations.inDemand}
                 />
+              ) : stepIndex === STEP_ADDITIONAL ? (
+                <AdditionalInfoPanel />
               ) : (
                 <RoleInsightsPanel occupation={role} industry={industry} />
               )}

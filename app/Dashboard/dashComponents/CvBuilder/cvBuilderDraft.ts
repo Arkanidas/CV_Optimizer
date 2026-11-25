@@ -207,6 +207,13 @@ function normalizeExperience(raw: unknown): WorkExperience | null {
   };
 }
 
+// ============================================================
+// STEP 3: EDUCATION
+// ============================================================
+
+// graduated:  finished, with a graduation date
+// ongoing:    still studying, the end date is the expected graduation date
+// incomplete: stopped before finishing, the end date is when they left
 export type EducationStatus = "graduated" | "ongoing" | "incomplete";
 
 export const EDUCATION_TYPES = [
@@ -225,10 +232,13 @@ export const educationTypeLabel = (value: string): string =>
 
 export interface EducationEntry {
   id: string;
+  // One of EDUCATION_TYPES, or "" when not chosen
   type: string;
   institution: string;
+  // Field of study or qualification, for example "Computer Science"
   field: string;
   location: string;
+  // "YYYY-MM", or "" when not chosen
   fromMonth: string;
   toMonth: string;
   status: EducationStatus;
@@ -319,8 +329,10 @@ function normalizeEducation(raw: unknown): EducationEntry | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
 
+  // Local constants, so TypeScript can narrow them inside the callback below
+  const rawType = r.type;
   const type =
-    typeof r.type === "string" && EDUCATION_TYPES.some((t) => t.value === r.type) ? r.type : "";
+    typeof rawType === "string" && EDUCATION_TYPES.some((t) => t.value === rawType) ? rawType : "";
   const status: EducationStatus =
     r.status === "ongoing" ? "ongoing" : r.status === "incomplete" ? "incomplete" : "graduated";
 
@@ -384,6 +396,312 @@ function normalizeSkillList(raw: unknown, max: number): string[] {
 }
 
 // ============================================================
+// STEP 5: ADDITIONAL INFORMATION
+// (languages, driving licenses, and the optional sections)
+// ============================================================
+
+// ---- languages ----
+
+export const LANGUAGE_LEVELS = [
+  { value: "native", label: "Native" },
+  { value: "fluent", label: "Fluent" },
+  { value: "intermediate", label: "Intermediate" },
+  { value: "basic", label: "Basic" },
+];
+
+export interface LanguageEntry {
+  id: string;
+  name: string;
+  // One of LANGUAGE_LEVELS
+  level: string;
+}
+
+export const MAX_LANGUAGES = 10;
+export const LANGUAGE_NAME_MAX = 40;
+
+// A new entry: the name is trimmed and gets a capital first letter
+export function createLanguage(name: string, level: string): LanguageEntry {
+  const trimmed = name.trim().slice(0, LANGUAGE_NAME_MAX);
+  return { id: newId(), name: trimmed.charAt(0).toUpperCase() + trimmed.slice(1), level };
+}
+
+export const hasLanguage = (list: LanguageEntry[], name: string) =>
+  list.some((l) => l.name.trim().toLowerCase() === name.trim().toLowerCase());
+
+// ---- driving licenses ----
+
+// The categories that can be added. To add or rename one, edit this list; the
+// rows on the page stay in this order.
+export const LICENSE_CATEGORIES = [
+  { code: "AM", name: "Moped" },
+  { code: "A1", name: "Light Motorcycle" },
+  { code: "A2", name: "Medium Motorcycle" },
+  { code: "A", name: "Motorcycle" },
+  { code: "B", name: "Passenger Cars" },
+  { code: "BE", name: "Cars with Trailer" },
+  { code: "C1", name: "Medium Trucks" },
+  { code: "C1E", name: "Medium Trucks with Trailer" },
+  { code: "C", name: "Heavy Trucks" },
+  { code: "CE", name: "Heavy Trucks with Trailer" },
+  { code: "D1", name: "Minibus" },
+  { code: "D1E", name: "Minibus with Trailer" },
+  { code: "D", name: "Bus" },
+  { code: "DE", name: "Bus with Trailer" },
+  { code: "T", name: "Tractor" },
+];
+
+// "B" becomes "B – Passenger Cars"
+export function licenseLabel(code: string): string {
+  const category = LICENSE_CATEGORIES.find((c) => c.code === code);
+  return category ? `${category.code} – ${category.name}` : code;
+}
+
+export interface LicenseEntry {
+  id: string;
+  // One of the codes in LICENSE_CATEGORIES. Each code appears once.
+  category: string;
+  // Additional qualifications or endorsements, for example "Code 95, ADR"
+  extras: string;
+}
+
+export const LICENSE_EXTRAS_MAX = 80;
+
+export function createLicense(category: string): LicenseEntry {
+  return { id: newId(), category, extras: "" };
+}
+
+// Keeps the licenses in the order of LICENSE_CATEGORIES
+export function sortLicenses(list: LicenseEntry[]): LicenseEntry[] {
+  const position = (code: string) => LICENSE_CATEGORIES.findIndex((c) => c.code === code);
+  return [...list].sort((a, b) => position(a.category) - position(b.category));
+}
+
+// The id of the endorsements input, so the page can focus it
+export const licenseExtrasId = (id: string) => `license-${id}-extras`;
+
+// ---- optional sections: volunteer experience, memberships, achievements ----
+
+export type ExtraKind = "volunteer" | "membership" | "achievement";
+export const EXTRA_KINDS: ExtraKind[] = ["volunteer", "membership", "achievement"];
+
+// One entry in any of the three sections
+export interface ExtraEntry {
+  id: string;
+  // The main text: the role or activity (volunteer), the association
+  // (membership) or the award or title (achievement)
+  title: string;
+  // The second text, optional: the organization (volunteer), the type of
+  // membership or role (membership), or who awarded it (achievement)
+  detail: string;
+  // "YYYY-MM". For an achievement this is the one date it was received.
+  fromMonth: string;
+  // The end date. Not used by an achievement.
+  toMonth: string;
+  // Ongoing. Never true for an achievement.
+  current: boolean;
+  description: string;
+}
+
+// How many entries each section can hold
+export const MAX_EXTRAS_PER_SECTION = 5;
+export const EXTRA_TEXT_MAX = 80;
+
+export function createExtra(): ExtraEntry {
+  return {
+    id: newId(),
+    title: "",
+    detail: "",
+    fromMonth: "",
+    toMonth: "",
+    current: false,
+    description: "",
+  };
+}
+
+// An entry nobody has touched. It's ignored when moving on.
+export function isExtraEmpty(e: ExtraEntry): boolean {
+  return (
+    !e.title.trim() &&
+    !e.detail.trim() &&
+    !e.fromMonth &&
+    !e.toMonth &&
+    !e.current &&
+    !e.description.trim()
+  );
+}
+
+export type ExtraField = "title" | "from" | "to";
+export type ExtraErrors = Partial<Record<ExtraField, string>>;
+// The required fields, in the order they appear. The first one with an error
+// gets the keyboard focus.
+export const EXTRA_FIELD_ORDER: ExtraField[] = ["title", "from", "to"];
+
+// The id of an input, so the page can focus it
+export const extraFieldId = (entryId: string, field: ExtraField | "detail" | "description") =>
+  `extra-${entryId}-${field}`;
+
+const EXTRA_TITLE_ERROR: Record<ExtraKind, string> = {
+  volunteer: "Enter your role or activity.",
+  membership: "Enter the association or organization.",
+  achievement: "Enter the achievement, award or title.",
+};
+
+export function validateExtra(kind: ExtraKind, e: ExtraEntry): ExtraErrors {
+  const errors: ExtraErrors = {};
+  if (e.title.trim().length < 2) errors.title = EXTRA_TITLE_ERROR[kind];
+
+  // An achievement has one date: when it was received
+  if (kind === "achievement") {
+    if (!e.fromMonth) errors.from = "Choose the date you received it.";
+    else if (e.fromMonth > thisMonth()) errors.from = "The date can't be in the future.";
+    return errors;
+  }
+
+  if (!e.fromMonth) errors.from = "Choose a start date.";
+  if (!e.current) {
+    if (!e.toMonth) errors.to = "Choose an end date, or mark it as ongoing.";
+    else if (e.fromMonth && e.toMonth < e.fromMonth) {
+      errors.to = "The end date can't be before the start date.";
+    }
+  }
+  return errors;
+}
+
+export interface ExtrasData {
+  // Which sections are open (their pill is lit)
+  active: Record<ExtraKind, boolean>;
+  // The entries of every section. A section that's closed keeps its entries,
+  // so nothing is lost by closing it, but they don't count for the CV.
+  entries: Record<ExtraKind, ExtraEntry[]>;
+}
+
+export const EMPTY_EXTRAS: ExtrasData = {
+  active: { volunteer: false, membership: false, achievement: false },
+  entries: { volunteer: [], membership: [], achievement: [] },
+};
+
+// The entries of a section that count for the CV: it has to be open, and
+// entries nobody touched are skipped. Use this when the CV is generated.
+export function filledExtras(extras: ExtrasData, kind: ExtraKind): ExtraEntry[] {
+  return extras.active[kind] ? extras.entries[kind].filter((e) => !isExtraEmpty(e)) : [];
+}
+
+// Reads one entry from storage without trusting its shape
+function normalizeExtraEntry(raw: unknown, kind: ExtraKind): ExtraEntry | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  const isAchievement = kind === "achievement";
+
+  return {
+    id: typeof r.id === "string" && r.id ? r.id.slice(0, 100) : newId(),
+    title: cleanText(r.title, EXTRA_TEXT_MAX),
+    detail: cleanText(r.detail, EXTRA_TEXT_MAX),
+    fromMonth: cleanMonth(r.fromMonth),
+    toMonth: isAchievement ? "" : cleanMonth(r.toMonth),
+    current: !isAchievement && r.current === true,
+    description: cleanText(r.description, DESCRIPTION_MAX),
+  };
+}
+
+// Reads the optional sections from storage without trusting their shape. An
+// older draft has none, which gives three closed, empty sections.
+function normalizeExtras(raw: unknown): ExtrasData {
+  const source = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  const activeSource =
+    source.active && typeof source.active === "object" ? (source.active as Record<string, unknown>) : {};
+  const entriesSource =
+    source.entries && typeof source.entries === "object"
+      ? (source.entries as Record<string, unknown>)
+      : {};
+
+  const result: ExtrasData = {
+    active: { ...EMPTY_EXTRAS.active },
+    entries: { volunteer: [], membership: [], achievement: [] },
+  };
+
+  for (const kind of EXTRA_KINDS) {
+    result.active[kind] = activeSource[kind] === true;
+
+    const list = entriesSource[kind];
+    result.entries[kind] = Array.isArray(list)
+      ? list
+          .map((item) => normalizeExtraEntry(item, kind))
+          .filter((e): e is ExtraEntry => e !== null)
+          .slice(0, MAX_EXTRAS_PER_SECTION)
+      : [];
+  }
+  return result;
+}
+
+// ---- the whole step ----
+
+export interface AdditionalData {
+  languages: LanguageEntry[];
+  licenses: LicenseEntry[];
+  extras: ExtrasData;
+}
+
+export const EMPTY_ADDITIONAL: AdditionalData = {
+  languages: [],
+  licenses: [],
+  extras: EMPTY_EXTRAS,
+};
+
+// Reads the languages from storage without trusting their shape
+function normalizeLanguages(raw: unknown): LanguageEntry[] {
+  if (!Array.isArray(raw)) return [];
+  const result: LanguageEntry[] = [];
+
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const r = item as Record<string, unknown>;
+
+    const name = cleanText(r.name, LANGUAGE_NAME_MAX).trim();
+    if (!name || hasLanguage(result, name)) continue;
+
+    // Local constant, so TypeScript can narrow it inside the callback below
+    const rawLevel = r.level;
+    const level =
+      typeof rawLevel === "string" && LANGUAGE_LEVELS.some((l) => l.value === rawLevel)
+        ? rawLevel
+        : "intermediate";
+
+    result.push({
+      id: typeof r.id === "string" && r.id ? r.id.slice(0, 100) : newId(),
+      name,
+      level,
+    });
+    if (result.length >= MAX_LANGUAGES) break;
+  }
+  return result;
+}
+
+// Reads the licenses from storage without trusting their shape
+function normalizeLicenses(raw: unknown): LicenseEntry[] {
+  if (!Array.isArray(raw)) return [];
+  const result: LicenseEntry[] = [];
+
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const r = item as Record<string, unknown>;
+
+    const rawCategory = r.category;
+    const category =
+      typeof rawCategory === "string" && LICENSE_CATEGORIES.some((c) => c.code === rawCategory)
+        ? rawCategory
+        : "";
+    if (!category || result.some((l) => l.category === category)) continue;
+
+    result.push({
+      id: typeof r.id === "string" && r.id ? r.id.slice(0, 100) : newId(),
+      category,
+      extras: cleanText(r.extras, LICENSE_EXTRAS_MAX),
+    });
+  }
+  return sortLicenses(result);
+}
+
+// ============================================================
 // THE DRAFT, SAVED IN THE BROWSER SESSION
 // ============================================================
 
@@ -396,6 +714,7 @@ export interface CvDraft {
   experiences: WorkExperience[];
   education: EducationEntry[];
   skills: SkillsData;
+  additional: AdditionalData;
 }
 
 // Browser only: call from effects and click handlers, never during render.
@@ -429,6 +748,14 @@ export function readCvDraft(): CvDraft | null {
       soft: normalizeSkillList(parsed?.skills?.soft, MAX_SOFT_SKILLS),
     };
 
+    // An older draft has no additional information yet: empty lists, and
+    // three closed optional sections
+    const additional: AdditionalData = {
+      languages: normalizeLanguages(parsed?.additional?.languages),
+      licenses: normalizeLicenses(parsed?.additional?.licenses),
+      extras: normalizeExtras(parsed?.additional?.extras),
+    };
+
     // The spread fills in any field an older draft doesn't have yet
     return {
       stepIndex,
@@ -436,6 +763,7 @@ export function readCvDraft(): CvDraft | null {
       experiences,
       education,
       skills,
+      additional,
     };
   } catch {
     return null;
