@@ -4,24 +4,24 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { ArrowLeft, Briefcase, Check } from "lucide-react";
+import { ArrowLeft, Briefcase, Check, Undo2 } from "lucide-react";
 import CvHomeBackground from "@/app/dashboard/dashComponents/CvHome/CvHomeBackground";
 import { readCvSetup, type CvSetup } from "@/app/dashboard/dashComponents/CvHome/cvSetup";
 import { INDUSTRIES } from "@/app/dashboard/dashComponents/CvHome/cvCareerData";
-import CvStepper, { CV_STEPS } from "@/app/dashboard/dashComponents/CvBuilder/CvStepper";
+import CvStepper from "@/app/dashboard/dashComponents/CvBuilder/CvStepper";
 import StepHeading from "@/app/dashboard/dashComponents/CvBuilder/StepHeading";
 import PersonalInfoStep from "@/app/dashboard/dashComponents/CvBuilder/PersonalInfoStep";
 import WorkExperienceStep from "@/app/dashboard/dashComponents/CvBuilder/WorkExperienceStep";
 import EducationStep from "@/app/dashboard/dashComponents/CvBuilder/EducationStep";
 import SkillsStep from "@/app/dashboard/dashComponents/CvBuilder/SkillStep";
 import AdditionalInfoStep from "@/app/dashboard/dashComponents/CvBuilder/AdditionalInfoStep";
+import ReviewStep, { type ReviewSectionId } from "@/app/dashboard/dashComponents/CvBuilder/ReviewStep";
 import RoleInsightsPanel from "@/app/dashboard/dashComponents/CvBuilder/RoleInsightsPanel";
 import AiAssistantPanel from "@/app/dashboard/dashComponents/CvBuilder/AiAssistantPanel";
 import EducationAssistantPanel from "@/app/dashboard/dashComponents/CvBuilder/EducationAssistantPanel";
 import SkillsInsightsPanel from "@/app/dashboard/dashComponents/CvBuilder/SkillsInsightsPanel";
 import AdditionalInfoPanel from "@/app/dashboard/dashComponents/CvBuilder/AdditionalInfoPanel";
-import StepPill from "@/app/dashboard/dashComponents/CvBuilder/StepPill";
-import { CARD } from "@/app/dashboard/dashComponents/CvBuilder/cvBuilderTheme";
+import ReviewAssistantPanel from "@/app/dashboard/dashComponents/CvBuilder/ReviewAssistantPanel";
 import { getStaticRecommendations } from "@/app/dashboard/dashComponents/CvBuilder/cvStaticSkills";
 import {
   EMPTY_ADDITIONAL,
@@ -45,10 +45,21 @@ import {
 // The step numbers (they are positions in CV_STEPS, counting from 0):
 //   0 Personal Information   1 Work Experience   2 Education
 //   3 Skills & Expertise     4 Additional Information   5 Review & Generate
+const STEP_PERSONAL = 0;
 const STEP_WORK = 1;
 const STEP_EDUCATION = 2;
 const STEP_SKILLS = 3;
 const STEP_ADDITIONAL = 4;
+const STEP_REVIEW = 5;
+
+// Which step each Edit button on the review leads to
+const REVIEW_SECTION_STEP: Record<ReviewSectionId, number> = {
+  personal: STEP_PERSONAL,
+  work: STEP_WORK,
+  education: STEP_EDUCATION,
+  skills: STEP_SKILLS,
+  additional: STEP_ADDITIONAL,
+};
 
 export default function CreateCvPage() {
   const { data: session } = useSession();
@@ -72,6 +83,9 @@ export default function CreateCvPage() {
   const [education, setEducation] = useState<EducationEntry[]>([firstEducation]);
   const [skills, setSkills] = useState<SkillsData>(EMPTY_SKILLS);
   const [additional, setAdditional] = useState<AdditionalData>(EMPTY_ADDITIONAL);
+  // True while the user is changing something from the review: Next then leads
+  // straight back to the review instead of to the next step. It isn't saved.
+  const [returnToReview, setReturnToReview] = useState(false);
   // Errors only show after the first press on Continue
   const [attempted, setAttempted] = useState(false);
   // Names and email are filled in from the account once, and only if there is
@@ -124,7 +138,21 @@ export default function CreateCvPage() {
 
   function goToStep(index: number) {
     setStepIndex(index);
+    // Arriving at the review ends the editing from it
+    if (index === STEP_REVIEW) setReturnToReview(false);
     scrollToTop();
+  }
+
+  // What every Next button does: go to the next step, or straight back to the
+  // review when the user came from there to change something
+  function goNext(target: number) {
+    goToStep(returnToReview ? STEP_REVIEW : target);
+  }
+
+  // The Edit button of a section on the review
+  function editFromReview(section: ReviewSectionId) {
+    setReturnToReview(true);
+    goToStep(REVIEW_SECTION_STEP[section]);
   }
 
   function handlePersonalContinue() {
@@ -138,7 +166,7 @@ export default function CreateCvPage() {
     }
 
     setAttempted(false);
-    goToStep(STEP_WORK);
+    goNext(STEP_WORK);
   }
 
   const role = setup?.occupation ?? "";
@@ -182,7 +210,7 @@ export default function CreateCvPage() {
         <div className="@container mx-auto w-full max-w-[1400px]">
           {/* TOP ROW */}
           <div className="flex items-center justify-between gap-4">
-            {stepIndex === 0 ? (
+            {stepIndex === STEP_PERSONAL ? (
               <Link href="/dashboard/cv" className={backClass}>
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -207,9 +235,8 @@ export default function CreateCvPage() {
             </span>
           </div>
 
-          {/* THE TITLE. Work Experience, Education, Skills & Expertise and
-              Additional Information have their own title in this place, so
-              "Create your CV" is only shown on the other steps. All are the
+          {/* THE TITLE. Every step except the first has its own title in this
+              place, so "Create your CV" is only shown on the first. All are the
               same size: 36px, 48px from 768px. The step pill sits to the right
               of the title. */}
           {stepIndex === STEP_WORK ? (
@@ -248,6 +275,13 @@ export default function CreateCvPage() {
               step={STEP_ADDITIONAL + 1}
               description="Add extra qualifications and details that help recruiters understand your professional profile."
             />
+          ) : stepIndex === STEP_REVIEW ? (
+            <StepHeading
+              before="Review &"
+              highlight="Generate"
+              step={STEP_REVIEW + 1}
+              description="Check that everything looks right before your CV is created. Press Edit on any section to change it."
+            />
           ) : (
             <>
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-white light:text-stone-900 md:text-5xl">
@@ -281,6 +315,24 @@ export default function CreateCvPage() {
             <CvStepper currentIndex={stepIndex} animate={stepperReady} />
           </div>
 
+          {/* EDITING FROM THE REVIEW. Shown while the user is changing a section
+              they came to from the review. Light: violet-100 box. */}
+          {returnToReview && stepIndex !== STEP_REVIEW && (
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-violet-400/25 bg-violet-500/10 px-5 py-3 light:border-violet-200 light:bg-violet-100/70">
+              <p className="text-sm text-white/80 light:text-stone-700">
+                You&apos;re editing from the review. Press Next to go straight back to it.
+              </p>
+              <button
+                type="button"
+                onClick={() => goToStep(STEP_REVIEW)}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-violet-400/40 px-3.5 py-1.5 text-sm font-semibold text-violet-200 transition hover:bg-violet-500/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 light:border-violet-300 light:text-violet-800 light:hover:bg-violet-100 light:hover:text-violet-900"
+              >
+                <Undo2 className="h-4 w-4" />
+                Back to review
+              </button>
+            </div>
+          )}
+
           {/* The form on the left and the panel on the right. This follows the
               width of the content area, not the window, so it also reacts to
               the sidebar opening and closing. From 1024px the panel is beside
@@ -288,7 +340,7 @@ export default function CreateCvPage() {
               PANEL WIDTH: clamp(380px,32%,440px) = 32% of the content area, but
               never narrower than 380px or wider than 440px. */}
           <div className="mt-8 grid gap-6 @5xl:grid-cols-[minmax(0,1fr)_clamp(380px,32%,440px)] @5xl:items-start">
-            {stepIndex === 0 ? (
+            {stepIndex === STEP_PERSONAL ? (
               <PersonalInfoStep
                 value={personal}
                 onChange={setPersonal}
@@ -300,13 +352,13 @@ export default function CreateCvPage() {
               <WorkExperienceStep
                 value={experiences}
                 onChange={setExperiences}
-                onNext={() => goToStep(STEP_EDUCATION)}
+                onNext={() => goNext(STEP_EDUCATION)}
               />
             ) : stepIndex === STEP_EDUCATION ? (
               <EducationStep
                 value={education}
                 onChange={setEducation}
-                onNext={() => goToStep(STEP_SKILLS)}
+                onNext={() => goNext(STEP_SKILLS)}
               />
             ) : stepIndex === STEP_SKILLS ? (
               <SkillsStep
@@ -314,36 +366,23 @@ export default function CreateCvPage() {
                 onChange={setSkills}
                 recommendations={recommendations}
                 occupation={role}
-                onNext={() => goToStep(STEP_ADDITIONAL)}
+                onNext={() => goNext(STEP_ADDITIONAL)}
               />
             ) : stepIndex === STEP_ADDITIONAL ? (
               <AdditionalInfoStep
                 value={additional}
                 onChange={setAdditional}
-                onNext={() => goToStep(STEP_ADDITIONAL + 1)}
+                onNext={() => goNext(STEP_REVIEW)}
               />
             ) : (
-              // The last step comes later. This keeps the tracker and the Back
-              // button working in the meantime.
-              <section className={`rounded-3xl border p-6 sm:p-8 ${CARD}`}>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                  <h2 className="text-3xl font-bold tracking-tight text-white light:text-stone-900">
-                    {CV_STEPS[stepIndex].label}
-                  </h2>
-                  <StepPill step={stepIndex + 1} />
-                </div>
-                <p className="mt-2 text-base text-white/60 light:text-stone-600">
-                  This step is coming next.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => goToStep(stepIndex - 1)}
-                  className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white light:border-stone-300 light:bg-white light:text-stone-700 light:hover:bg-stone-100 light:hover:text-stone-900"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back
-                </button>
-              </section>
+              <ReviewStep
+                personal={personal}
+                experiences={experiences}
+                education={education}
+                skills={skills}
+                additional={additional}
+                onEdit={editFromReview}
+              />
             )}
 
             {/* top-12 keeps the sticky panel below the strip at the top */}
@@ -365,6 +404,8 @@ export default function CreateCvPage() {
                 />
               ) : stepIndex === STEP_ADDITIONAL ? (
                 <AdditionalInfoPanel />
+              ) : stepIndex === STEP_REVIEW ? (
+                <ReviewAssistantPanel />
               ) : (
                 <RoleInsightsPanel occupation={role} industry={industry} />
               )}
